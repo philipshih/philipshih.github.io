@@ -1,14 +1,14 @@
 # Site settings
 title: A.P
-baseurl: "/ap"
-url: "https://kssim.github.io"
+baseurl: "/ps"
+url: "https://philipshih.github.io"
 google_analytics: # Tracking ID, e.g. "UA-000000-01"
 
 # Author
 author:
-  name: KyeongSeob Sim
-  desc: Hello nice to meet you
-  email: ksub0912@gmail.com
+  name: Philip Shih
+  desc: Medical Student · Developer · Researcher
+  email: philip.shih@ucsf.edu
   selfie: assets/img/profile.jpg
 
 # social
@@ -23,7 +23,7 @@ social:
   google_plus:
   instagram:
   keybase:
-  linkedin: https://www.linkedin.com/in/kssim/ 
+  linkedin: https://www.linkedin.com/in/vwx/ 
   pinterest:
   reddit:
   soundcloud:
