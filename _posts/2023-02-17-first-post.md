@@ -7,7 +7,7 @@ type: Blog
 ---
 
 ## Hello World
-This is my first post.
+I'm planning for my blog posts, projects, and interesting finds to live here.
 
 ## Info
 This part of my site is still in the works.
