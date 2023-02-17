@@ -3,24 +3,25 @@ layout: about
 ---
 
 # About Me
-There is no specific format here. You can fill out the form you want.  
-For example, you might want to write a brief introduction about your self, experience, interests, publications, and other information.  
-I wrote "about me", "career", and "interests" on this page as an example.  
+
+I'm Philip, a first-year medical student. This website is a work in progress - check back for more later.
 
 <br/>
 
-# Career
-* Second Company (2012/01 ~ )
-  * Web Application Firewall
-    * Developed TCP network acceleration module.
-    * Developde Application User Interface.
-* First Company (2011/01 ~ 2011/12)
-  * VPN Development Company
-  * Team Leader of VPN Development Div.
+# Research Experience
+
+Researcher, Morrison Lab @ UCSF
+2023 — Present
+
+Researcher, Klinman Lab @ UC Berkeley
+2017 — 19
+
+Researcher, ULab @ UC Berkeley
+2016 — 17
 
 <br/>
 
 # Interests
-I am interested in technology trends.  
-I'm not afraid to learn languages, but I enjoy using Python.  
-I like to automate and reduce annoying things.  
+I am broadly interested in exploring applications of statistics to medicine and public health. 
+I'm not afraid to learn languages, but I prefer using Python.  
+I like to automate things and minimize hassle.
