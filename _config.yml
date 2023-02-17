@@ -1,6 +1,6 @@
 # Site settings
-title: A.P
-baseurl: "/ps"
+title: P.S
+#baseurl: "/ps"
 url: "https://philipshih.github.io"
 google_analytics: # Tracking ID, e.g. "UA-000000-01"
 
