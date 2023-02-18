@@ -31,11 +31,11 @@ social:
   steam:
   tumblr:
   gitlab:
-  twitter: Test
+  twitter: philip_e_shih
   vimeo:
   wordpress:
   youtube:
-  default_txt: "Follow On"
+  default_txt: "My"
 
 # Build settings
 markdown: kramdown
