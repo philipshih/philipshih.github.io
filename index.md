@@ -3,7 +3,7 @@ layout: about
 ---
 
 # About Me
-Working to gain skills to increase efficiency and interoperability in healthcare.
+Working on acquiring skills to increase interoperability and efficiency in healthcare.
 
 M.D., M.S. Candidate @ [The Joint Medical Program](https://publichealth.berkeley.edu/academics/joint-medical-program/). Cal alum.
 <br/>
@@ -17,7 +17,7 @@ In the past, I was part of the [Klinman Group](http://www.cchem.berkeley.edu/juk
 # Interests
 I am broadly interested in applications of statistical learning in medicine and public health. 
 
-I like to automate things and minimize redundancy.
+I enjoy finding ways to automate things and minimize redundancy.
 
 I [read](https://www.goodreads.com/user/show/108682054-philip-shih) about science, medicine, philosophy, geopolitics, and the future.
 
