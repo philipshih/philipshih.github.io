@@ -7,10 +7,10 @@ type: Blog
 ---
 
 ## Hello World
-I'm planning for my blog posts, projects, and interesting finds to live here.
+Blog posts, projects, and interesting finds will live here.
 
 ## Info
-This part of my site is still in the works.
+This section of my site is in the works.
 
 ## Duration 
-Check back later for more updates.
+Check back soon for updates.
