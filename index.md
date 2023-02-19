@@ -19,7 +19,7 @@ I am broadly interested in applications of statistical learning in medicine and 
 
 I enjoy finding ways to automate things and minimize redundancy.
 
-I love learning about technology, anthropology, and geopolitics. I maintain a bookshelf of my current reads [here](https://www.goodreads.com/user/show/108682054-philip-shih).
+I love learning about technology, anthropology, and geopolitics. I keep a bookshelf of my current reads [here](https://www.goodreads.com/user/show/108682054-philip-shih).
 
 You can find me playing [Forum Mafia](https://www.sc2mafia.com/forum/) or [hiking](https://www.alltrails.com/members/philip-shih-2?ref=header) in San Francisco and the East Bay. 
 
