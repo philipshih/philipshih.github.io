@@ -7,7 +7,7 @@ google_analytics: # Tracking ID, e.g. "UA-000000-01"
 # Author
 author:
   name: Philip Shih
-  desc: Medical Student · Developer · Researcher
+  desc: Medical Student · Developer
   email: philip.shih@ucsf.edu
   selfie: assets/img/profile.jpg
 

@@ -3,7 +3,7 @@ layout: about
 ---
 
 # About Me
-Working on acquiring skills to make healthcare more efficient and interoperable. 
+Acquiring skills to make healthcare more efficient and interoperable. 
 
 M.D., M.S. Candidate @ [The Joint Medical Program](https://publichealth.berkeley.edu/academics/joint-medical-program/). Cal alum.
 <br/>
