@@ -15,7 +15,7 @@ In the past, I was part of the [Klinman Group](http://www.cchem.berkeley.edu/juk
 # Interests
 I am interested in applications of statistical learning in medicine and public health. 
 
-I enjoy finding ways to automate things and reduce redundancy.
+I enjoy finding ways to minimize redundancy through automation. 
 
 I love learning about technology, anthropology, and geopolitics. I keep a bookshelf of my current reads [here](https://www.goodreads.com/user/show/108682054-philip-shih).
 
