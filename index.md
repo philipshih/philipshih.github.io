@@ -13,6 +13,6 @@ In the past, I was part of the [Klinman Group](http://www.cchem.berkeley.edu/juk
 <br/>
 
 # Interests
-My primary research interest is in the development of multimodal clinical decision support systems and image classification tools in medicine.
+My primary research interest is in the development of multimodal clinical decision support systems in medicine.
 
 I love learning about technology, anthropology, and geopolitics. [Here's](https://www.goodreads.com/user/show/108682054-philip-shih) what's on my reading list!
