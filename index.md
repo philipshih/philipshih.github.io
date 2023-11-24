@@ -15,4 +15,4 @@ In the past, I was part of the [Klinman Group](http://www.cchem.berkeley.edu/juk
 # Interests
 My primary research interest is in imaging tools for clinical decision support systems.
 
-I like to [read](https://www.goodreads.com/user/show/108682054-philip-shih)) about technology, anthropology, and geopolitics.
+I like to [read](https://www.goodreads.com/user/show/108682054-philip-shih) about technology, anthropology, and geopolitics.
