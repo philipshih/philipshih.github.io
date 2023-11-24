@@ -13,9 +13,7 @@ In the past, I was part of the [Klinman Group](http://www.cchem.berkeley.edu/juk
 <br/>
 
 # Interests
-I am interested in applications of statistical learning in medicine and public health. 
-
-I enjoy finding ways to minimize redundancy through automation. 
+My primary research interest is in the development of multimodal clinical decision support systems and image classification tools in medicine.
 
 I love learning about technology, anthropology, and geopolitics. I keep a bookshelf of my current reads [here](https://www.goodreads.com/user/show/108682054-philip-shih).
 
