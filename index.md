@@ -15,7 +15,4 @@ In the past, I was part of the [Klinman Group](http://www.cchem.berkeley.edu/juk
 # Interests
 My primary research interest is in the development of multimodal clinical decision support systems and image classification tools in medicine.
 
-I love learning about technology, anthropology, and geopolitics.[Here's](https://www.goodreads.com/user/show/108682054-philip-shih) what I'm currently reading.
-
-You can find me playing [Forum Mafia](https://www.sc2mafia.com/forum/) or [hiking](https://www.alltrails.com/members/philip-shih-2?ref=header) in San Francisco and the East Bay. 
-
+I love learning about technology, anthropology, and geopolitics. [Here's](https://www.goodreads.com/user/show/108682054-philip-shih) what I'm currently reading!
