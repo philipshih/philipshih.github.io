@@ -5,9 +5,9 @@ info: "Blog"
 #tech: "--"
 type: Career 
 ---
-## UCSF Summer Explore Fellowship, 2023
+## What I did
 
-Here's the abstract from my grant proposal that sums up my work over summer 2023:
+Here's the abstract from my grant proposal that sums up my work for the [UCSF Summer Explore Fellowship](https://meded.ucsf.edu/fund-opportunity/summer-explore-research-fellowship), which I participated in as part of the 2023 cohort:
 
 Deep brain stimulation (DBS) is a highly effective neurosurgical
 treatment option for alleviation of Parkinson’s disease (PD)
@@ -25,13 +25,13 @@ undergo DBS therapy and thus has potential for serving as an
 effective predictor for DBS response.
 
 
-This project will assess and compare the predictive power of
+This project assesses and compares the predictive power of
 tract-specific FA values for DBS outcomes in PD patients, which
 can be approximated by pre- to post-operative difference in
-patients’ daily PD medication dose. We will use DTI data and
+patients’ daily PD medication dose. We use DTI data and
 outcome measures from 150 PD patients who underwent DBS
 at UCSF. A novel segmentation method called automated fiber
-quantification (AFQ) will be used to create a pipeline for
+quantification (AFQ) is used to create a pipeline for
 retrieving FA values of the corticospinal and
 dentatorubrothalamic tracts, both of which are involved in PD
 motor dysfunction. Through preserving diffusion measurement
