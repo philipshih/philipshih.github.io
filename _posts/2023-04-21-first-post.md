@@ -5,7 +5,7 @@ info: "Blog"
 #tech: "--"
 type: Career 
 ---
-## This Summer's Project
+## UCSF Summer Explore Fellowship, 2023
 
 Here's the abstract from my grant proposal that sums up my work over summer 2023:
 
