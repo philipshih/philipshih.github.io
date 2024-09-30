@@ -1,8 +1,7 @@
 ---
 layout: post
-title:  "PitNET Hyperenhancement"
+title:  "post2"
 info: "Blog"
 #tech: "--"
 type: Career 
 ---
-## 
