@@ -13,4 +13,4 @@ In the past, I was part of the [Klinman Group](http://www.cchem.berkeley.edu/juk
 <br/>
 
 # Interests
-My primary research interest is in imaging tools and generation of synthetic data for improving clinical decision support system performance.
+My primary research interest is in imaging approaches to generating synthetic data for training clinical decision support systems.
