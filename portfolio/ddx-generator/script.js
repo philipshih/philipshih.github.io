@@ -293,8 +293,21 @@ function calculateDDx() {
 function updateUI(ddxResults) {
     ddxListUl.innerHTML = ''; // Clear previous list
 
+    // --- TEMPORARY DEBUG ---
+    // Display the count of results found, even if zero
+    const debugMsg = `DEBUG: Found ${ddxResults.length} potential diagnoses.`;
+    const debugLi = document.createElement('li');
+    debugLi.style.color = 'orange';
+    debugLi.textContent = debugMsg;
+    ddxListUl.appendChild(debugLi);
+    // --- END TEMP DEBUG ---
+
+
     if (ddxResults.length === 0) {
-        ddxListUl.innerHTML = '<li>Enter findings to generate ideas...</li>';
+        // Keep the default message if no results, but the debug line will also show
+        if (ddxListUl.children.length <= 1) { // Avoid adding default msg if debug msg is already there
+             ddxListUl.innerHTML += '<li>Enter findings to generate ideas...</li>';
+        }
         planSuggestionP.textContent = 'Plan suggestions will appear here based on top differential ideas.';
         return;
     }
