@@ -116,9 +116,17 @@ function changeDirection(event) {
     if (keyPressed === RIGHT_KEY && !goingLeft) { dx = 1; dy = 0; changingDirection = true; }
     if (keyPressed === DOWN_KEY && !goingUp) { dx = 0; dy = 1; changingDirection = true; }
 
-    // Restart game on Enter if game over
-    if (!gameRunning && keyPressed === ENTER_KEY) {
-        initializeGame();
+    // Handle direction changes only if the game is running
+    if (gameRunning) {
+        if (keyPressed === LEFT_KEY && !goingRight) { dx = -1; dy = 0; changingDirection = true; }
+        if (keyPressed === UP_KEY && !goingDown) { dx = 0; dy = -1; changingDirection = true; }
+        if (keyPressed === RIGHT_KEY && !goingLeft) { dx = 1; dy = 0; changingDirection = true; }
+        if (keyPressed === DOWN_KEY && !goingUp) { dx = 0; dy = 1; changingDirection = true; }
+    } else {
+        // Restart game on Enter ONLY if game is over
+        if (keyPressed === ENTER_KEY) {
+            initializeGame();
+        }
     }
 }
 

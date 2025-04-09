@@ -286,40 +286,64 @@ function applyCrop() {
     const naturalSx = sx * (imgToCrop.naturalWidth / canvas.width);
     const naturalSy = sy * (imgToCrop.naturalHeight / canvas.height);
     const naturalSWidth = sWidth * (imgToCrop.naturalWidth / canvas.width);
-    const naturalSHeight = sHeight * (imgToCrop.naturalHeight / canvas.height);
+    const naturalSHeight = Math.round(sHeight * (imgToCrop.naturalHeight / canvas.height)); // Use Math.round for integer dimensions
 
 
     try {
         // Get the image data for the selected region from the temp canvas
-        const croppedImageData = tempCtx.getImageData(naturalSx, naturalSy, naturalSWidth, naturalSHeight);
+        // Ensure calculated dimensions don't exceed the source image bounds slightly due to rounding
+        const safeSWidth = Math.min(naturalSWidth, imgToCrop.naturalWidth - naturalSx);
+        const safeSHeight = Math.min(naturalSHeight, imgToCrop.naturalHeight - naturalSy);
+
+        if (safeSWidth <= 0 || safeSHeight <= 0) {
+            throw new Error("Calculated crop dimensions are invalid.");
+        }
+
+        const croppedImageData = tempCtx.getImageData(naturalSx, naturalSy, safeSWidth, safeSHeight);
 
         // Create another temporary canvas to hold just the cropped data
         const cropOutputCanvas = document.createElement('canvas');
-        cropOutputCanvas.width = naturalSWidth;
-        cropOutputCanvas.height = naturalSHeight;
+        cropOutputCanvas.width = safeSWidth; // Use safe dimensions
+        cropOutputCanvas.height = safeSHeight;
         const cropOutputCtx = cropOutputCanvas.getContext('2d');
         cropOutputCtx.putImageData(croppedImageData, 0, 0);
 
-        // Create a new Image object from the cropped canvas data
-        const croppedImage = new Image();
-        croppedImage.onload = () => {
-            // Update the main originalImage to the cropped version
-            originalImage = croppedImage;
-            // Update canvas size and details
+        // Create a new Image object from the cropped canvas data URL
+        const dataUrl = cropOutputCanvas.toDataURL(`image/${currentImageType}`);
+
+        // Update the main originalImage source to the new data URL
+        // This effectively replaces the current image with the cropped version
+        // We also need to update the sourceImage if we want subsequent crops
+        // to be based on the *first* crop, not the original. Let's keep sourceImage as original.
+        originalImage = new Image(); // Create a new image object for the cropped version
+        originalImage.crossOrigin = "Anonymous";
+        originalImage.onload = () => {
+            // Update canvas size and details for the newly cropped image
             canvas.width = originalImage.naturalWidth;
             canvas.height = originalImage.naturalHeight;
             resolutionValueSpan.textContent = `${originalImage.naturalWidth} x ${originalImage.naturalHeight}`;
-            // File type remains the same conceptually, though it's now canvas data
             filetypeValueSpan.textContent = currentImageType.toUpperCase() + " (Cropped)";
 
-            // Reset augmentations and redraw
-            resetControls(); // This calls drawImage internally
+            // Reset augmentations and redraw with the cropped image
+            // We don't call resetControls() fully as that would revert to sourceImage
+            // Just reset sliders and redraw
+            rotationSlider.value = 0;
+            scaleSlider.value = 1.0;
+            brightnessSlider.value = 100;
+            contrastSlider.value = 100;
+            noiseSlider.value = 0;
+            blurSlider.value = 0;
+            shearSlider.value = 0;
+            drawImage(); // Redraw with the new cropped image and default augmentations
         };
-        croppedImage.onerror = () => {
-             console.error("Error creating image from cropped data.");
-             alert("Failed to apply crop.");
+         originalImage.onerror = () => {
+             console.error("Error loading cropped image data URL.");
+             alert("Failed to load cropped image.");
+             // Revert to previous state if loading fails? Maybe revert to sourceImage.
+             originalImage = sourceImage; // Revert
+             resetControls(); // Full reset if crop load fails
         }
-        croppedImage.src = cropOutputCanvas.toDataURL(`image/${currentImageType}`); // Use original type if known
+        originalImage.src = dataUrl; // Load the cropped image data
 
     } catch (error) {
         console.error("Error during cropping:", error);

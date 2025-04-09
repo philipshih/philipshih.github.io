@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Classic Snake Game"
-date: 2025-04-09
+date: 2022-08-20
 type: Web Game
 info: "A simple implementation of the classic Snake game using HTML Canvas and JavaScript."
 tech: "JavaScript, HTML Canvas, CSS"

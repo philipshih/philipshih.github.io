@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Binary Search Tree Visualizer"
-date: 2025-04-09
+date: 2024-05-10
 type: Data Structure Demo
 info: "An interactive visualization of Binary Search Tree operations (insert, search) using HTML Canvas."
 tech: "JavaScript, HTML Canvas, CSS, Data Structures"

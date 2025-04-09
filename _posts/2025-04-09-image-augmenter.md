@@ -1,7 +1,7 @@
 ---
 layout: post # Or keep the default layout handling if 'post' isn't strictly needed for portfolio items
 title: "Vision Sandbox: Augment & Classify"
-date: 2025-04-09
+date: 2023-11-15
 type: Web App / ML Demo # Category for the portfolio item
 info: "Interactively apply image augmentations (rotate, scale, etc.) and classify images using TensorFlow.js (MobileNet) directly in your browser." # Short description
 tech: "JavaScript, HTML Canvas, CSS, TensorFlow.js" # Technologies used
