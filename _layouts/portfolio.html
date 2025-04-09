@@ -4,7 +4,11 @@ layout: base
 
 <div class="portfolio">
   {% for post in paginator.posts %}
-    <a href="{{ post.url | prepend: site.baseurl }}" class="portfolio-item">
+    {% assign item_url = post.url %}
+    {% if post.app_url %}
+      {% assign item_url = post.app_url %}
+    {% endif %}
+    <a href="{{ item_url | prepend: site.baseurl }}" class="portfolio-item">
       <div>
         <h1 class="portfolio-title">{{ post.title }}</h1>
         <div class="portfolio-line"></div>

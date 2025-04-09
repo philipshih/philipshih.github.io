@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Image Augmenter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Interactive Image Augmentation Viewer</h1>
+    <p>
+        Explore common image augmentation techniques used in machine learning,
+        especially for training models on medical imaging data. Adjust the controls
+        to see the effects in real-time.
+    </p>
+
+    <div class="container">
+        <div class="controls">
+            <h2>Controls</h2>
+            <!-- Placeholder for controls -->
+            <div class="control-group">
+                <label for="image-upload">Upload Image:</label>
+                <input type="file" id="image-upload" accept="image/*">
+            </div>
+             <div class="control-group">
+                <label for="rotation">Rotation (&deg;): <span id="rotation-value">0</span></label>
+                <input type="range" id="rotation" min="-180" max="180" value="0" step="1">
+            </div>
+             <div class="control-group">
+                <label for="scale">Scale: <span id="scale-value">1.0</span></label>
+                <input type="range" id="scale" min="0.1" max="2.0" value="1.0" step="0.05">
+            </div>
+             <div class="control-group">
+                <label for="brightness">Brightness: <span id="brightness-value">100</span>%</label>
+                <input type="range" id="brightness" min="0" max="200" value="100" step="1">
+            </div>
+             <div class="control-group">
+                <label for="contrast">Contrast: <span id="contrast-value">100</span>%</label>
+                <input type="range" id="contrast" min="0" max="200" value="100" step="1">
+            </div>
+             <div class="control-group">
+                <label for="noise">Noise Amount: <span id="noise-value">0</span></label>
+                <input type="range" id="noise" min="0" max="50" value="0" step="1">
+            </div>
+             <div class="control-group">
+                <label for="blur">Gaussian Blur (px): <span id="blur-value">0</span></label>
+                <input type="range" id="blur" min="0" max="10" value="0" step="0.5">
+            </div>
+             <div class="control-group">
+                <label for="shear">Horizontal Shear: <span id="shear-value">0.0</span></label>
+                <input type="range" id="shear" min="-0.5" max="0.5" value="0" step="0.05">
+            </div>
+            <button id="reset-button">Reset Augmentations</button>
+        </div>
+
+        <div class="image-display">
+            <h2>Augmented Image</h2>
+            <canvas id="image-canvas"></canvas>
+            <p id="loading-message" style="display: none;">Loading image...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
