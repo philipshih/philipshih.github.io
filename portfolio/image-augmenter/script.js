@@ -2,6 +2,7 @@ const canvas = document.getElementById('image-canvas');
 const ctx = canvas.getContext('2d');
 const imageUpload = document.getElementById('image-upload');
 const loadingMessage = document.getElementById('loading-message');
+const classificationResultDiv = document.getElementById('classification-result');
 
 // Control elements
 const rotationSlider = document.getElementById('rotation');
@@ -24,9 +25,27 @@ const shearValueSpan = document.getElementById('shear-value');
 
 let originalImage = null;
 let imageLoaded = false;
-// Attempt to find a suitable default image path relative to the correct project structure
-// Assuming 'assets/img/' exists at the root of 'C:\Users\phili\OneDrive\Desktop\philipshih.github.io\'
-const defaultImageSrc = '../../assets/img/profile.jpg'; // Adjusted relative path
+let mobilenetModel = null; // Variable to hold the loaded model
+// Use the user-provided image path
+const defaultImageSrc = '../../assets/img/Skin_rashes.jpg'; // Updated default image
+
+// --- ML Model Loading ---
+async function loadModel() {
+    console.log('Loading MobileNet model...');
+    classificationResultDiv.innerHTML = '<p>Loading classification model...</p>';
+    try {
+        mobilenetModel = await mobilenet.load();
+        console.log('MobileNet model loaded successfully.');
+        classificationResultDiv.innerHTML = '<p>Model loaded. Ready to classify.</p>';
+        // Classify the initial image once the model is loaded
+        if (imageLoaded) {
+            classifyImage();
+        }
+    } catch (error) {
+        console.error('Error loading MobileNet model:', error);
+        classificationResultDiv.innerHTML = '<p>Error loading classification model.</p>';
+    }
+}
 
 // --- Image Loading ---
 function loadImage(src) {
@@ -42,20 +61,19 @@ function loadImage(src) {
         canvas.width = originalImage.naturalWidth;
         canvas.height = originalImage.naturalHeight;
         resetControls(); // Reset sliders when new image loads
-        drawImage();
+        drawImage(); // Draw the image first
+        // Classify the newly loaded image if model is ready
+        if (mobilenetModel) {
+             classifyImage();
+        } else {
+            classificationResultDiv.innerHTML = '<p>Waiting for model to load...</p>';
+        }
     };
     originalImage.onerror = () => {
-        // Try a different potential default if the first fails
-        const fallbackImageSrc = '../../assets/img/profile3.jpg'; // Try another common profile image
-        if (src !== fallbackImageSrc) {
-            console.warn("Failed to load default image:", src, "Trying fallback:", fallbackImageSrc);
-            loadImage(fallbackImageSrc);
-        } else {
-            loadingMessage.innerText = 'Error loading default image. Please upload one.';
-            console.error("Error loading image:", src, "and fallback failed.");
-            imageLoaded = false;
-            originalImage = null; // Clear image object on error
-        }
+        loadingMessage.innerText = 'Error loading default image. Please check path or upload one.';
+        console.error("Error loading image:", src);
+        imageLoaded = false;
+        originalImage = null; // Clear image object on error
     };
     originalImage.src = src;
 }
@@ -126,7 +144,41 @@ function drawImage() {
     if (noise > 0) {
         applyNoise(noise);
     }
+
+    // Classify the image after drawing/augmenting if model is loaded
+    if (mobilenetModel) {
+        classifyImage();
+    }
 }
+
+// --- Image Classification ---
+async function classifyImage() {
+    if (!mobilenetModel || !imageLoaded || !canvas) {
+        console.log("Model or image not ready for classification.");
+        return;
+    }
+    classificationResultDiv.innerHTML = '<p>Classifying...</p>';
+
+    try {
+        // Get the current image data from the canvas
+        // Note: Using the canvas directly works with MobileNet
+        const predictions = await mobilenetModel.classify(canvas);
+
+        if (predictions && predictions.length > 0) {
+            const topPrediction = predictions[0];
+            const className = topPrediction.className.split(',')[0]; // Get primary class name
+            const probability = (topPrediction.probability * 100).toFixed(1);
+            classificationResultDiv.innerHTML = `<p>Identified as: <strong>${className}</strong> (${probability}%)</p>`;
+            console.log('Classification results:', predictions);
+        } else {
+            classificationResultDiv.innerHTML = '<p>Could not classify image.</p>';
+        }
+    } catch (error) {
+        console.error('Error during classification:', error);
+        classificationResultDiv.innerHTML = '<p>Error during classification.</p>';
+    }
+}
+
 
 // --- Noise Application ---
 function applyNoise(amount) {
@@ -170,5 +222,7 @@ function resetControls() {
 resetButton.addEventListener('click', resetControls);
 
 // --- Initial Load ---
-// Load a default image on page load
+// Load the ML model first
+loadModel();
+// Then load the default image
 loadImage(defaultImageSrc);

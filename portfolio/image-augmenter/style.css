@@ -105,3 +105,20 @@ label span {
         margin-bottom: 20px; /* Add space below controls */
     }
 }
+
+/* Style for classification result */
+.caption {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #555;
+    min-height: 2.5em; /* Reserve space */
+    text-align: center;
+}
+
+.caption p {
+    margin: 0;
+    padding: 5px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    display: inline-block; /* Fit content */
+}

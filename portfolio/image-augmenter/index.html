@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Image Augmenter</title>
+    <title>Interactive Image Augmenter & Classifier</title>
     <link rel="stylesheet" href="style.css">
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <!-- MobileNet model -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest/dist/mobilenet.min.js"></script>
 </head>
 <body>
     <h1>Interactive Image Augmentation Viewer</h1>
@@ -57,6 +61,9 @@
             <h2>Augmented Image</h2>
             <canvas id="image-canvas"></canvas>
             <p id="loading-message" style="display: none;">Loading image...</p>
+            <div id="classification-result" class="caption">
+                <p>Identifying image...</p>
+            </div>
         </div>
     </div>
 
