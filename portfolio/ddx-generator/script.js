@@ -98,7 +98,28 @@ function generateDdx() {
             resultsList.appendChild(listItem);
         });
     }
+
+    // Send height update to parent window
+    sendHeightToParent();
 }
 
-// Optional: Add event listener to generate DDx when any checkbox changes (can be noisy)
-// document.getElementById('ddx-form').addEventListener('change', generateDdx);
+// Function to send the document height to the parent window
+function sendHeightToParent() {
+    const height = document.body.scrollHeight;
+    // Send message to parent window; '*' allows any origin, consider restricting for security if needed
+    window.parent.postMessage({ frameHeight: height }, '*');
+}
+
+// Initial generation and height sending on load
+document.addEventListener('DOMContentLoaded', () => {
+    generateDdx(); // Generate initial state (likely empty list)
+    sendHeightToParent(); // Send initial height
+});
+
+
+// Add event listener to the form for real-time updates
+document.getElementById('ddx-form').addEventListener('input', generateDdx); // Use 'input' for better responsiveness with number fields
+
+// Optional: Use ResizeObserver for more robust height updates if content changes dynamically outside of generateDdx
+// const resizeObserver = new ResizeObserver(sendHeightToParent);
+// resizeObserver.observe(document.body);
