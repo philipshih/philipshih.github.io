@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Differential Diagnosis Idea Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Differential Diagnosis Idea Generator (Demo)</h1>
+
+    <div class="disclaimer">
+        <strong>Disclaimer:</strong> This is a portfolio demonstration project ONLY. It uses a highly simplified, illustrative knowledge base. It is NOT a real medical tool and must NOT be used for actual diagnosis or treatment decisions. Consult a qualified healthcare professional for any medical concerns.
+    </div>
+
+    <div class="container">
+        <div class="input-section">
+            <h2>Patient Information & Findings</h2>
+
+            <div class="input-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" min="0" max="120" placeholder="e.g., 30">
+            </div>
+
+            <!-- Add Vitals later if needed -->
+
+            <details class="finding-section">
+                <summary>Review of Systems / History</summary>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="fever" value="fever"> Fever</label>
+                    <label><input type="checkbox" id="itchy" value="itchy"> Itchy Rash</label>
+                    <label><input type="checkbox" id="sore_throat" value="sore_throat"> Sore Throat</label>
+                    <label><input type="checkbox" id="recent_travel" value="recent_travel"> Recent Travel</label>
+                    <label><input type="checkbox" id="new_medication" value="new_medication"> New Medication/Exposure</label>
+                     <!-- Add more ROS as needed -->
+                </div>
+            </details>
+
+            <details class="finding-section">
+                <summary>Physical Exam Findings (Skin Example)</summary>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="maculopapular" value="maculopapular"> Maculopapular Rash (Red bumps/spots)</label>
+                    <label><input type="checkbox" id="vesicular" value="vesicular"> Vesicular Rash (Blisters)</label>
+                    <label><input type="checkbox" id="urticaria" value="urticaria"> Urticaria (Hives/Welts)</label>
+                    <label><input type="checkbox" id="starts_face" value="starts_face"> Rash started on face/head</label>
+                    <label><input type="checkbox" id="nikolsky_pos" value="nikolsky_pos"> Nikolsky Sign Positive</label>
+                    <label><input type="checkbox" id="nikolsky_neg" value="nikolsky_neg"> Nikolsky Sign Negative</label>
+                     <!-- Add more PE findings as needed -->
+                 </div>
+            </details>
+
+            <details class="finding-section">
+                <summary>Chest Pain Characteristics</summary>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="cp_pressure" value="cp_pressure"> Pressure/Squeezing</label>
+                    <label><input type="checkbox" id="cp_pleuritic" value="cp_pleuritic"> Pleuritic (Worse w/ breath)</label>
+                    <label><input type="checkbox" id="cp_reproducible" value="cp_reproducible"> Reproducible w/ palpation</label>
+                    <label><input type="checkbox" id="cp_radiation" value="cp_radiation"> Radiates (Arm/Jaw/Back)</label>
+                    <label><input type="checkbox" id="cp_worse_exertion" value="cp_worse_exertion"> Worse w/ exertion</label>
+                    <label><input type="checkbox" id="cp_worse_eating" value="cp_worse_eating"> Worse after eating / lying down</label>
+                </div>
+            </details>
+
+             <details class="finding-section">
+                <summary>Respiratory Findings</summary>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="sob" value="sob"> Shortness of Breath (Dyspnea)</label>
+                    <label><input type="checkbox" id="cough" value="cough"> Cough</label>
+                    <label><input type="checkbox" id="wheezing" value="wheezing"> Wheezing</label>
+                    <label><input type="checkbox" id="hemoptysis" value="hemoptysis"> Hemoptysis (Coughing blood)</label>
+                    <label><input type="checkbox" id="leg_swelling" value="leg_swelling"> Unilateral Leg Swelling</label>
+                </div>
+            </details>
+
+        </div>
+
+        <div class="output-section">
+            <h2>Generated Differential Diagnosis (Illustrative)</h2>
+            <ul id="ddx-list">
+                <li>Enter findings to generate ideas...</li>
+            </ul>
+
+            <h2>Suggested Plan (Illustrative)</h2>
+            <p id="plan-suggestion">Plan suggestions will appear here based on top differential ideas.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
