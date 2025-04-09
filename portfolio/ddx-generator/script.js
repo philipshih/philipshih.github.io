@@ -126,6 +126,66 @@ const knowledgeBase = {
         findings: ["dizziness"], // Specific positional triggers (not checkbox)
         plan: "Dix-Hallpike maneuver for diagnosis. Epley maneuver for treatment (BPPV). Consider Meclizine short-term.",
         baseScore: 7
+    },
+    tension_headache: {
+        name: "Tension Headache",
+        findings: ["headache", "muscle_ache"], // Often bilateral, band-like
+        plan: "Reassurance, NSAIDs/Acetaminophen, stress reduction techniques.",
+        baseScore: 12 // Very common
+    },
+    cluster_headache: {
+        name: "Cluster Headache",
+        findings: ["headache"], // Severe, unilateral, orbital/temporal, autonomic symptoms (not checkboxes)
+        plan: "High-flow oxygen, Sumatriptan (subcutaneous/nasal). Prophylaxis (e.g., Verapamil). Neurology consult.",
+        baseScore: 2
+    },
+     meningitis: {
+        name: "Meningitis",
+        findings: ["headache", "fever", "altered_mental_status"], // Neck stiffness (not checkbox)
+        plan: "EMERGENCY. Lumbar Puncture STAT (after Head CT if focal deficit/papilledema). Empiric antibiotics + steroids. Droplet precautions.",
+        baseScore: 1
+    },
+    sah: {
+        name: "Subarachnoid Hemorrhage (SAH)",
+        findings: ["headache", "nausea_vomiting", "altered_mental_status"], // Sudden, severe ("thunderclap") headache is key
+        plan: "EMERGENCY. Non-contrast Head CT STAT. If CT negative but high suspicion, Lumbar Puncture. Neurosurgery consult.",
+        baseScore: 1
+    },
+    ibs: {
+        name: "Irritable Bowel Syndrome (IBS)",
+        findings: ["abd_pain", "diarrhea"], // Often alternating constipation/diarrhea, related to stress/food
+        plan: "Diagnosis of exclusion. Lifestyle/diet modification (e.g., low FODMAP). Symptomatic treatment (antispasmodics, fiber, etc.).",
+        baseScore: 9
+    },
+    pud: {
+        name: "Peptic Ulcer Disease (PUD)",
+        findings: ["abd_pain", "nausea_vomiting", "cp_worse_eating"], // Epigastric pain, can be worse/better with food
+        plan: "PPI therapy. Test for H. pylori (breath test, stool antigen, or biopsy). Consider EGD.",
+        baseScore: 7
+    },
+    fibromyalgia: {
+        name: "Fibromyalgia",
+        findings: ["muscle_ache", "joint_pain", "back_pain", "headache"], // Widespread pain, fatigue, tender points
+        plan: "Multimodal approach: Exercise, CBT, patient education. Medications (e.g., TCAs, SNRIs, Gabapentinoids).",
+        baseScore: 6
+    },
+    herniated_disc: {
+        name: "Herniated Disc / Radiculopathy",
+        findings: ["back_pain", "focal_deficit"], // Often radiating pain, numbness/weakness
+        plan: "Conservative management initially (NSAIDs, PT). Consider MRI if persistent/red flags. Pain management/Neurosurgery consult if severe.",
+        baseScore: 5
+    },
+    pneumothorax: {
+        name: "Pneumothorax",
+        findings: ["sob", "cp_pleuritic"], // Sudden onset SOB/pleuritic CP, decreased breath sounds (not checkbox)
+        plan: "Chest X-ray STAT. Oxygen. If large or tension, needle decompression / chest tube placement.",
+        baseScore: 3
+    },
+    cellulitis: {
+        name: "Cellulitis",
+        findings: ["localized_redness", "fever"], // Localized skin infection findings
+        plan: "Antibiotics covering likely pathogens (e.g., Staph, Strep). Mark borders. Elevate limb if applicable. Consider CBC, blood cultures if systemic signs.",
+        baseScore: 8
     }
     // Add more conditions as needed
 };
@@ -148,13 +208,34 @@ function calculateDDx() {
         let score = dx.baseScore;
 
         // Increase score for matching findings
+        let numberOfMatchingFindings = 0;
         dx.findings.forEach(findingId => {
             if (findings[findingId] === true) {
-                // Simple scoring: +10 points per matching finding
-                // More complex scoring could weight findings differently
-                score += 10;
-                 // Special boost/penalty based on specific combinations or negatives
-                 if (dxKey === 'sjs_ten' && findings['nikolsky_pos'] === true) score += 30; // High weight for +Nikolsky in SJS/TEN
+                numberOfMatchingFindings++;
+                // Increase base score boost for a match - Make it much larger
+                let boost = 30; // Higher default boost
+
+                // Specific high-yield findings get even larger boosts
+                if (findingId === 'headache' && (dxKey === 'migraine' || dxKey === 'tension_headache' || dxKey === 'cluster_headache' || dxKey === 'meningitis' || dxKey === 'sah')) boost = 50; // Significantly boost headache diagnoses if headache is checked
+                if (findingId === 'focal_deficit' && dxKey === 'stroke_tia') boost = 60;
+                if (findingId === 'nikolsky_pos' && dxKey === 'sjs_ten') boost = 60;
+                if (findingId === 'cp_pressure' && dxKey === 'acs') boost = 40;
+                if (findingId === 'leg_swelling' && dxKey === 'pe') boost = 35;
+                if (findingId === 'cp_reproducible' && dxKey === 'costochondritis') boost = 35;
+                if (findingId === 'wheezing' && dxKey === 'asthma_exacerbation') boost = 35;
+                if (findingId === 'jaundice' && dxKey === 'cholecystitis') boost = 40;
+                if (findingId === 'localized_redness' && dxKey === 'cellulitis') boost = 40;
+
+                score += boost;
+
+                 // Penalties / Negative Associations (Example)
+                 // If headache is present, slightly reduce likelihood of purely peripheral things?
+                 // This can get complex and requires careful tuning. Let's keep it simple for now.
+                 // if (findings['headache'] === true && dxKey === 'costochondritis') score -= 5;
+
+
+                 // Existing special boosts/penalties (keep but adjust base boost above)
+                 // if (dxKey === 'sjs_ten' && findings['nikolsky_pos'] === true) score += 30; // Covered by boost logic now
                  if (dxKey !== 'sjs_ten' && findings['nikolsky_pos'] === true) score -= 10; // Penalize others if +Nikolsky
                  if (dxKey === 'sjs_ten' && findings['nikolsky_neg'] === true) score -= 20; // Penalize SJS if -Nikolsky
 
@@ -171,6 +252,9 @@ function calculateDDx() {
                  if (dxKey === 'cholecystitis' && findings['abd_pain'] === true && findings['jaundice'] === true) score += 20;
                  if (dxKey === 'stroke_tia' && findings['focal_deficit'] === true) score += 40; // High weight for focal deficit
                  if (dxKey === 'migraine' && findings['headache'] === true && findings['nausea_vomiting'] === true) score += 10;
+
+                 // Add scoring for cellulitis
+                 if (dxKey === 'cellulitis' && findings['localized_redness'] === true) score += 25; // High weight for localized findings
             }
         });
 
@@ -179,15 +263,41 @@ function calculateDDx() {
             if ((dxKey === 'measles' || dxKey === 'varicella') && findings.age > 40) {
                 score -= 5; // Less common in older adults if first presentation
             }
-            if (dxKey === 'drug_eruption' && findings.age > 60) {
-                score += 3; // Polypharmacy increases risk
-            }
+            // Add age adjustments for other conditions if needed
+             if (dxKey === 'acs' && findings.age > 50) score += 5;
+             if (dxKey === 'stroke_tia' && findings.age > 60) score += 5;
+        }
+
+        // Determine if *any* finding was checked by the user
+        const anyFindingChecked = Object.values(findings).some(f => f === true);
+
+        // Include result if:
+        // 1. At least one finding was checked AND the score increased significantly OR
+        // 2. No findings were checked (show base rates) - Removed this condition, only show if relevant
+        // Let's require a score increase relative to base if findings are checked.
+        // If only one finding checked, require a larger relative increase?
+        let includeThreshold = dx.baseScore + 5; // Require at least a small increase if any finding checked
+        if (anyFindingChecked && numberOfMatchingFindings === 1 && boost < 35) { // If only one non-specific finding matched
+             includeThreshold = dx.baseScore + boost / 2; // Require less of an increase if it's non-specific
+        } else if (anyFindingChecked) {
+             includeThreshold = dx.baseScore + 10; // Require a more significant increase if multiple findings or a specific one matched
         }
 
 
-        if (score > dx.baseScore || Object.values(findings).some(f => f === true)) { // Only include if score increased or any finding selected
+        // Include if score is above threshold OR if it's a direct match for the *only* symptom checked
+        const onlyOneSymptomChecked = Object.values(findings).filter(f => f === true).length === 1;
+        const isDirectMatchForOnlySymptom = onlyOneSymptomChecked && dx.findings.some(fid => findings[fid] === true);
+
+        if (anyFindingChecked && (score > includeThreshold || isDirectMatchForOnlySymptom)) {
+             // Ensure score is non-negative
+             score = Math.max(0, score);
              ddxResults.push({ name: dx.name, score: score, plan: dx.plan });
+        } else if (!anyFindingChecked) {
+             // If nothing is checked, maybe show top 5 base scores? Or nothing? Let's show nothing for now.
+             // ddxResults.push({ name: dx.name, score: score, plan: dx.plan }); // Keep this line if you want to show base scores
         }
+
+
     }
 
     // Sort by score descending
