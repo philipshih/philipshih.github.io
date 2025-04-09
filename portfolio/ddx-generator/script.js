@@ -256,11 +256,11 @@ function calculateDDx() {
         // Determine if *any* finding was checked by the user
         const anyFindingChecked = Object.values(findings).some(f => f === true);
 
-        // Define a stricter threshold for inclusion: score must be significantly above base
-        const inclusionThreshold = dx.baseScore + 15; // Only include if score is > base + 15
-
-        // Include if at least one finding was checked AND the score meets the stricter threshold
-        if (anyFindingChecked && score > inclusionThreshold) {
+        // Include if:
+        // 1. At least one finding was checked by the user AND
+        // 2. At least one of this diagnosis's findings was matched AND
+        // 3. The final score is greater than the base score
+        if (anyFindingChecked && numberOfMatchingFindings > 0 && score > dx.baseScore) {
              // Ensure score is non-negative
              score = Math.max(0, score);
              ddxResults.push({ name: dx.name, score: score, plan: dx.plan });
