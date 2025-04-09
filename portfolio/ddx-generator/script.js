@@ -75,8 +75,59 @@ const knowledgeBase = {
         findings: ["fever", "cough", "sob", "cp_pleuritic"],
         plan: "Chest X-ray. Consider CBC, blood cultures, sputum culture. Antibiotics based on likely pathogen (community vs hospital acquired).",
         baseScore: 6
+    },
+    // GI DDx Examples
+    gastroenteritis: {
+        name: "Gastroenteritis",
+        findings: ["nausea_vomiting", "diarrhea", "abd_pain", "fever"],
+        plan: "Supportive care, hydration (oral rehydration solution). Antiemetics/antidiarrheals if needed. Consider stool studies if severe/prolonged/bloody.",
+        baseScore: 10 // Very common
+    },
+    appendicitis: {
+        name: "Appendicitis",
+        findings: ["abd_pain", "nausea_vomiting", "fever"], // Pain often starts periumbilical then RLQ
+        plan: "Surgical consult. CT abdomen/pelvis or Ultrasound. NPO, IV fluids, pain control, antibiotics.",
+        baseScore: 4
+    },
+    cholecystitis: {
+        name: "Cholecystitis",
+        findings: ["abd_pain", "nausea_vomiting", "fever", "jaundice"], // RUQ pain, +Murphy's sign (not checkbox)
+        plan: "Ultrasound RUQ. CBC, LFTs, Lipase. NPO, IV fluids, pain control, antibiotics. Surgical consult.",
+        baseScore: 3
+    },
+    // MSK DDx Examples
+    muscle_strain: {
+        name: "Muscle Strain / Sprain",
+        findings: ["muscle_ache", "back_pain", "cp_reproducible"], // Can cause reproducible chest wall pain
+        plan: "Rest, Ice/Heat, NSAIDs, stretching/physical therapy.",
+        baseScore: 10 // Very common
+    },
+    arthritis: {
+        name: "Arthritis Flare (Inflammatory/Osteo)",
+        findings: ["joint_pain", "muscle_ache"],
+        plan: "NSAIDs, Acetaminophen. Consider joint aspiration if septic arthritis suspected. Rheumatology referral if inflammatory.",
+        baseScore: 7
+    },
+    // Neuro DDx Examples
+    migraine: {
+        name: "Migraine Headache",
+        findings: ["headache", "nausea_vomiting"], // Often unilateral, pulsating, photo/phonophobia (not checkboxes)
+        plan: "Abortive therapy (NSAIDs, Triptans). Prophylactic therapy if frequent. Identify triggers.",
+        baseScore: 8
+    },
+    stroke_tia: {
+        name: "Stroke / TIA",
+        findings: ["focal_deficit", "altered_mental_status", "headache", "dizziness"], // Sudden onset is key
+        plan: "EMERGENCY. Non-contrast Head CT STAT. Neurological consult. Consider thrombolysis/thrombectomy if indicated.",
+        baseScore: 2
+    },
+    vertigo_bppv: {
+        name: "Vertigo (e.g., BPPV)",
+        findings: ["dizziness"], // Specific positional triggers (not checkbox)
+        plan: "Dix-Hallpike maneuver for diagnosis. Epley maneuver for treatment (BPPV). Consider Meclizine short-term.",
+        baseScore: 7
     }
-    // Add more conditions as needed (e.g., Pneumothorax, Anxiety)
+    // Add more conditions as needed
 };
 
 // --- Core Logic ---
@@ -114,6 +165,12 @@ function calculateDDx() {
                  if (dxKey === 'gerd' && findings['cp_worse_eating'] === true) score += 15;
                  if (dxKey === 'asthma_exacerbation' && findings['wheezing'] === true) score += 15;
                  if (dxKey === 'pneumonia' && findings['fever'] === true && findings['cough'] === true) score += 10; // Combo finding
+
+                 // Add some basic scoring adjustments for new systems
+                 if (dxKey === 'appendicitis' && findings['abd_pain'] === true && findings['fever'] === true) score += 15;
+                 if (dxKey === 'cholecystitis' && findings['abd_pain'] === true && findings['jaundice'] === true) score += 20;
+                 if (dxKey === 'stroke_tia' && findings['focal_deficit'] === true) score += 40; // High weight for focal deficit
+                 if (dxKey === 'migraine' && findings['headache'] === true && findings['nausea_vomiting'] === true) score += 10;
             }
         });
 
