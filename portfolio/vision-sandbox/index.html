@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Image Augmenter & Classifier</title>
+    <title>Vision Sandbox: Augment & Classify</title>
     <link rel="stylesheet" href="style.css">
     <!-- TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
@@ -11,9 +11,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest/dist/mobilenet.min.js"></script>
 </head>
 <body>
-    <h1>Interactive Image Augmentation Viewer</h1>
+    <h1>Vision Sandbox</h1>
     <p>
-        Explore common image augmentation techniques used in machine learning,
+        Explore image augmentation techniques and in-browser classification.
         especially for training models on medical imaging data. Adjust the controls
         to see the effects in real-time.
     </p>
@@ -21,9 +21,12 @@
     <div class="container">
         <div class="controls">
             <h2>Controls</h2>
-            <!-- Placeholder for controls -->
+            <div id="image-details" class="details">
+                <p>Resolution: <span id="resolution-value">-</span></p>
+                <p>File Type: <span id="filetype-value">-</span></p>
+            </div>
             <div class="control-group">
-                <label for="image-upload">Upload Image:</label>
+                <label for="image-upload">Upload New Image:</label>
                 <input type="file" id="image-upload" accept="image/*">
             </div>
              <div class="control-group">
@@ -54,10 +57,11 @@
                 <label for="shear">Horizontal Shear: <span id="shear-value">0.0</span></label>
                 <input type="range" id="shear" min="-0.5" max="0.5" value="0" step="0.05">
             </div>
-            <button id="reset-button">Reset Augmentations</button>
+            <button id="crop-button" style="margin-top: 10px; background-color: #28a745;">Apply Crop</button>
+            <button id="reset-button" style="margin-top: 10px;">Reset Augmentations</button>
         </div>
 
-        <div class="image-display">
+        <div class="image-display" style="position: relative;"> <!-- Added relative positioning for overlay -->
             <h2>Augmented Image</h2>
             <canvas id="image-canvas"></canvas>
             <p id="loading-message" style="display: none;">Loading image...</p>

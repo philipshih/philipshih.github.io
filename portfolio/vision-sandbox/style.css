@@ -122,3 +122,11 @@ label span {
     border-radius: 4px;
     display: inline-block; /* Fit content */
 }
+
+/* Style for crop selection */
+#selection-rect {
+    position: absolute;
+    border: 2px dashed #007bff;
+    pointer-events: none; /* Allow clicks to pass through */
+    display: none; /* Hidden initially */
+}

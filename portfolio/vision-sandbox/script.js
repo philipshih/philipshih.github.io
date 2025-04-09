@@ -3,6 +3,8 @@ const ctx = canvas.getContext('2d');
 const imageUpload = document.getElementById('image-upload');
 const loadingMessage = document.getElementById('loading-message');
 const classificationResultDiv = document.getElementById('classification-result');
+const resolutionValueSpan = document.getElementById('resolution-value');
+const filetypeValueSpan = document.getElementById('filetype-value');
 
 // Control elements
 const rotationSlider = document.getElementById('rotation');
@@ -12,6 +14,7 @@ const contrastSlider = document.getElementById('contrast');
 const noiseSlider = document.getElementById('noise');
 const blurSlider = document.getElementById('blur');
 const shearSlider = document.getElementById('shear');
+const cropButton = document.getElementById('crop-button');
 const resetButton = document.getElementById('reset-button');
 
 // Value display elements
@@ -23,9 +26,17 @@ const noiseValueSpan = document.getElementById('noise-value');
 const blurValueSpan = document.getElementById('blur-value');
 const shearValueSpan = document.getElementById('shear-value');
 
-let originalImage = null;
+let originalImage = null; // Holds the *current* base image (could be original or cropped)
+let sourceImage = null; // Always holds the initially loaded image before any crops
+let currentImageType = 'jpeg'; // Default assumption for initial image
 let imageLoaded = false;
 let mobilenetModel = null; // Variable to hold the loaded model
+
+// Crop state variables
+let isSelecting = false;
+let cropStartX, cropStartY, cropEndX, cropEndY;
+let selectionRectDiv = null; // Will create this div dynamically
+
 // Use the user-provided image path
 const defaultImageSrc = '../../assets/img/Skin_rashes.jpg'; // Updated default image
 
@@ -58,8 +69,18 @@ function loadImage(src) {
         loadingMessage.style.display = 'none';
         canvas.style.display = 'block';
         // Set canvas size to match image initially
+        // Store the initially loaded image separately
+        if (!sourceImage) {
+             sourceImage = new Image();
+             sourceImage.crossOrigin = "Anonymous";
+             sourceImage.src = src; // Keep a copy of the original source
+        }
         canvas.width = originalImage.naturalWidth;
         canvas.height = originalImage.naturalHeight;
+        // Update image details display
+        resolutionValueSpan.textContent = `${originalImage.naturalWidth} x ${originalImage.naturalHeight}`;
+        filetypeValueSpan.textContent = currentImageType.toUpperCase(); // Use stored type
+
         resetControls(); // Reset sliders when new image loads
         drawImage(); // Draw the image first
         // Classify the newly loaded image if model is ready
@@ -81,9 +102,11 @@ function loadImage(src) {
 imageUpload.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file) {
+        sourceImage = null; // Reset source image on new upload
+        currentImageType = file.type.split('/')[1] || 'unknown'; // Store file type
         const reader = new FileReader();
         reader.onload = (e) => {
-            loadImage(e.target.result);
+            loadImage(e.target.result); // Load image from data URL
         }
         reader.readAsDataURL(file);
     }
@@ -145,11 +168,168 @@ function drawImage() {
         applyNoise(noise);
     }
 
+    // Add watermark AFTER all other drawing and BEFORE classification
+    addWatermark();
+
     // Classify the image after drawing/augmenting if model is loaded
     if (mobilenetModel) {
         classifyImage();
     }
 }
+
+// --- Watermark ---
+function addWatermark() {
+    ctx.save(); // Save context state before applying watermark styles
+    ctx.font = '12px Arial';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // Semi-transparent white
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('© Philip Shih 2025', canvas.width - 5, canvas.height - 5);
+    ctx.restore(); // Restore context state
+}
+
+// --- Cropping Logic ---
+
+function initializeCropSelection() {
+    if (!selectionRectDiv) {
+        selectionRectDiv = document.createElement('div');
+        selectionRectDiv.id = 'selection-rect';
+        // Append to the same container as the canvas for correct positioning
+        canvas.parentNode.appendChild(selectionRectDiv);
+    }
+
+    canvas.addEventListener('mousedown', startSelection);
+    canvas.addEventListener('mousemove', updateSelection);
+    canvas.addEventListener('mouseup', endSelection);
+    canvas.addEventListener('mouseleave', endSelection); // Stop if mouse leaves canvas
+}
+
+function startSelection(e) {
+    if (!imageLoaded) return;
+    isSelecting = true;
+    const rect = canvas.getBoundingClientRect();
+    cropStartX = e.clientX - rect.left;
+    cropStartY = e.clientY - rect.top;
+    cropEndX = cropStartX; // Initialize end points
+    cropEndY = cropStartY;
+
+    selectionRectDiv.style.left = `${cropStartX}px`;
+    selectionRectDiv.style.top = `${cropStartY}px`;
+    selectionRectDiv.style.width = '0px';
+    selectionRectDiv.style.height = '0px';
+    selectionRectDiv.style.display = 'block'; // Show selection rectangle
+}
+
+function updateSelection(e) {
+    if (!isSelecting || !imageLoaded) return;
+    const rect = canvas.getBoundingClientRect();
+    cropEndX = e.clientX - rect.left;
+    cropEndY = e.clientY - rect.top;
+
+    // Ensure coordinates stay within canvas bounds
+    cropEndX = Math.max(0, Math.min(canvas.width, cropEndX));
+    cropEndY = Math.max(0, Math.min(canvas.height, cropEndY));
+
+    const width = Math.abs(cropEndX - cropStartX);
+    const height = Math.abs(cropEndY - cropStartY);
+    const left = Math.min(cropStartX, cropEndX);
+    const top = Math.min(cropStartY, cropEndY);
+
+    selectionRectDiv.style.left = `${left}px`;
+    selectionRectDiv.style.top = `${top}px`;
+    selectionRectDiv.style.width = `${width}px`;
+    selectionRectDiv.style.height = `${height}px`;
+}
+
+function endSelection() {
+    if (!isSelecting) return;
+    isSelecting = false;
+    // Optional: Snap selection to bounds slightly? Or just keep it as is.
+    // If width or height is very small, maybe cancel selection?
+    const width = Math.abs(cropEndX - cropStartX);
+    const height = Math.abs(cropEndY - cropStartY);
+    if (width < 5 || height < 5) { // Minimal size check
+        selectionRectDiv.style.display = 'none'; // Hide if too small
+    }
+}
+
+function applyCrop() {
+    if (!imageLoaded || selectionRectDiv.style.display === 'none') {
+        alert("Please select an area on the image to crop first.");
+        return;
+    }
+
+    const sx = Math.min(cropStartX, cropEndX);
+    const sy = Math.min(cropStartY, cropEndY);
+    const sWidth = Math.abs(cropEndX - cropStartX);
+    const sHeight = Math.abs(cropEndY - cropStartY);
+
+    if (sWidth < 5 || sHeight < 5) {
+         alert("Selection is too small to crop.");
+         selectionRectDiv.style.display = 'none';
+         return;
+    }
+
+    // Create a temporary canvas to draw the *original* image at its natural size
+    // We crop from the sourceImage to avoid re-cropping an already cropped image
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    const imgToCrop = sourceImage || originalImage; // Prefer the initial source if available
+
+    tempCanvas.width = imgToCrop.naturalWidth;
+    tempCanvas.height = imgToCrop.naturalHeight;
+    tempCtx.drawImage(imgToCrop, 0, 0);
+
+    // Calculate crop coordinates relative to the natural image size
+    // (assuming canvas display size matches natural size for simplicity here,
+    // might need adjustment if canvas is scaled via CSS)
+    const naturalSx = sx * (imgToCrop.naturalWidth / canvas.width);
+    const naturalSy = sy * (imgToCrop.naturalHeight / canvas.height);
+    const naturalSWidth = sWidth * (imgToCrop.naturalWidth / canvas.width);
+    const naturalSHeight = sHeight * (imgToCrop.naturalHeight / canvas.height);
+
+
+    try {
+        // Get the image data for the selected region from the temp canvas
+        const croppedImageData = tempCtx.getImageData(naturalSx, naturalSy, naturalSWidth, naturalSHeight);
+
+        // Create another temporary canvas to hold just the cropped data
+        const cropOutputCanvas = document.createElement('canvas');
+        cropOutputCanvas.width = naturalSWidth;
+        cropOutputCanvas.height = naturalSHeight;
+        const cropOutputCtx = cropOutputCanvas.getContext('2d');
+        cropOutputCtx.putImageData(croppedImageData, 0, 0);
+
+        // Create a new Image object from the cropped canvas data
+        const croppedImage = new Image();
+        croppedImage.onload = () => {
+            // Update the main originalImage to the cropped version
+            originalImage = croppedImage;
+            // Update canvas size and details
+            canvas.width = originalImage.naturalWidth;
+            canvas.height = originalImage.naturalHeight;
+            resolutionValueSpan.textContent = `${originalImage.naturalWidth} x ${originalImage.naturalHeight}`;
+            // File type remains the same conceptually, though it's now canvas data
+            filetypeValueSpan.textContent = currentImageType.toUpperCase() + " (Cropped)";
+
+            // Reset augmentations and redraw
+            resetControls(); // This calls drawImage internally
+        };
+        croppedImage.onerror = () => {
+             console.error("Error creating image from cropped data.");
+             alert("Failed to apply crop.");
+        }
+        croppedImage.src = cropOutputCanvas.toDataURL(`image/${currentImageType}`); // Use original type if known
+
+    } catch (error) {
+        console.error("Error during cropping:", error);
+        alert("An error occurred while cropping the image. The selection might be outside the image bounds.");
+    } finally {
+         // Hide selection rectangle
+         selectionRectDiv.style.display = 'none';
+    }
+}
+
 
 // --- Image Classification ---
 async function classifyImage() {
@@ -206,9 +386,11 @@ contrastSlider.addEventListener('input', drawImage);
 noiseSlider.addEventListener('input', drawImage);
 blurSlider.addEventListener('input', drawImage);
 shearSlider.addEventListener('input', drawImage);
+cropButton.addEventListener('click', applyCrop);
 
 // --- Reset Functionality ---
 function resetControls() {
+    // Reset sliders
     rotationSlider.value = 0;
     scaleSlider.value = 1.0;
     brightnessSlider.value = 100;
@@ -216,12 +398,31 @@ function resetControls() {
     noiseSlider.value = 0;
     blurSlider.value = 0;
     shearSlider.value = 0;
-    drawImage(); // Redraw with default values
+
+    // Reset crop selection visual
+    if (selectionRectDiv) {
+        selectionRectDiv.style.display = 'none';
+    }
+    isSelecting = false; // Ensure selection state is reset
+
+    // If we have the original source image, reset to that
+    if (sourceImage && originalImage !== sourceImage) {
+        originalImage = sourceImage; // Revert to the very first image loaded
+        canvas.width = originalImage.naturalWidth;
+        canvas.height = originalImage.naturalHeight;
+        resolutionValueSpan.textContent = `${originalImage.naturalWidth} x ${originalImage.naturalHeight}`;
+        filetypeValueSpan.textContent = currentImageType.toUpperCase(); // Revert type display
+        console.log("Reverted to original source image.");
+    }
+
+
+    drawImage(); // Redraw with default values/original image
 }
 
 resetButton.addEventListener('click', resetControls);
 
 // --- Initial Load ---
+initializeCropSelection(); // Set up mouse listeners for cropping
 // Load the ML model first
 loadModel();
 // Then load the default image

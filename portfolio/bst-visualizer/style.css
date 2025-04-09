@@ -1,0 +1,73 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    background-color: #f8f9fa;
+}
+
+h1 {
+    color: #343a40;
+}
+
+.controls {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+}
+
+.controls input[type="number"] {
+    padding: 8px;
+    margin-right: 5px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.controls button {
+    padding: 8px 12px;
+    margin-left: 5px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.controls button:hover {
+    background-color: #0056b3;
+}
+
+.controls button#deleteBtn {
+    background-color: #dc3545;
+}
+.controls button#deleteBtn:hover {
+    background-color: #c82333;
+}
+.controls button#resetBtn {
+    background-color: #6c757d;
+}
+.controls button#resetBtn:hover {
+    background-color: #5a6268;
+}
+
+
+.message-area {
+    margin-bottom: 15px;
+    min-height: 1.5em; /* Reserve space for messages */
+    color: #495057;
+}
+
+.canvas-container {
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#bstCanvas {
+    display: block;
+}
+
+/* Basic node styling (drawn on canvas, but can add related styles here if needed) */
