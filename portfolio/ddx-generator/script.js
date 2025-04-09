@@ -239,22 +239,7 @@ function calculateDDx() {
                  if (dxKey !== 'sjs_ten' && findings['nikolsky_pos'] === true) score -= 10; // Penalize others if +Nikolsky
                  if (dxKey === 'sjs_ten' && findings['nikolsky_neg'] === true) score -= 20; // Penalize SJS if -Nikolsky
 
-                 // Add some basic scoring adjustments for new findings
-                 if (dxKey === 'acs' && findings['cp_pressure'] === true) score += 15; // High weight for pressure CP in ACS
-                 if (dxKey === 'pe' && findings['leg_swelling'] === true) score += 15; // High weight for leg swelling in PE
-                 if (dxKey === 'costochondritis' && findings['cp_reproducible'] === true) score += 20; // High weight for reproducible CP
-                 if (dxKey === 'gerd' && findings['cp_worse_eating'] === true) score += 15;
-                 if (dxKey === 'asthma_exacerbation' && findings['wheezing'] === true) score += 15;
-                 if (dxKey === 'pneumonia' && findings['fever'] === true && findings['cough'] === true) score += 10; // Combo finding
-
-                 // Add some basic scoring adjustments for new systems
-                 if (dxKey === 'appendicitis' && findings['abd_pain'] === true && findings['fever'] === true) score += 15;
-                 if (dxKey === 'cholecystitis' && findings['abd_pain'] === true && findings['jaundice'] === true) score += 20;
-                 if (dxKey === 'stroke_tia' && findings['focal_deficit'] === true) score += 40; // High weight for focal deficit
-                 if (dxKey === 'migraine' && findings['headache'] === true && findings['nausea_vomiting'] === true) score += 10;
-
-                 // Add scoring for cellulitis
-                 if (dxKey === 'cellulitis' && findings['localized_redness'] === true) score += 25; // High weight for localized findings
+                 // Removed redundant score adjustments here - rely on initial boost logic
             }
         });
 
@@ -271,24 +256,11 @@ function calculateDDx() {
         // Determine if *any* finding was checked by the user
         const anyFindingChecked = Object.values(findings).some(f => f === true);
 
-        // Include result if:
-        // 1. At least one finding was checked AND the score increased significantly OR
-        // 2. No findings were checked (show base rates) - Removed this condition, only show if relevant
-        // Let's require a score increase relative to base if findings are checked.
-        // If only one finding checked, require a larger relative increase?
-        let includeThreshold = dx.baseScore + 5; // Require at least a small increase if any finding checked
-        if (anyFindingChecked && numberOfMatchingFindings === 1 && boost < 35) { // If only one non-specific finding matched
-             includeThreshold = dx.baseScore + boost / 2; // Require less of an increase if it's non-specific
-        } else if (anyFindingChecked) {
-             includeThreshold = dx.baseScore + 10; // Require a more significant increase if multiple findings or a specific one matched
-        }
+        // Define a stricter threshold for inclusion: score must be significantly above base
+        const inclusionThreshold = dx.baseScore + 15; // Only include if score is > base + 15
 
-
-        // Include if score is above threshold OR if it's a direct match for the *only* symptom checked
-        const onlyOneSymptomChecked = Object.values(findings).filter(f => f === true).length === 1;
-        const isDirectMatchForOnlySymptom = onlyOneSymptomChecked && dx.findings.some(fid => findings[fid] === true);
-
-        if (anyFindingChecked && (score > includeThreshold || isDirectMatchForOnlySymptom)) {
+        // Include if at least one finding was checked AND the score meets the stricter threshold
+        if (anyFindingChecked && score > inclusionThreshold) {
              // Ensure score is non-negative
              score = Math.max(0, score);
              ddxResults.push({ name: dx.name, score: score, plan: dx.plan });
