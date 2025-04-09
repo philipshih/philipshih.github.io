@@ -3,7 +3,7 @@ layout: post
 title: "Binary Search Tree Visualizer"
 date: 2024-05-10
 type: Data Structure Demo
-info: "Visualize Binary Search Tree operations (insert, search) using HTML Canvas."
+info: "Visualize Binary Search Tree operations (insert, search) using HTML Canvas - without the annoying lag on other sites."
 tech: "JavaScript, HTML Canvas, CSS, Data Structures"
 app_url: "/portfolio/bst-visualizer/index.html"
 ---
