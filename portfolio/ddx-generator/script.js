@@ -1,62 +1,104 @@
-// --- DOM Elements ---
-const generateBtn = document.getElementById('generate-btn');
-const ddxListUl = document.getElementById('ddx-list');
-const planSuggestionP = document.getElementById('plan-suggestion');
+// Basic data structure for diagnoses and their associated findings
+// NOTE: This is a highly simplified model for demonstration. Real-world DDx requires extensive medical knowledge and complex algorithms/data.
+const diagnoses = [
+    // Respiratory
+    { name: "Pneumonia", score: 0, system: "Respiratory", criteria: { vitals: ['fever', 'tachycardia', 'tachypnea', 'hypoxia'], ros: ['cough', 'sob', 'chest_pain', 'chills', 'fatigue'], pe: ['rales', 'rhonchi', 'decreased_breath_sounds', 'ill_appearing'] } },
+    { name: "Acute Bronchitis", score: 0, system: "Respiratory", criteria: { vitals: ['fever'], ros: ['cough', 'sob', 'fatigue'], pe: ['rhonchi', 'wheezes'] } },
+    { name: "Pulmonary Embolism", score: 0, system: "Respiratory/Cardiovascular", criteria: { vitals: ['tachycardia', 'tachypnea', 'hypoxia'], ros: ['sob', 'chest_pain'], pe: [] /* Often normal exam, maybe tachycardia */ } },
+    { name: "Asthma Exacerbation", score: 0, system: "Respiratory", criteria: { vitals: ['tachycardia', 'tachypnea'], ros: ['sob', 'cough', 'wheezing'], pe: ['wheezes'] } },
+    { name: "Upper Respiratory Infection (URI)", score: 0, system: "Respiratory/HEENT", criteria: { vitals: ['fever'], ros: ['sore_throat', 'cough', 'headache', 'fatigue'], pe: ['pharyngeal_erythema'] } },
+    { name: "COVID-19", score: 0, system: "Respiratory/Constitutional", criteria: { vitals: ['fever', 'tachycardia', 'tachypnea', 'hypoxia'], ros: ['cough', 'sob', 'fatigue', 'headache', 'sore_throat'], pe: ['decreased_breath_sounds'] } },
 
-// --- Event Listener ---
-generateBtn.addEventListener('click', generatePlaceholderDDx);
+    // Cardiovascular
+    { name: "Heart Failure Exacerbation", score: 0, system: "Cardiovascular", criteria: { vitals: ['tachycardia', 'tachypnea', 'hypoxia', 'hypertension'], ros: ['sob', 'edema', 'cough', 'fatigue'], pe: ['jvd', 'pedal_edema', 'rales'] } },
+    { name: "Acute Coronary Syndrome (ACS)", score: 0, system: "Cardiovascular", criteria: { vitals: ['tachycardia', 'hypertension', 'hypotension'], ros: ['chest_pain', 'sob', 'nausea', 'fatigue'], pe: [] /* Often normal exam */ } },
+    { name: "Atrial Fibrillation", score: 0, system: "Cardiovascular", criteria: { vitals: ['tachycardia'], ros: ['palpitations', 'sob', 'fatigue', 'chest_pain'], pe: [] /* Irregularly irregular pulse */ } },
+    { name: "Pericarditis", score: 0, system: "Cardiovascular", criteria: { vitals: ['fever', 'tachycardia'], ros: ['chest_pain', 'sob'], pe: [] /* Pericardial friction rub */ } },
+    { name: "Hypertensive Urgency/Emergency", score: 0, system: "Cardiovascular", criteria: { vitals: ['hypertension'], ros: ['headache', 'vision_change', 'chest_pain', 'sob'], pe: [] } },
 
-// --- Placeholder Logic ---
-function generatePlaceholderDDx() {
-    // Clear previous results
-    ddxListUl.innerHTML = '';
-    planSuggestionP.textContent = 'Plan suggestions will appear here...';
+    // Gastrointestinal
+    { name: "Gastroenteritis", score: 0, system: "Gastrointestinal", criteria: { vitals: ['fever', 'tachycardia'], ros: ['nausea', 'vomiting', 'diarrhea', 'abd_pain', 'fatigue'], pe: ['tenderness'] } },
+    { name: "Appendicitis", score: 0, system: "Gastrointestinal", criteria: { vitals: ['fever', 'tachycardia'], ros: ['nausea', 'vomiting', 'abd_pain'], pe: ['tenderness', 'rebound', 'guarding', 'ill_appearing'] } },
+    { name: "Cholecystitis", score: 0, system: "Gastrointestinal", criteria: { vitals: ['fever', 'tachycardia'], ros: ['nausea', 'vomiting', 'abd_pain'], pe: ['tenderness' /* RUQ */, 'guarding'] } },
+    { name: "Pancreatitis", score: 0, system: "Gastrointestinal", criteria: { vitals: ['fever', 'tachycardia', 'hypotension'], ros: ['nausea', 'vomiting', 'abd_pain'], pe: ['tenderness' /* Epigastric */, 'distension'] } },
+    { name: "Bowel Obstruction", score: 0, system: "Gastrointestinal", criteria: { vitals: ['tachycardia', 'hypotension'], ros: ['nausea', 'vomiting', 'abd_pain', 'constipation'], pe: ['tenderness', 'distension'] } },
 
-    // Get a few example inputs (can be expanded later)
+    // Genitourinary
+    { name: "Urinary Tract Infection (UTI)/Pyelonephritis", score: 0, system: "Genitourinary", criteria: { vitals: ['fever', 'tachycardia'], ros: ['dysuria', 'frequency', 'abd_pain', 'nausea', 'vomiting', 'fatigue'], pe: ['tenderness' /* Suprapubic or CVA */] } },
+    { name: "Kidney Stone", score: 0, system: "Genitourinary", criteria: { vitals: ['tachycardia'], ros: ['abd_pain' /* Flank */, 'nausea', 'vomiting', 'hematuria', 'dysuria'], pe: ['tenderness' /* CVA */] } },
+
+    // HEENT
+    { name: "Otitis Media", score: 0, system: "HEENT", criteria: { vitals: ['fever'], ros: ['ear_pain'], pe: ['tm_bulging'] } },
+    { name: "Strep Pharyngitis", score: 0, system: "HEENT", criteria: { vitals: ['fever'], ros: ['sore_throat', 'headache'], pe: ['pharyngeal_erythema'] } },
+    { name: "Migraine Headache", score: 0, system: "HEENT/Neuro", criteria: { vitals: [], ros: ['headache', 'nausea', 'vomiting', 'vision_change'], pe: [] } },
+
+    // Constitutional / Other
+    { name: "Sepsis", score: 0, system: "Systemic", criteria: { vitals: ['fever', 'tachycardia', 'tachypnea', 'hypotension', 'hypoxia'], ros: ['fatigue', 'chills'], pe: ['ill_appearing'] } },
+    { name: "Anemia", score: 0, system: "Hematologic", criteria: { vitals: ['tachycardia'], ros: ['fatigue', 'sob', 'palpitations'], pe: [] /* Pallor */ } },
+
+];
+
+function generateDdx() {
+    // Reset scores
+    diagnoses.forEach(dx => dx.score = 0);
+
+    // Get selected inputs
     const age = document.getElementById('age').value;
-    const gender = document.getElementById('gender').value;
-    const isFeverChecked = document.getElementById('ros_fever')?.checked;
-    const isHeadacheChecked = document.getElementById('ros_headache')?.checked;
-    // Add more input gathering here if needed for more complex placeholder logic
+    const gender = document.querySelector('input[name="gender"]:checked')?.value;
+    const selectedVitals = Array.from(document.querySelectorAll('input[name="vitals"]:checked')).map(el => el.value);
+    const selectedRos = Array.from(document.querySelectorAll('input[name="ros"]:checked')).map(el => el.value);
+    const selectedPe = Array.from(document.querySelectorAll('input[name="pe"]:checked')).map(el => el.value);
 
-    let ddxResults = [];
-    let planSuggestions = [];
+    const allSelections = [...selectedVitals, ...selectedRos, ...selectedPe];
 
-    // --- VERY BASIC PLACEHOLDER LOGIC ---
-    // This is NOT medically accurate and only serves as a UI demo
+    // Basic Scoring Logic: +1 for each matching criterion
+    diagnoses.forEach(dx => {
+        let currentScore = 0;
+        const criteria = [
+            ...(dx.criteria.vitals || []),
+            ...(dx.criteria.ros || []),
+            ...(dx.criteria.pe || [])
+        ];
 
-    if (isFeverChecked) {
-        ddxResults.push("Infection (Placeholder)");
-        planSuggestions.push("Consider basic labs like CBC (Placeholder).");
-    }
-
-    if (isHeadacheChecked) {
-        ddxResults.push("Headache Syndrome (Placeholder)");
-        planSuggestions.push("Consider neurological exam details (Placeholder).");
-        if (parseInt(age) > 50) {
-             ddxResults.push("Rule out secondary causes (Placeholder - Age > 50)");
-             planSuggestions.push("Consider imaging if red flags present (Placeholder).");
-        }
-    }
-
-    // --- Update UI ---
-    if (ddxResults.length === 0) {
-        ddxListUl.innerHTML = '<li>No specific findings selected for placeholder logic.</li>';
-        planSuggestionP.textContent = 'Enter information and click generate...';
-    } else {
-        ddxResults.forEach(dx => {
-            const li = document.createElement('li');
-            li.textContent = dx;
-            ddxListUl.appendChild(li);
+        criteria.forEach(criterion => {
+            if (allSelections.includes(criterion)) {
+                currentScore++;
+            }
         });
 
-        if (planSuggestions.length > 0) {
-            planSuggestionP.textContent = "Placeholder Plan: " + planSuggestions.join(' ');
-        } else {
-             planSuggestionP.textContent = 'No specific plan suggestions for these placeholders.';
-        }
+        // Simple boost for key findings (can be expanded)
+        if (dx.name === "Appendicitis" && selectedPe.includes('rebound')) currentScore += 1;
+        if (dx.name === "Heart Failure Exacerbation" && selectedPe.includes('jvd')) currentScore += 1;
+        if (dx.name === "Pneumonia" && selectedPe.includes('rales')) currentScore += 1;
+        if (dx.name === "Sepsis" && selectedVitals.includes('hypotension')) currentScore += 1;
+
+
+        dx.score = currentScore;
+    });
+
+    // Filter out diagnoses with zero score and sort by score descending
+    const potentialDdx = diagnoses
+        .filter(dx => dx.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+    // Display results
+    const resultsList = document.getElementById('ddx-list');
+    resultsList.innerHTML = ''; // Clear previous results
+
+    if (potentialDdx.length === 0 && allSelections.length > 0) {
+         resultsList.innerHTML = '<li>No specific diagnoses strongly suggested by these findings based on this simplified model. Consider broader possibilities or consult clinical resources.</li>';
+    } else if (potentialDdx.length === 0) {
+         resultsList.innerHTML = '<li>Please select patient findings to generate differentials.</li>';
+    } else {
+        // Display top 5 or fewer
+        const topDdx = potentialDdx.slice(0, 5);
+        topDdx.forEach(dx => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${dx.name} (Score: ${dx.score}, System: ${dx.system})`;
+            resultsList.appendChild(listItem);
+        });
     }
 }
 
-// --- Initial State ---
-// No initial calculation needed, waits for button click.
+// Optional: Add event listener to generate DDx when any checkbox changes (can be noisy)
+// document.getElementById('ddx-form').addEventListener('change', generateDdx);
