@@ -335,6 +335,10 @@ function applyCrop() {
             blurSlider.value = 0;
             shearSlider.value = 0;
             drawImage(); // Redraw with the new cropped image and default augmentations
+            // Explicitly classify the newly cropped and drawn image
+            if (mobilenetModel) {
+                classifyImage();
+            }
         };
          originalImage.onerror = () => {
              console.error("Error loading cropped image data URL.");
