@@ -3,115 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Differential Diagnosis Idea Generator</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Differential Diagnosis Generator</title>
+    <link rel="stylesheet" href="style.css"> <!-- Assuming a style.css will be created later -->
 </head>
 <body>
-    <h1>Differential Diagnosis Idea Generator (Demo)</h1>
-
-    <div class="disclaimer">
-        <strong>Disclaimer:</strong> I built this for demo purposes ONLY. It uses a highly simplified, illustrative knowledge base. It is NOT a real medical tool, so do NOT be used for actual diagnosis or treatment decisions. Consult a qualified healthcare professional for any medical concerns.
-    </div>
+    <h1>Differential Diagnosis Generator</h1>
 
     <div class="container">
         <div class="input-section">
             <h2>Patient Information & Findings</h2>
 
-            <div class="input-group">
-                <label for="age">Age:</label>
-                <input type="number" id="age" min="0" max="120" placeholder="e.g., 30">
-            </div>
-
-            <!-- Add Vitals later if needed -->
-
-            <details class="finding-section">
-                <summary>Review of Systems / History</summary>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" id="fever" value="fever"> Fever</label>
-                    <label><input type="checkbox" id="itchy" value="itchy"> Itchy Rash</label>
-                    <label><input type="checkbox" id="sore_throat" value="sore_throat"> Sore Throat</label>
-                    <label><input type="checkbox" id="recent_travel" value="recent_travel"> Recent Travel</label>
-                    <label><input type="checkbox" id="new_medication" value="new_medication"> New Medication/Exposure</label>
-                     <!-- Add more ROS as needed -->
+            <fieldset>
+                <legend>Patient Information</legend>
+                <div class="input-group">
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" min="0" max="120" placeholder="e.g., 30">
                 </div>
-            </details>
-
-            <details class="finding-section">
-                <summary>Physical Exam Findings (Skin Example)</summary>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" id="maculopapular" value="maculopapular"> Maculopapular Rash (Red bumps/spots)</label>
-                    <label><input type="checkbox" id="vesicular" value="vesicular"> Vesicular Rash (Blisters)</label>
-                    <label><input type="checkbox" id="urticaria" value="urticaria"> Urticaria (Hives/Welts)</label>
-                    <label><input type="checkbox" id="starts_face" value="starts_face"> Rash started on face/head</label>
-                    <label><input type="checkbox" id="nikolsky_pos" value="nikolsky_pos"> Nikolsky Sign Positive</label>
-                    <label><input type="checkbox" id="nikolsky_neg" value="nikolsky_neg"> Nikolsky Sign Negative</label>
-                    <label><input type="checkbox" id="localized_redness" value="localized_redness"> Localized Redness/Swelling/Warmth</label>
-                     <!-- Add more PE findings as needed -->
-                 </div>
-            </details>
-
-            <details class="finding-section">
-                <summary>Chest Pain Characteristics</summary>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" id="cp_pressure" value="cp_pressure"> Pressure/Squeezing</label>
-                    <label><input type="checkbox" id="cp_pleuritic" value="cp_pleuritic"> Pleuritic (Worse w/ breath)</label>
-                    <label><input type="checkbox" id="cp_reproducible" value="cp_reproducible"> Reproducible w/ palpation</label>
-                    <label><input type="checkbox" id="cp_radiation" value="cp_radiation"> Radiates (Arm/Jaw/Back)</label>
-                    <label><input type="checkbox" id="cp_worse_exertion" value="cp_worse_exertion"> Worse w/ exertion</label>
-                    <label><input type="checkbox" id="cp_worse_eating" value="cp_worse_eating"> Worse after eating / lying down</label>
+                <div class="input-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender">
+                        <option value="">Select...</option>
+                        <option value="M">M</option>
+                        <option value="F">F</option>
+                    </select>
                 </div>
-            </details>
+            </fieldset>
 
-             <details class="finding-section">
-                <summary>Respiratory Findings</summary>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" id="sob" value="sob"> Shortness of Breath (Dyspnea)</label>
-                    <label><input type="checkbox" id="cough" value="cough"> Cough</label>
-                    <label><input type="checkbox" id="wheezing" value="wheezing"> Wheezing</label>
-                    <label><input type="checkbox" id="hemoptysis" value="hemoptysis"> Hemoptysis (Coughing blood)</label>
-                    <label><input type="checkbox" id="leg_swelling" value="leg_swelling"> Unilateral Leg Swelling</label>
+            <fieldset>
+                <legend>Vitals</legend>
+                <div class="input-group">
+                    <label for="temp">Temp (°C):</label>
+                    <input type="text" id="temp" placeholder="e.g., 37.0">
                 </div>
-            </details>
+                <div class="input-group">
+                    <label for="hr">Heart Rate (bpm):</label>
+                    <input type="text" id="hr" placeholder="e.g., 70">
+                </div>
+                <div class="input-group">
+                    <label for="bp">Blood Pressure (mmHg):</label>
+                    <input type="text" id="bp" placeholder="e.g., 120/80">
+                </div>
+                <div class="input-group">
+                    <label for="rr">Resp Rate (bpm):</label>
+                    <input type="text" id="rr" placeholder="e.g., 16">
+                </div>
+                 <div class="input-group">
+                    <label for="spo2">SpO2 (%):</label>
+                    <input type="text" id="spo2" placeholder="e.g., 98">
+                </div>
+            </fieldset>
 
-            <details class="finding-section">
-                <summary>Gastrointestinal (GI) Findings</summary>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" id="nausea_vomiting" value="nausea_vomiting"> Nausea / Vomiting</label>
-                    <label><input type="checkbox" id="diarrhea" value="diarrhea"> Diarrhea</label>
-                    <label><input type="checkbox" id="abd_pain" value="abd_pain"> Abdominal Pain</label>
-                    <label><input type="checkbox" id="jaundice" value="jaundice"> Jaundice</label>
+            <fieldset>
+                <legend>Histories</legend>
+                 <div class="input-group">
+                    <label for="pmh">Past Medical History:</label>
+                    <textarea id="pmh" rows="3" placeholder="e.g., Hypertension, Diabetes Type 2"></textarea>
                 </div>
-            </details>
+                 <div class="input-group">
+                    <label for="psh">Past Surgical History:</label>
+                    <textarea id="psh" rows="2" placeholder="e.g., Appendectomy (2010)"></textarea>
+                </div>
+                 <div class="input-group">
+                    <label for="famhx">Family History:</label>
+                    <textarea id="famhx" rows="2" placeholder="e.g., Father with CAD"></textarea>
+                </div>
+                 <div class="input-group">
+                    <label for="sochx">Social History:</label>
+                    <textarea id="sochx" rows="3" placeholder="e.g., Smokes 1 ppd, occasional alcohol, denies illicit drugs"></textarea>
+                </div>
+            </fieldset>
 
-            <details class="finding-section">
-                <summary>Musculoskeletal (MSK) Findings</summary>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" id="joint_pain" value="joint_pain"> Joint Pain / Swelling</label>
-                    <label><input type="checkbox" id="muscle_ache" value="muscle_ache"> Muscle Aches (Myalgia)</label>
-                    <label><input type="checkbox" id="back_pain" value="back_pain"> Back Pain</label>
+             <fieldset>
+                <legend>Current Medications</legend>
+                 <div class="input-group">
+                    <label for="meds">Medications (Class or Name):</label>
+                    <textarea id="meds" rows="4" placeholder="e.g., Lisinopril (ACEi), Metformin (Biguanide), Atorvastatin (Statin)"></textarea>
                 </div>
-            </details>
+            </fieldset>
 
-            <details class="finding-section">
-                <summary>Neurological Findings</summary>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" id="headache" value="headache"> Headache</label>
-                    <label><input type="checkbox" id="dizziness" value="dizziness"> Dizziness / Vertigo</label>
-                    <label><input type="checkbox" id="focal_deficit" value="focal_deficit"> Focal Neurological Deficit</label>
-                    <label><input type="checkbox" id="altered_mental_status" value="altered_mental_status"> Altered Mental Status</label>
-                </div>
-            </details>
+            <fieldset>
+                <legend>Review of Systems / History</legend>
+                <details class="finding-section">
+                    <summary>General</summary>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_fever" value="ros_fever"> Fever</label>
+                        <label><input type="checkbox" id="ros_chills" value="ros_chills"> Chills</label>
+                        <label><input type="checkbox" id="ros_fatigue" value="ros_fatigue"> Fatigue</label>
+                        <label><input type="checkbox" id="ros_weight_change" value="ros_weight_change"> Weight Change</label>
+                    </div>
+                </details>
+                 <details class="finding-section">
+                    <summary>HEENT</summary>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_headache" value="ros_headache"> Headache</label>
+                        <label><input type="checkbox" id="ros_vision_change" value="ros_vision_change"> Vision Change</label>
+                        <label><input type="checkbox" id="ros_sore_throat" value="ros_sore_throat"> Sore Throat</label>
+                        <label><input type="checkbox" id="ros_congestion" value="ros_congestion"> Congestion</label>
+                    </div>
+                </details>
+                 <details class="finding-section">
+                    <summary>Cardiovascular</summary>
+                     <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_chest_pain" value="ros_chest_pain"> Chest Pain</label>
+                        <label><input type="checkbox" id="ros_palpitations" value="ros_palpitations"> Palpitations</label>
+                        <label><input type="checkbox" id="ros_edema" value="ros_edema"> Edema</label>
+                    </div>
+                </details>
+                 <details class="finding-section">
+                    <summary>Respiratory</summary>
+                     <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_sob" value="ros_sob"> Shortness of Breath</label>
+                        <label><input type="checkbox" id="ros_cough" value="ros_cough"> Cough</label>
+                        <label><input type="checkbox" id="ros_wheezing" value="ros_wheezing"> Wheezing</label>
+                    </div>
+                </details>
+                 <details class="finding-section">
+                    <summary>Gastrointestinal</summary>
+                     <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_nausea" value="ros_nausea"> Nausea</label>
+                        <label><input type="checkbox" id="ros_vomiting" value="ros_vomiting"> Vomiting</label>
+                        <label><input type="checkbox" id="ros_diarrhea" value="ros_diarrhea"> Diarrhea</label>
+                        <label><input type="checkbox" id="ros_constipation" value="ros_constipation"> Constipation</label>
+                        <label><input type="checkbox" id="ros_abd_pain" value="ros_abd_pain"> Abdominal Pain</label>
+                    </div>
+                </details>
+                 <details class="finding-section">
+                    <summary>Genitourinary</summary>
+                     <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_dysuria" value="ros_dysuria"> Dysuria</label>
+                        <label><input type="checkbox" id="ros_hematuria" value="ros_hematuria"> Hematuria</label>
+                        <label><input type="checkbox" id="ros_frequency" value="ros_frequency"> Urinary Frequency</label>
+                    </div>
+                </details>
+                 <details class="finding-section">
+                    <summary>Musculoskeletal</summary>
+                     <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_joint_pain" value="ros_joint_pain"> Joint Pain</label>
+                        <label><input type="checkbox" id="ros_muscle_ache" value="ros_muscle_ache"> Muscle Ache</label>
+                        <label><input type="checkbox" id="ros_back_pain" value="ros_back_pain"> Back Pain</label>
+                    </div>
+                </details>
+                 <details class="finding-section">
+                    <summary>Skin</summary>
+                     <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_rash" value="ros_rash"> Rash</label>
+                        <label><input type="checkbox" id="ros_lesions" value="ros_lesions"> Lesions</label>
+                        <label><input type="checkbox" id="ros_itch" value="ros_itch"> Itching</label>
+                    </div>
+                </details>
+                 <details class="finding-section">
+                    <summary>Neurological</summary>
+                     <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_dizziness" value="ros_dizziness"> Dizziness</label>
+                        <label><input type="checkbox" id="ros_weakness" value="ros_weakness"> Weakness</label>
+                        <label><input type="checkbox" id="ros_numbness" value="ros_numbness"> Numbness/Tingling</label>
+                        <label><input type="checkbox" id="ros_syncope" value="ros_syncope"> Syncope</label>
+                    </div>
+                </details>
+                 <details class="finding-section">
+                    <summary>Psychiatric</summary>
+                     <div class="checkbox-group">
+                        <label><input type="checkbox" id="ros_anxiety" value="ros_anxiety"> Anxiety</label>
+                        <label><input type="checkbox" id="ros_depression" value="ros_depression"> Depression</label>
+                        <label><input type="checkbox" id="ros_mood_change" value="ros_mood_change"> Mood Change</label>
+                    </div>
+                </details>
+                <!-- Add more ROS sections as needed -->
+            </fieldset>
+
+            <fieldset>
+                <legend>Physical Exam Findings</legend>
+                 <details class="finding-section">
+                    <summary>General Appearance</summary>
+                    <textarea id="pe_general" rows="2" placeholder="e.g., Well-developed, well-nourished, in no acute distress"></textarea>
+                </details>
+                 <details class="finding-section">
+                    <summary>HEENT Exam</summary>
+                    <textarea id="pe_heent" rows="3" placeholder="e.g., PERRLA, EOMI, TMs clear, oropharynx clear"></textarea>
+                </details>
+                 <details class="finding-section">
+                    <summary>Neck Exam</summary>
+                    <textarea id="pe_neck" rows="2" placeholder="e.g., Supple, no JVD, no thyromegaly"></textarea>
+                </details>
+                 <details class="finding-section">
+                    <summary>Cardiovascular Exam</summary>
+                    <textarea id="pe_cv" rows="3" placeholder="e.g., RRR, no murmurs/rubs/gallops, normal pulses"></textarea>
+                </details>
+                 <details class="finding-section">
+                    <summary>Pulmonary Exam</summary>
+                    <textarea id="pe_pulm" rows="3" placeholder="e.g., CTAB, no wheezes/rales/rhonchi"></textarea>
+                </details>
+                 <details class="finding-section">
+                    <summary>Abdominal Exam</summary>
+                    <textarea id="pe_abd" rows="3" placeholder="e.g., Soft, non-tender, non-distended, +BS"></textarea>
+                </details>
+                 <details class="finding-section">
+                    <summary>Extremities Exam</summary>
+                    <textarea id="pe_ext" rows="2" placeholder="e.g., No edema, normal ROM"></textarea>
+                </details>
+                 <details class="finding-section">
+                    <summary>Skin Exam</summary>
+                    <textarea id="pe_skin" rows="3" placeholder="e.g., Warm, dry, no rashes or lesions noted"></textarea>
+                </details>
+                 <details class="finding-section">
+                    <summary>Neurological Exam</summary>
+                    <textarea id="pe_neuro" rows="3" placeholder="e.g., A&Ox3, CN II-XII intact, Strength 5/5 globally"></textarea>
+                </details>
+                <!-- Add more PE sections as needed -->
+            </fieldset>
+
+            <button id="generate-btn">Generate Differential & Plan</button>
 
         </div>
 
         <div class="output-section">
-            <h2>Generated Differential Diagnosis (Illustrative)</h2>
+            <h2>Differential Diagnosis</h2>
             <ul id="ddx-list">
-                <li>Enter findings to generate ideas...</li>
+                <li>Enter information and click generate...</li>
             </ul>
 
-            <h2>Suggested Plan (Illustrative)</h2>
-            <p id="plan-suggestion">Plan suggestions will appear here based on top differential ideas.</p>
+            <h2>Suggested Plan</h2>
+            <p id="plan-suggestion">Plan suggestions will appear here...</p>
         </div>
     </div>
 
