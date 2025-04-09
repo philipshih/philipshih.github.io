@@ -3,7 +3,7 @@ layout: about
 ---
 
 # About Me
-MS-3 at [UCSF School of Medicine](https://medschool.ucsf.edu/). Cal alum.
+Medical Student at [UCSF School of Medicine](https://medschool.ucsf.edu/). Cal alum.
 <br/>
 
 # Research
