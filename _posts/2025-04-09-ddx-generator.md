@@ -6,7 +6,7 @@ categories: medical tools
 ---
 
 <div class="ddx-generator-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
-    <iframe id="ddx-iframe" src="/portfolio/ddx-generator/" width="100%" style="border:none; overflow:hidden;" scrolling="no"></iframe>
+    <iframe id="ddx-iframe" src="/portfolio/ddx-generator/" width="100%" style="border:none; overflow:hidden; min-height: 500px;" scrolling="no"></iframe> <!-- Added min-height -->
 </div>
 
 <script>
