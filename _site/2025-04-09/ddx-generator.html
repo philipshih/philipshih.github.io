@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="2Zm73NkeDoDbC-ea6qmCXryVr5ni1izJJpvAPXx-EeE" />
+  <title>Philip Shih</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" type="text/css" href="/assets/css/fontawesome-all.min.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon.ico">
+
+  <!-- Google Analytics -->
+  
+
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">Philip Shih</h2>
+        </a>
+        <ul>
+          <li><a href="/">About</a></li>
+          <li><a href="/portfolio/">Fun Stuff</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <h2 class="post-title">Differential Diagnosis Generator</h2>
+  <div class="post-line"></div>
+
+  <div class="ddx-generator-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+    <iframe id="ddx-iframe" src="/portfolio/ddx-generator/" width="100%" style="border:none; overflow:hidden;" scrolling="no"></iframe>
+</div>
+
+<script>
+    window.addEventListener('message', function(event) {
+        // Optional: Check event.origin for security if the iframe source is external or untrusted
+        // if (event.origin !== 'expected_origin') return;
+
+        if (event.data && typeof event.data.frameHeight === 'number') {
+            const iframe = document.getElementById('ddx-iframe');
+            if (iframe) {
+                // Add a small buffer (e.g., 20px) to prevent potential scrollbars due to rounding or borders
+                iframe.style.height = (event.data.frameHeight + 20) + 'px';
+            }
+        }
+    });
+</script>
+
+
+
+</div>
+
+<div class="pagination">
+  
+  
+    <a href="/2024-05-10/bst-visualizer" class="right next">Next</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy;  Philip Shih <time datetime="2025-04-12 12:56:42 -0700">2025</time>
+      </span>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Snake</h1>
+    <div class="game-container">
+        <div class="score-board">Score: <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div id="gameOver" class="game-over">
+            Game Over! Press Enter to Restart
+        </div>
+        <div id="leaderboard" class="leaderboard">
+            <h2>Leaderboard</h2>
+            <ol id="highScores"></ol>
+         </div>
+    </div>
+    <p class="instructions">Use Arrow Keys (or swipe on mobile) to move the snake.</p>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+
+    <!-- Your game script -->
+    <script src="script.js"></script>
+</body>
+</html>
