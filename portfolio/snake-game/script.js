@@ -2,6 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreSpan = document.getElementById('score');
 const gameOverDiv = document.getElementById('gameOver');
+const leaderboardDiv = document.getElementById('leaderboard'); // Added
+const highScoresList = document.getElementById('highScores'); // Added
 
 const gridSize = 20; // Size of each grid cell and snake segment
 const canvasSize = canvas.width; // Assuming square canvas
@@ -16,6 +18,62 @@ let score = 0;
 let changingDirection = false; // Prevent rapid 180-degree turns
 let gameRunning = true;
 let gameLoopInterval = null;
+let highScores = []; // Added for leaderboard
+const MAX_HIGH_SCORES = 5; // Added: Max scores to keep
+
+// --- Leaderboard Functions --- Added Section
+const initialHighScores = [
+    { name: "AI Pro", score: 150 },
+    { name: "SnakeMaster", score: 100 },
+    { name: "PixelEater", score: 70 },
+    { name: "GridRunner", score: 40 },
+    { name: "Noob", score: 10 }
+];
+
+function loadHighScores() {
+    const storedScores = localStorage.getItem('snakeHighScores');
+    if (storedScores) {
+        highScores = JSON.parse(storedScores);
+    } else {
+        // Use initial scores if nothing is stored
+        highScores = [...initialHighScores];
+        saveHighScores(); // Save initial scores to localStorage
+    }
+    // Ensure scores are sorted on load
+    highScores.sort((a, b) => b.score - a.score);
+}
+
+function saveHighScores() {
+    localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
+}
+
+function displayHighScores() {
+    highScoresList.innerHTML = ''; // Clear existing list
+    highScores.forEach(scoreEntry => {
+        const li = document.createElement('li');
+        li.textContent = `${scoreEntry.name}: ${scoreEntry.score}`;
+        highScoresList.appendChild(li);
+    });
+    leaderboardDiv.style.display = 'block'; // Make sure it's visible
+}
+
+function updateLeaderboard(newScore) {
+    // Check if the score is high enough
+    const lowestScore = highScores.length < MAX_HIGH_SCORES ? 0 : highScores[MAX_HIGH_SCORES - 1].score;
+
+    if (newScore > lowestScore) {
+        const name = prompt(`New high score! Enter your name (max 10 chars):`);
+        const playerName = name ? name.substring(0, 10) : "Anonymous"; // Limit name length
+
+        highScores.push({ name: playerName, score: newScore });
+        highScores.sort((a, b) => b.score - a.score); // Sort descending
+        highScores = highScores.slice(0, MAX_HIGH_SCORES); // Keep only top scores
+
+        saveHighScores();
+        displayHighScores();
+    }
+}
+
 
 // --- Game Initialization ---
 function initializeGame() {
@@ -28,6 +86,8 @@ function initializeGame() {
     gameRunning = true;
     gameOverDiv.style.display = 'none';
     placeFood();
+    loadHighScores(); // Load scores on init
+    displayHighScores(); // Display scores on init
     if (gameLoopInterval) clearInterval(gameLoopInterval); // Clear previous interval if restarting
     gameLoopInterval = setInterval(gameLoop, 100); // Start game loop (100ms = 10fps)
 }
@@ -154,6 +214,7 @@ function gameOver() {
     gameRunning = false;
     gameOverDiv.style.display = 'block';
     clearInterval(gameLoopInterval); // Stop the loop
+    updateLeaderboard(score); // Update leaderboard on game over
 }
 
 // --- Event Listeners ---
