@@ -8,16 +8,91 @@
 </head>
 <body>
     <h1>Binary Search Tree Visualizer</h1>
-    <div class="controls">
-        <input type="number" id="nodeValue" placeholder="Enter value">
-        <button id="insertBtn">Insert</button>
-        <button id="searchBtn">Search</button>
-        <button id="deleteBtn">Delete</button>
-        <button id="resetBtn">Reset Tree</button>
-    </div>
+    <div class="controls-container"> <!-- New outer container -->
+
+        <div class="control-group">
+            <h3>Tree Setup</h3>
+            <div class="tree-type-selector">
+                <label>Type:</label>
+            <input type="radio" id="bstMode" name="treeMode" value="BST" checked>
+            <label for="bstMode">Standard BST</label>
+            <input type="radio" id="avlMode" name="treeMode" value="AVL">
+            <label for="avlMode">AVL Tree (Self-Balancing)</label>
+            </div>
+            <div>
+                <input type="number" id="randomCount" placeholder="# nodes" value="10" min="1" max="50">
+                <button id="randomTreeBtn">Random Tree</button>
+                <button id="clearTreeBtn">Clear Tree</button>
+            </div>
+             <div>
+                <input type="text" id="bulkValues" placeholder="e.g., 50,30,70">
+                <button id="bulkInsertBtn">Bulk Insert</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Node Operations</h3>
+             <div>
+                <input type="number" id="nodeValue" placeholder="Enter value">
+                <button id="insertBtn">Insert</button>
+                <button id="searchBtn">Search</button>
+                <button id="deleteBtn">Delete</button>
+            </div>
+            <div>
+                <input type="number" id="successorPredecessorValue" placeholder="Node value">
+                <button id="findSuccessorBtn">Find Successor</button>
+                <button id="findPredecessorBtn">Find Predecessor</button>
+            </div>
+        </div>
+
+         <div class="control-group">
+            <h3>Traversal & Info</h3>
+             <div>
+                <button id="inOrderBtn">In-order</button>
+                <button id="preOrderBtn">Pre-order</button>
+                <button id="postOrderBtn">Post-order</button>
+                <button id="levelOrderBtn">Level-order</button>
+            </div>
+             <div>
+                 <button id="findMinBtn">Find Min</button>
+                 <button id="findMaxBtn">Find Max</button>
+            </div>
+        </div>
+
+         <div class="control-group">
+             <h3>Settings</h3>
+             <label for="speedControl">Speed:</label>
+             <select id="speedControl">
+                 <option value="250">Fast</option>
+                 <option value="500" selected>Medium</option>
+                 <option value="1000">Slow</option>
+             </select>
+             <button id="resetViewBtn" title="Reset zoom and pan">Reset View</button> <!-- New Button -->
+         </div>
+
+    </div> <!-- End controls-container -->
+
+    <!-- Updated Message Area -->
     <div class="message-area">
-        <p id="message">Enter a number and click Insert to start.</p>
+        <p id="message">Enter value & click Insert, Bulk Insert, Random Tree, or click canvas to add. Right-click node to delete.</p>
     </div>
+
+    <!-- New Tree Properties Display Area -->
+    <div class="properties-area">
+        <h3>Tree Properties</h3>
+        <p>Height: <span id="treeHeight">-</span></p>
+        <p>Node Count: <span id="nodeCount">-</span></p>
+        <p>Balanced: <span id="balancedStatus">-</span></p>
+    </div>
+
+    <!-- New Step-by-Step Controls (Initially Hidden) -->
+    <div class="step-controls" id="stepControls" style="display: none;">
+        <button id="stepNextBtn" title="Execute next step of visualization">Next Step</button>
+        <button id="stepPauseResumeBtn" title="Pause/Resume automatic execution">Pause</button>
+        <button id="stepRunBtn" title="Run visualization to completion without pausing">Run to End</button>
+        <button id="stepCancelBtn" title="Stop current visualization">Cancel Viz</button>
+    </div>
+
     <div class="canvas-container">
         <canvas id="bstCanvas" width="800" height="500"></canvas>
     </div>
