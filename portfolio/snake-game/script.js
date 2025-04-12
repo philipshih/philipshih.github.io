@@ -40,6 +40,7 @@ const highScoresCollection = db.collection('highscores'); // Reference to the co
 // --- Leaderboard Functions (Firestore Version) --- Modified Section
 
 async function loadHighScores() {
+    console.log("Attempting to load scores from Firestore..."); // Added log
     try {
         const snapshot = await highScoresCollection
             .orderBy('score', 'desc')
@@ -47,9 +48,12 @@ async function loadHighScores() {
             .get();
 
         highScores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Store doc id too
-        console.log("Loaded scores:", highScores); // Debugging
+        console.log("Loaded scores from Firestore:", highScores); // Modified log
+        if (highScores.length === 0) {
+            console.log("Firestore returned no scores."); // Added log
+        }
     } catch (error) {
-        console.error("Error loading high scores:", error);
+        console.error("Error loading high scores from Firestore:", error); // Modified log
         highScores = []; // Reset on error
     }
 }
@@ -57,8 +61,10 @@ async function loadHighScores() {
 // No separate saveHighScores needed, done within updateLeaderboard
 
 function displayHighScores() {
+    console.log("Displaying scores. Current highScores array:", highScores); // Added log
     highScoresList.innerHTML = ''; // Clear existing list
     if (highScores.length === 0) {
+        console.log("High scores array is empty, displaying loading message."); // Added log
         highScoresList.innerHTML = '<li>Loading scores or no scores yet...</li>';
     }
     highScores.forEach(scoreEntry => {

@@ -91,9 +91,35 @@
              <div class="checkbox-group">
                 <input type="checkbox" id="ros_dysuria" name="ros" value="dysuria"><label for="ros_dysuria">Dysuria</label>
                 <input type="checkbox" id="ros_hematuria" name="ros" value="hematuria"><label for="ros_hematuria">Hematuria</label>
-                <input type="checkbox" id="ros_frequency" name="ros" value="frequency"><label for="ros_frequency">Urinary Frequency</label>
+                 <input type="checkbox" id="ros_frequency" name="ros" value="frequency"><label for="ros_frequency">Urinary Frequency</label>
             </div>
-            <!-- Add more ROS sections as needed (MSK, Neuro, Skin, etc.) -->
+             <h4>Endocrine</h4>
+             <div class="checkbox-group">
+                <input type="checkbox" id="ros_polyuria" name="ros" value="polyuria"><label for="ros_polyuria">Polyuria</label>
+                <input type="checkbox" id="ros_polydipsia" name="ros" value="polydipsia"><label for="ros_polydipsia">Polydipsia</label>
+                <input type="checkbox" id="ros_sweating" name="ros" value="sweating"><label for="ros_sweating">Sweating</label>
+                <input type="checkbox" id="ros_tremor" name="ros" value="tremor"><label for="ros_tremor">Tremor</label>
+                <input type="checkbox" id="ros_weight_gain" name="ros" value="weight_gain"><label for="ros_weight_gain">Weight Gain</label>
+                <input type="checkbox" id="ros_cold_intolerance" name="ros" value="cold_intolerance"><label for="ros_cold_intolerance">Cold Intolerance</label>
+                <input type="checkbox" id="ros_heat_intolerance" name="ros" value="heat_intolerance"><label for="ros_heat_intolerance">Heat Intolerance</label>
+                <input type="checkbox" id="ros_blurry_vision" name="ros" value="blurry_vision"><label for="ros_blurry_vision">Blurry Vision</label>
+            </div>
+             <h4>Musculoskeletal</h4>
+             <div class="checkbox-group">
+                <input type="checkbox" id="ros_back_pain" name="ros" value="back_pain"><label for="ros_back_pain">Back Pain</label>
+                <input type="checkbox" id="ros_radiculopathy" name="ros" value="radiculopathy"><label for="ros_radiculopathy">Radiculopathy (shooting pain)</label>
+            </div>
+             <h4>Skin</h4>
+             <div class="checkbox-group">
+                 <!-- Skin ROS often overlaps PE, add specific symptoms if needed -->
+            </div>
+             <h4>Psychiatric</h4>
+             <div class="checkbox-group">
+                <input type="checkbox" id="ros_sad_mood" name="ros" value="sad_mood"><label for="ros_sad_mood">Sad Mood / Depression</label>
+                <input type="checkbox" id="ros_anxiety" name="ros" value="anxiety"><label for="ros_anxiety">Anxiety / Worry</label>
+                <input type="checkbox" id="ros_sleep_disturbance" name="ros" value="sleep_disturbance"><label for="ros_sleep_disturbance">Sleep Disturbance</label>
+                <input type="checkbox" id="ros_confusion" name="ros" value="confusion"><label for="ros_confusion">Confusion</label>
+            </div>
         </div>
 
         <div class="input-section">
@@ -127,21 +153,36 @@
                  <input type="checkbox" id="pe_tenderness" name="pe" value="tenderness"><label for="pe_tenderness">Tenderness to Palpation</label>
                  <input type="checkbox" id="pe_rebound" name="pe" value="rebound"><label for="pe_rebound">Rebound Tenderness</label>
                  <input type="checkbox" id="pe_guarding" name="pe" value="guarding"><label for="pe_guarding">Guarding</label>
-                 <input type="checkbox" id="pe_distension" name="pe" value="distension"><label for="pe_distension">Distension</label>
+                  <input type="checkbox" id="pe_distension" name="pe" value="distension"><label for="pe_distension">Distension</label>
             </div>
-            <!-- Add more PE sections as needed -->
+             <h4>Skin</h4>
+            <div class="checkbox-group">
+                 <input type="checkbox" id="pe_skin_erythema" name="pe" value="skin_erythema"><label for="pe_skin_erythema">Skin Erythema (Redness)</label>
+                 <input type="checkbox" id="pe_skin_warmth" name="pe" value="skin_warmth"><label for="pe_skin_warmth">Skin Warmth</label>
+                 <input type="checkbox" id="pe_skin_swelling" name="pe" value="skin_swelling"><label for="pe_skin_swelling">Skin Swelling</label>
+            </div>
+            <!-- Add more PE sections as needed (Neuro, MSK, etc.) -->
         </div>
 
-        <button type="button" onclick="generateDdx()">Generate DDx</button>
+        <!-- Remove the button, generation is now automatic on input change -->
+        <!-- <button type="button" onclick="generateDdx()">Generate DDx</button> -->
 
     </form>
 
     <div id="results">
         <h3>Potential Differential Diagnoses</h3>
         <ul id="ddx-list">
-            <!-- Results will be populated here -->
+            <!-- DDx results will be populated here -->
         </ul>
     </div>
+
+    <div id="plan-results" style="margin-top: 20px; border: 1px solid #ccc; padding: 15px; background-color: #f0f0ff; border-radius: 5px;">
+        <h3>Suggested Plan</h3>
+        <ul id="plan-list">
+            <!-- Plan suggestions will be populated here -->
+        </ul>
+    </div>
+
 
     <script src="script.js"></script>
 </body>
