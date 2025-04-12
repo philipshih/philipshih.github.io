@@ -82,6 +82,8 @@ const diagnoses = [
     { name: "Glomerulonephritis", score: 0, system: "Renal/Rheum", criteria: { vitals: ['hypertension'], ros: ['hematuria', 'edema', 'fatigue'], pe: ['pedal_edema'] } },
     { name: "Benign Prostatic Hyperplasia (BPH)", score: 0, system: "Genitourinary", criteria: { vitals: [], ros: ['frequency', 'urgency', 'nocturia', 'weak_stream'], pe: ['enlarged_prostate'] } }, // Need more specific ROS/PE
     { name: "Chronic Kidney Disease (CKD)", score: 0, system: "Renal", criteria: { vitals: ['hypertension'], ros: ['fatigue', 'nausea', 'itching', 'edema'], pe: ['pedal_edema'] } }, // Often asymptomatic until late
+    { name: "Placental Abruption", score: 0, system: "OBGYN", criteria: { vitals: ['tachycardia', 'hypotension'], ros: ['abd_pain', 'vaginal_bleeding', 'pelvic_pain'], pe: ['tenderness' /* Uterine */] } }, // Assuming pregnancy context
+    { name: "Preeclampsia/Eclampsia", score: 0, system: "OBGYN", criteria: { vitals: ['hypertension'], ros: ['headache', 'vision_change', 'edema', 'abd_pain' /* Epigastric/RUQ */, 'seizure_activity'], pe: ['pedal_edema', 'altered_mental_status'] } }, // Assuming pregnancy context
 
 
     // HEENT
@@ -673,6 +675,12 @@ function generatePlan(topDiagnoses) {
                 break;
             case "Adjustment Disorder":
                 planItems.add("PE Exam: Assess mood/anxiety in context of stressor. Plan: Clinical diagnosis. Supportive counseling, Stress management. Consider short-term meds if severe.");
+                break;
+            case "Placental Abruption":
+                planItems.add("PE Exam: Assess uterine tenderness, vaginal bleeding. Plan: STAT OB Consult, Bedside Ultrasound, CBC, Coags, Type & Screen, Continuous fetal monitoring. Prepare for delivery.");
+                break;
+            case "Preeclampsia/Eclampsia":
+                planItems.add("PE Exam: Check BP, edema, reflexes/clonus, neuro status. Plan: STAT OB Consult, BP management (e.g., Labetalol, Hydralazine), Magnesium Sulfate (seizure ppx/tx), CBC, CMP, LFTs, Uric Acid, Urine Protein/Cr ratio. Fetal monitoring. Delivery planning.");
                 break;
             default:
                 // Add a generic suggestion if no specific plan is listed

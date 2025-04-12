@@ -94,19 +94,29 @@
             margin-bottom: 10px;
         }
         label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="checkbox"], input[type="radio"] { margin-right: 5px; vertical-align: middle; }
+        input[type="checkbox"], input[type="radio"] {
+             margin-right: 5px;
+             vertical-align: middle; /* Ensure vertical alignment */
+             flex-shrink: 0; /* Prevent checkbox from shrinking */
+        }
         .checkbox-group {
             display: flex; /* Use flexbox for checkbox layout */
             flex-wrap: wrap; /* Allow wrapping */
             gap: 5px 15px; /* Row and column gap */
-            align-items: center; /* Align items vertically */
+            align-items: baseline; /* Align based on text baseline */
         }
         .checkbox-group label {
-            /* display: inline-block; */ /* No longer needed */
+            display: inline-block; /* Make label an inline-block */
+            /* align-items: center; /* Not needed for inline-block */
             /* margin-right: 15px; */ /* Handled by gap */
             margin-bottom: 0; /* Remove bottom margin */
             font-weight: normal;
-            white-space: nowrap; /* Prevent label text from wrapping */
+            /* white-space: nowrap; /* Removed to allow label text wrapping */
+        }
+        .checkbox-item { /* Style for the wrapper span */
+            display: inline-block; /* Treat as a block but flow inline */
+            white-space: normal; /* Allow text within the label to wrap */
+            vertical-align: middle; /* Align with other items */
         }
         input[type="number"] { width: 60px; padding: 5px; }
 
@@ -177,13 +187,13 @@
                 <div class="input-section">
                     <h3>Vitals</h3>
                     <div class="checkbox-group">
-                        <input type="checkbox" id="vital_fever" name="vitals" value="fever"><label for="vital_fever">Fever (>38C/100.4F)</label>
-                        <input type="checkbox" id="vital_tachycardia" name="vitals" value="tachycardia"><label for="vital_tachycardia">Tachycardia (>100 bpm)</label>
-                        <input type="checkbox" id="vital_bradycardia" name="vitals" value="bradycardia"><label for="vital_bradycardia">Bradycardia (<60 bpm)</label>
-                        <input type="checkbox" id="vital_hypertension" name="vitals" value="hypertension"><label for="vital_hypertension">Hypertension (>140/90)</label>
-                        <input type="checkbox" id="vital_hypotension" name="vitals" value="hypotension"><label for="vital_hypotension">Hypotension (<90/60)</label>
-                        <input type="checkbox" id="vital_tachypnea" name="vitals" value="tachypnea"><label for="vital_tachypnea">Tachypnea (>20 breaths/min)</label>
-                        <input type="checkbox" id="vital_hypoxia" name="vitals" value="hypoxia"><label for="vital_hypoxia">Hypoxia (SpO2 <94%)</label>
+                        <span class="checkbox-item"><input type="checkbox" id="vital_fever" name="vitals" value="fever"><label for="vital_fever">Fever (>38C/100.4F)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="vital_tachycardia" name="vitals" value="tachycardia"><label for="vital_tachycardia">Tachycardia (>100 bpm)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="vital_bradycardia" name="vitals" value="bradycardia"><label for="vital_bradycardia">Bradycardia (<60 bpm)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="vital_hypertension" name="vitals" value="hypertension"><label for="vital_hypertension">Hypertension (>140/90)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="vital_hypotension" name="vitals" value="hypotension"><label for="vital_hypotension">Hypotension (<90/60)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="vital_tachypnea" name="vitals" value="tachypnea"><label for="vital_tachypnea">Tachypnea (>20 breaths/min)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="vital_hypoxia" name="vitals" value="hypoxia"><label for="vital_hypoxia">Hypoxia (SpO2 <94%)</label></span>
                     </div>
                     </div> <!-- End Vitals -->
             </div><!-- End ddx-form-container-top -->
@@ -210,140 +220,140 @@
                     <h3>Review of Systems / History</h3>
                     <h4>Constitutional</h4>
                     <div class="checkbox-group">
-                        <input type="checkbox" id="ros_fatigue" name="ros" value="fatigue"><label for="ros_fatigue">Fatigue</label>
-                        <input type="checkbox" id="ros_weight_loss" name="ros" value="weight_loss"><label for="ros_weight_loss">Weight Loss</label>
-                        <input type="checkbox" id="ros_chills" name="ros" value="chills"><label for="ros_chills">Chills</label>
-                        <input type="checkbox" id="ros_night_sweats" name="ros" value="night_sweats"><label for="ros_night_sweats">Night Sweats</label>
-                        <input type="checkbox" id="ros_decreased_urine_output" name="ros" value="decreased_urine_output"><label for="ros_decreased_urine_output">Decreased Urine Output</label>
-                        <input type="checkbox" id="ros_snoring" name="ros" value="snoring"><label for="ros_snoring">Snoring</label>
-                        <input type="checkbox" id="ros_witnessed_apneas" name="ros" value="witnessed_apneas"><label for="ros_witnessed_apneas">Witnessed Apneas</label>
-                        <input type="checkbox" id="ros_pica" name="ros" value="pica"><label for="ros_pica">Pica</label>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_fatigue" name="ros" value="fatigue"><label for="ros_fatigue">Fatigue</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_weight_loss" name="ros" value="weight_loss"><label for="ros_weight_loss">Weight Loss</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_chills" name="ros" value="chills"><label for="ros_chills">Chills</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_night_sweats" name="ros" value="night_sweats"><label for="ros_night_sweats">Night Sweats</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_decreased_urine_output" name="ros" value="decreased_urine_output"><label for="ros_decreased_urine_output">Decreased Urine Output</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_snoring" name="ros" value="snoring"><label for="ros_snoring">Snoring</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_witnessed_apneas" name="ros" value="witnessed_apneas"><label for="ros_witnessed_apneas">Witnessed Apneas</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_pica" name="ros" value="pica"><label for="ros_pica">Pica</label></span>
                     </div>
                      <h4>HEENT</h4>
                     <div class="checkbox-group">
-                        <input type="checkbox" id="ros_headache" name="ros" value="headache"><label for="ros_headache">Headache</label>
-                        <input type="checkbox" id="ros_sore_throat" name="ros" value="sore_throat"><label for="ros_sore_throat">Sore Throat</label>
-                        <input type="checkbox" id="ros_vision_change" name="ros" value="vision_change"><label for="ros_vision_change">Vision Change</label>
-                        <input type="checkbox" id="ros_ear_pain" name="ros" value="ear_pain"><label for="ros_ear_pain">Ear Pain</label>
-                        <input type="checkbox" id="ros_eye_redness" name="ros" value="eye_redness"><label for="ros_eye_redness">Eye Redness</label>
-                        <input type="checkbox" id="ros_eye_discharge" name="ros" value="eye_discharge"><label for="ros_eye_discharge">Eye Discharge</label>
-                        <input type="checkbox" id="ros_eye_itching" name="ros" value="eye_itching"><label for="ros_eye_itching">Eye Itching</label>
-                        <input type="checkbox" id="ros_eyelid_swelling" name="ros" value="eyelid_swelling"><label for="ros_eyelid_swelling">Eyelid Swelling</label>
-                        <input type="checkbox" id="ros_eyelid_pain" name="ros" value="eyelid_pain"><label for="ros_eyelid_pain">Eyelid Pain</label>
-                        <input type="checkbox" id="ros_facial_pain_pressure" name="ros" value="facial_pain_pressure"><label for="ros_facial_pain_pressure">Facial Pain/Pressure</label>
-                        <input type="checkbox" id="ros_nasal_congestion" name="ros" value="nasal_congestion"><label for="ros_nasal_congestion">Nasal Congestion</label>
-                        <input type="checkbox" id="ros_vertigo" name="ros" value="vertigo"><label for="ros_vertigo">Vertigo (Room Spinning)</label>
-                        <input type="checkbox" id="ros_hearing_loss" name="ros" value="hearing_loss"><label for="ros_hearing_loss">Hearing Loss</label>
-                        <input type="checkbox" id="ros_ear_discharge" name="ros" value="ear_discharge"><label for="ros_ear_discharge">Ear Discharge</label>
-                        <input type="checkbox" id="ros_sneezing" name="ros" value="sneezing"><label for="ros_sneezing">Sneezing</label>
-                        <input type="checkbox" id="ros_jaw_claudication" name="ros" value="jaw_claudication"><label for="ros_jaw_claudication">Jaw Claudication</label>
-                        <input type="checkbox" id="ros_dysphagia" name="ros" value="dysphagia"><label for="ros_dysphagia">Dysphagia (Difficulty Swallowing)</label>
-                        <input type="checkbox" id="ros_drooling" name="ros" value="drooling"><label for="ros_drooling">Drooling</label>
-                        <input type="checkbox" id="ros_muffled_voice" name="ros" value="muffled_voice"><label for="ros_muffled_voice">Muffled Voice</label>
-                        <input type="checkbox" id="ros_neck_stiffness" name="ros" value="neck_stiffness"><label for="ros_neck_stiffness">Neck Stiffness</label>
-                        <input type="checkbox" id="ros_tinnitus" name="ros" value="tinnitus"><label for="ros_tinnitus">Tinnitus</label>
-                        <input type="checkbox" id="ros_ear_fullness" name="ros" value="ear_fullness"><label for="ros_ear_fullness">Ear Fullness</label>
-                        <input type="checkbox" id="ros_neck_pain" name="ros" value="neck_pain"><label for="ros_neck_pain">Neck Pain</label>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_headache" name="ros" value="headache"><label for="ros_headache">Headache</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_sore_throat" name="ros" value="sore_throat"><label for="ros_sore_throat">Sore Throat</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_vision_change" name="ros" value="vision_change"><label for="ros_vision_change">Vision Change</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_ear_pain" name="ros" value="ear_pain"><label for="ros_ear_pain">Ear Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_eye_redness" name="ros" value="eye_redness"><label for="ros_eye_redness">Eye Redness</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_eye_discharge" name="ros" value="eye_discharge"><label for="ros_eye_discharge">Eye Discharge</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_eye_itching" name="ros" value="eye_itching"><label for="ros_eye_itching">Eye Itching</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_eyelid_swelling" name="ros" value="eyelid_swelling"><label for="ros_eyelid_swelling">Eyelid Swelling</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_eyelid_pain" name="ros" value="eyelid_pain"><label for="ros_eyelid_pain">Eyelid Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_facial_pain_pressure" name="ros" value="facial_pain_pressure"><label for="ros_facial_pain_pressure">Facial Pain/Pressure</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_nasal_congestion" name="ros" value="nasal_congestion"><label for="ros_nasal_congestion">Nasal Congestion</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_vertigo" name="ros" value="vertigo"><label for="ros_vertigo">Vertigo (Room Spinning)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_hearing_loss" name="ros" value="hearing_loss"><label for="ros_hearing_loss">Hearing Loss</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_ear_discharge" name="ros" value="ear_discharge"><label for="ros_ear_discharge">Ear Discharge</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_sneezing" name="ros" value="sneezing"><label for="ros_sneezing">Sneezing</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_jaw_claudication" name="ros" value="jaw_claudication"><label for="ros_jaw_claudication">Jaw Claudication</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_dysphagia" name="ros" value="dysphagia"><label for="ros_dysphagia">Dysphagia (Difficulty Swallowing)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_drooling" name="ros" value="drooling"><label for="ros_drooling">Drooling</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_muffled_voice" name="ros" value="muffled_voice"><label for="ros_muffled_voice">Muffled Voice</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_neck_stiffness" name="ros" value="neck_stiffness"><label for="ros_neck_stiffness">Neck Stiffness</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_tinnitus" name="ros" value="tinnitus"><label for="ros_tinnitus">Tinnitus</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_ear_fullness" name="ros" value="ear_fullness"><label for="ros_ear_fullness">Ear Fullness</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_neck_pain" name="ros" value="neck_pain"><label for="ros_neck_pain">Neck Pain</label></span>
                     </div>
                     <h4>Cardiovascular</h4>
                      <div class="checkbox-group">
-                        <input type="checkbox" id="ros_chest_pain" name="ros" value="chest_pain"><label for="ros_chest_pain">Chest Pain</label>
-                        <input type="checkbox" id="ros_palpitations" name="ros" value="palpitations"><label for="ros_palpitations">Palpitations</label>
-                        <input type="checkbox" id="ros_edema" name="ros" value="edema"><label for="ros_edema">Edema (Swelling)</label>
-                        <input type="checkbox" id="ros_leg_pain" name="ros" value="leg_pain"><label for="ros_leg_pain">Leg Pain</label>
-                        <input type="checkbox" id="ros_leg_swelling" name="ros" value="leg_swelling"><label for="ros_leg_swelling">Leg Swelling</label>
-                        <input type="checkbox" id="ros_syncope_episode" name="ros" value="syncope_episode"><label for="ros_syncope_episode">Syncope / Near-Syncope</label>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_chest_pain" name="ros" value="chest_pain"><label for="ros_chest_pain">Chest Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_palpitations" name="ros" value="palpitations"><label for="ros_palpitations">Palpitations</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_edema" name="ros" value="edema"><label for="ros_edema">Edema (Swelling)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_leg_pain" name="ros" value="leg_pain"><label for="ros_leg_pain">Leg Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_leg_swelling" name="ros" value="leg_swelling"><label for="ros_leg_swelling">Leg Swelling</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_syncope_episode" name="ros" value="syncope_episode"><label for="ros_syncope_episode">Syncope / Near-Syncope</label></span>
                     </div>
                     <h4>Respiratory</h4>
                      <div class="checkbox-group">
-                        <input type="checkbox" id="ros_cough" name="ros" value="cough"><label for="ros_cough">Cough</label>
-                        <input type="checkbox" id="ros_sputum_change" name="ros" value="sputum_change"><label for="ros_sputum_change">Sputum Change (Color/Amount)</label>
-                        <input type="checkbox" id="ros_sob" name="ros" value="sob"><label for="ros_sob">Shortness of Breath (SOB)</label>
-                        <input type="checkbox" id="ros_wheezing" name="ros" value="wheezing"><label for="ros_wheezing">Wheezing</label>
-                        <input type="checkbox" id="ros_hemoptysis" name="ros" value="hemoptysis"><label for="ros_hemoptysis">Hemoptysis (Coughing Blood)</label>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_cough" name="ros" value="cough"><label for="ros_cough">Cough</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_sputum_change" name="ros" value="sputum_change"><label for="ros_sputum_change">Sputum Change (Color/Amount)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_sob" name="ros" value="sob"><label for="ros_sob">Shortness of Breath (SOB)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_wheezing" name="ros" value="wheezing"><label for="ros_wheezing">Wheezing</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_hemoptysis" name="ros" value="hemoptysis"><label for="ros_hemoptysis">Hemoptysis (Coughing Blood)</label></span>
                     </div>
                     <h4>Gastrointestinal</h4>
                      <div class="checkbox-group">
-                        <input type="checkbox" id="ros_nausea" name="ros" value="nausea"><label for="ros_nausea">Nausea</label>
-                        <input type="checkbox" id="ros_vomiting" name="ros" value="vomiting"><label for="ros_vomiting">Vomiting</label>
-                        <input type="checkbox" id="ros_abd_pain" name="ros" value="abd_pain"><label for="ros_abd_pain">Abdominal Pain</label>
-                        <input type="checkbox" id="ros_heartburn" name="ros" value="heartburn"><label for="ros_heartburn">Heartburn/Indigestion</label>
-                        <input type="checkbox" id="ros_diarrhea" name="ros" value="diarrhea"><label for="ros_diarrhea">Diarrhea</label>
-                        <input type="checkbox" id="ros_constipation" name="ros" value="constipation"><label for="ros_constipation">Constipation</label>
-                        <input type="checkbox" id="ros_bloating" name="ros" value="bloating"><label for="ros_bloating">Bloating</label>
-                        <input type="checkbox" id="ros_early_satiety" name="ros" value="early_satiety"><label for="ros_early_satiety">Early Satiety</label>
-                        <input type="checkbox" id="ros_melena" name="ros" value="melena"><label for="ros_melena">Melena (Dark, Tarry Stool)</label>
-                        <input type="checkbox" id="ros_hematochezia" name="ros" value="hematochezia"><label for="ros_hematochezia">Hematochezia (Bright Red Blood in Stool)</label>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_nausea" name="ros" value="nausea"><label for="ros_nausea">Nausea</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_vomiting" name="ros" value="vomiting"><label for="ros_vomiting">Vomiting</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_abd_pain" name="ros" value="abd_pain"><label for="ros_abd_pain">Abdominal Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_heartburn" name="ros" value="heartburn"><label for="ros_heartburn">Heartburn/Indigestion</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_diarrhea" name="ros" value="diarrhea"><label for="ros_diarrhea">Diarrhea</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_constipation" name="ros" value="constipation"><label for="ros_constipation">Constipation</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_bloating" name="ros" value="bloating"><label for="ros_bloating">Bloating</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_early_satiety" name="ros" value="early_satiety"><label for="ros_early_satiety">Early Satiety</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_melena" name="ros" value="melena"><label for="ros_melena">Melena (Dark, Tarry Stool)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_hematochezia" name="ros" value="hematochezia"><label for="ros_hematochezia">Hematochezia (Bright Red Blood in Stool)</label></span>
                     </div>
                      <h4>Genitourinary</h4>
                      <div class="checkbox-group">
-                        <input type="checkbox" id="ros_dysuria" name="ros" value="dysuria"><label for="ros_dysuria">Dysuria</label>
-                        <input type="checkbox" id="ros_hematuria" name="ros" value="hematuria"><label for="ros_hematuria">Hematuria</label>
-                         <input type="checkbox" id="ros_frequency" name="ros" value="frequency"><label for="ros_frequency">Urinary Frequency</label>
-                         <input type="checkbox" id="ros_urgency" name="ros" value="urgency"><label for="ros_urgency">Urinary Urgency</label>
-                         <input type="checkbox" id="ros_nocturia" name="ros" value="nocturia"><label for="ros_nocturia">Nocturia</label>
-                         <input type="checkbox" id="ros_weak_stream" name="ros" value="weak_stream"><label for="ros_weak_stream">Weak Urinary Stream</label>
-                         <input type="checkbox" id="ros_testicular_pain" name="ros" value="testicular_pain"><label for="ros_testicular_pain">Testicular Pain</label>
-                         <input type="checkbox" id="ros_testicular_swelling" name="ros" value="testicular_swelling"><label for="ros_testicular_swelling">Testicular Swelling</label>
-                         <input type="checkbox" id="ros_vaginal_bleeding" name="ros" value="vaginal_bleeding"><label for="ros_vaginal_bleeding">Vaginal Bleeding (Abnormal)</label>
-                         <input type="checkbox" id="ros_missed_period" name="ros" value="missed_period"><label for="ros_missed_period">Missed Period</label>
-                         <input type="checkbox" id="ros_vaginal_discharge" name="ros" value="vaginal_discharge"><label for="ros_vaginal_discharge">Vaginal Discharge</label>
-                         <input type="checkbox" id="ros_dyspareunia" name="ros" value="dyspareunia"><label for="ros_dyspareunia">Dyspareunia (Painful Intercourse)</label>
-                         <input type="checkbox" id="ros_pelvic_pain" name="ros" value="pelvic_pain"><label for="ros_pelvic_pain">Pelvic Pain</label>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_dysuria" name="ros" value="dysuria"><label for="ros_dysuria">Dysuria</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_hematuria" name="ros" value="hematuria"><label for="ros_hematuria">Hematuria</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_frequency" name="ros" value="frequency"><label for="ros_frequency">Urinary Frequency</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_urgency" name="ros" value="urgency"><label for="ros_urgency">Urinary Urgency</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_nocturia" name="ros" value="nocturia"><label for="ros_nocturia">Nocturia</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_weak_stream" name="ros" value="weak_stream"><label for="ros_weak_stream">Weak Urinary Stream</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_testicular_pain" name="ros" value="testicular_pain"><label for="ros_testicular_pain">Testicular Pain</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_testicular_swelling" name="ros" value="testicular_swelling"><label for="ros_testicular_swelling">Testicular Swelling</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_vaginal_bleeding" name="ros" value="vaginal_bleeding"><label for="ros_vaginal_bleeding">Vaginal Bleeding (Abnormal)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_missed_period" name="ros" value="missed_period"><label for="ros_missed_period">Missed Period</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_vaginal_discharge" name="ros" value="vaginal_discharge"><label for="ros_vaginal_discharge">Vaginal Discharge</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_dyspareunia" name="ros" value="dyspareunia"><label for="ros_dyspareunia">Dyspareunia (Painful Intercourse)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_pelvic_pain" name="ros" value="pelvic_pain"><label for="ros_pelvic_pain">Pelvic Pain</label></span>
                     </div>
                      <h4>Endocrine</h4>
                      <div class="checkbox-group">
-                        <input type="checkbox" id="ros_polyuria" name="ros" value="polyuria"><label for="ros_polyuria">Polyuria</label>
-                        <input type="checkbox" id="ros_polydipsia" name="ros" value="polydipsia"><label for="ros_polydipsia">Polydipsia</label>
-                        <input type="checkbox" id="ros_sweating" name="ros" value="sweating"><label for="ros_sweating">Sweating</label>
-                        <input type="checkbox" id="ros_tremor" name="ros" value="tremor"><label for="ros_tremor">Tremor</label>
-                        <input type="checkbox" id="ros_weight_gain" name="ros" value="weight_gain"><label for="ros_weight_gain">Weight Gain</label>
-                        <input type="checkbox" id="ros_cold_intolerance" name="ros" value="cold_intolerance"><label for="ros_cold_intolerance">Cold Intolerance</label>
-                        <input type="checkbox" id="ros_heat_intolerance" name="ros" value="heat_intolerance"><label for="ros_heat_intolerance">Heat Intolerance</label>
-                        <input type="checkbox" id="ros_blurry_vision" name="ros" value="blurry_vision"><label for="ros_blurry_vision">Blurry Vision</label>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_polyuria" name="ros" value="polyuria"><label for="ros_polyuria">Polyuria</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_polydipsia" name="ros" value="polydipsia"><label for="ros_polydipsia">Polydipsia</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_sweating" name="ros" value="sweating"><label for="ros_sweating">Sweating</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_tremor" name="ros" value="tremor"><label for="ros_tremor">Tremor</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_weight_gain" name="ros" value="weight_gain"><label for="ros_weight_gain">Weight Gain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_cold_intolerance" name="ros" value="cold_intolerance"><label for="ros_cold_intolerance">Cold Intolerance</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_heat_intolerance" name="ros" value="heat_intolerance"><label for="ros_heat_intolerance">Heat Intolerance</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_blurry_vision" name="ros" value="blurry_vision"><label for="ros_blurry_vision">Blurry Vision</label></span>
                     </div>
                      <h4>Musculoskeletal</h4>
                      <div class="checkbox-group">
-                        <input type="checkbox" id="ros_back_pain" name="ros" value="back_pain"><label for="ros_back_pain">Back Pain</label>
-                        <input type="checkbox" id="ros_radiculopathy" name="ros" value="radiculopathy"><label for="ros_radiculopathy">Radiculopathy (shooting pain)</label>
-                        <input type="checkbox" id="ros_knee_pain" name="ros" value="knee_pain"><label for="ros_knee_pain">Knee Pain</label>
-                        <input type="checkbox" id="ros_knee_stiffness" name="ros" value="knee_stiffness"><label for="ros_knee_stiffness">Knee Stiffness</label>
-                        <input type="checkbox" id="ros_knee_locking" name="ros" value="knee_locking"><label for="ros_knee_locking">Knee Locking/Catching</label>
-                        <input type="checkbox" id="ros_knee_instability" name="ros" value="knee_instability"><label for="ros_knee_instability">Knee Instability/Giving Way</label>
-                        <input type="checkbox" id="ros_knee_swelling_acute" name="ros" value="knee_swelling_acute"><label for="ros_knee_swelling_acute">Knee Swelling (Acute)</label>
-                        <input type="checkbox" id="ros_joint_pain_acute" name="ros" value="joint_pain_acute"><label for="ros_joint_pain_acute">Acute Joint Pain (Specific Joint)</label>
-                        <input type="checkbox" id="ros_joint_pain" name="ros" value="joint_pain"><label for="ros_joint_pain">Joint Pain (General/Chronic)</label>
-                        <input type="checkbox" id="ros_joint_swelling" name="ros" value="joint_swelling"><label for="ros_joint_swelling">Joint Swelling</label>
-                        <input type="checkbox" id="ros_muscle_cramps_weakness" name="ros" value="muscle_cramps_weakness"><label for="ros_muscle_cramps_weakness">Muscle Cramps/Weakness</label>
-                        <input type="checkbox" id="ros_widespread_pain" name="ros" value="widespread_pain"><label for="ros_widespread_pain">Widespread Pain</label>
-                        <input type="checkbox" id="ros_stiffness" name="ros" value="stiffness"><label for="ros_stiffness">Stiffness (Joint/Muscle)</label>
-                        <input type="checkbox" id="ros_bone_pain" name="ros" value="bone_pain"><label for="ros_bone_pain">Bone Pain</label>
-                        <input type="checkbox" id="ros_shoulder_pain" name="ros" value="shoulder_pain"><label for="ros_shoulder_pain">Shoulder Pain</label>
-                        <input type="checkbox" id="ros_muscle_weakness" name="ros" value="muscle_weakness"><label for="ros_muscle_weakness">Muscle Weakness (General/Proximal)</label>
-                        <input type="checkbox" id="ros_hand_pain" name="ros" value="hand_pain"><label for="ros_hand_pain">Hand Pain</label>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_back_pain" name="ros" value="back_pain"><label for="ros_back_pain">Back Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_radiculopathy" name="ros" value="radiculopathy"><label for="ros_radiculopathy">Radiculopathy (shooting pain)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_knee_pain" name="ros" value="knee_pain"><label for="ros_knee_pain">Knee Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_knee_stiffness" name="ros" value="knee_stiffness"><label for="ros_knee_stiffness">Knee Stiffness</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_knee_locking" name="ros" value="knee_locking"><label for="ros_knee_locking">Knee Locking/Catching</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_knee_instability" name="ros" value="knee_instability"><label for="ros_knee_instability">Knee Instability/Giving Way</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_knee_swelling_acute" name="ros" value="knee_swelling_acute"><label for="ros_knee_swelling_acute">Knee Swelling (Acute)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_joint_pain_acute" name="ros" value="joint_pain_acute"><label for="ros_joint_pain_acute">Acute Joint Pain (Specific Joint)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_joint_pain" name="ros" value="joint_pain"><label for="ros_joint_pain">Joint Pain (General/Chronic)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_joint_swelling" name="ros" value="joint_swelling"><label for="ros_joint_swelling">Joint Swelling</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_muscle_cramps_weakness" name="ros" value="muscle_cramps_weakness"><label for="ros_muscle_cramps_weakness">Muscle Cramps/Weakness</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_widespread_pain" name="ros" value="widespread_pain"><label for="ros_widespread_pain">Widespread Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_stiffness" name="ros" value="stiffness"><label for="ros_stiffness">Stiffness (Joint/Muscle)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_bone_pain" name="ros" value="bone_pain"><label for="ros_bone_pain">Bone Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_shoulder_pain" name="ros" value="shoulder_pain"><label for="ros_shoulder_pain">Shoulder Pain</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_muscle_weakness" name="ros" value="muscle_weakness"><label for="ros_muscle_weakness">Muscle Weakness (General/Proximal)</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_hand_pain" name="ros" value="hand_pain"><label for="ros_hand_pain">Hand Pain</label></span>
                     </div>
                      <h4>Skin</h4>
                      <div class="checkbox-group">
-                         <input type="checkbox" id="ros_rash" name="ros" value="rash"><label for="ros_rash">Rash</label>
-                         <input type="checkbox" id="ros_itching" name="ros" value="itching"><label for="ros_itching">Itching (Pruritus)</label>
-                         <input type="checkbox" id="ros_lesion" name="ros" value="lesion"><label for="ros_lesion">New Skin Lesion/Mole Change</label>
-                         <input type="checkbox" id="ros_sweating" name="ros" value="sweating"><label for="ros_sweating">Sweating (Diaphoresis)</label> <!-- Moved from Endocrine for broader use -->
-                         <input type="checkbox" id="ros_skin_lesion_painful" name="ros" value="skin_lesion_painful"><label for="ros_skin_lesion_painful">Painful Skin Lesion</label>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_rash" name="ros" value="rash"><label for="ros_rash">Rash</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_itching" name="ros" value="itching"><label for="ros_itching">Itching (Pruritus)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_lesion" name="ros" value="lesion"><label for="ros_lesion">New Skin Lesion/Mole Change</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_sweating" name="ros" value="sweating"><label for="ros_sweating">Sweating (Diaphoresis)</label></span> <!-- Moved from Endocrine for broader use -->
+                         <span class="checkbox-item"><input type="checkbox" id="ros_skin_lesion_painful" name="ros" value="skin_lesion_painful"><label for="ros_skin_lesion_painful">Painful Skin Lesion</label></span>
                     </div>
                      <h4>Psychiatric/Neurologic</h4>
                      <div class="checkbox-group">
-                        <input type="checkbox" id="ros_sad_mood" name="ros" value="sad_mood"><label for="ros_sad_mood">Sad Mood / Depression</label>
-                        <input type="checkbox" id="ros_anxiety" name="ros" value="anxiety"><label for="ros_anxiety">Anxiety / Worry</label>
-                        <input type="checkbox" id="ros_sleep_disturbance" name="ros" value="sleep_disturbance"><label for="ros_sleep_disturbance">Sleep Disturbance</label>
-                         <input type="checkbox" id="ros_confusion" name="ros" value="confusion"><label for="ros_confusion">Confusion</label>
-                         <input type="checkbox" id="ros_seizure_activity" name="ros" value="seizure_activity"><label for="ros_seizure_activity">Seizure Activity (Witnessed/Reported)</label>
-                         <input type="checkbox" id="ros_numbness_tingling" name="ros" value="numbness_tingling"><label for="ros_numbness_tingling">Numbness/Tingling</label>
-                         <input type="checkbox" id="ros_burning_pain" name="ros" value="burning_pain"><label for="ros_burning_pain">Burning Pain (Neuropathic)</label>
-                         <input type="checkbox" id="ros_gait_problems" name="ros" value="gait_problems"><label for="ros_gait_problems">Gait Problems / Instability</label>
-                         <input type="checkbox" id="ros_ptosis" name="ros" value="ptosis"><label for="ros_ptosis">Ptosis (Droopy Eyelid)</label>
-                         <input type="checkbox" id="ros_diplopia" name="ros" value="diplopia"><label for="ros_diplopia">Diplopia (Double Vision)</label>
-                         <input type="checkbox" id="ros_slowness" name="ros" value="slowness"><label for="ros_slowness">Slowness of Movement</label>
-                         <input type="checkbox" id="ros_facial_weakness_unilateral" name="ros" value="facial_weakness_unilateral"><label for="ros_facial_weakness_unilateral">Unilateral Facial Weakness</label>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_sad_mood" name="ros" value="sad_mood"><label for="ros_sad_mood">Sad Mood / Depression</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_anxiety" name="ros" value="anxiety"><label for="ros_anxiety">Anxiety / Worry</label></span>
+                        <span class="checkbox-item"><input type="checkbox" id="ros_sleep_disturbance" name="ros" value="sleep_disturbance"><label for="ros_sleep_disturbance">Sleep Disturbance</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_confusion" name="ros" value="confusion"><label for="ros_confusion">Confusion</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_seizure_activity" name="ros" value="seizure_activity"><label for="ros_seizure_activity">Seizure Activity (Witnessed/Reported)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_numbness_tingling" name="ros" value="numbness_tingling"><label for="ros_numbness_tingling">Numbness/Tingling</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_burning_pain" name="ros" value="burning_pain"><label for="ros_burning_pain">Burning Pain (Neuropathic)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_gait_problems" name="ros" value="gait_problems"><label for="ros_gait_problems">Gait Problems / Instability</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_ptosis" name="ros" value="ptosis"><label for="ros_ptosis">Ptosis (Droopy Eyelid)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_diplopia" name="ros" value="diplopia"><label for="ros_diplopia">Diplopia (Double Vision)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_slowness" name="ros" value="slowness"><label for="ros_slowness">Slowness of Movement</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="ros_facial_weakness_unilateral" name="ros" value="facial_weakness_unilateral"><label for="ros_facial_weakness_unilateral">Unilateral Facial Weakness</label></span>
                     </div>
                 </div>
 
@@ -351,152 +361,152 @@
                     <h3>Physical Exam Findings</h3>
                      <h4>General</h4>
                     <div class="checkbox-group">
-                         <input type="checkbox" id="pe_ill_appearing" name="pe" value="ill_appearing"><label for="pe_ill_appearing">Ill Appearing</label>
-                         <input type="checkbox" id="pe_cachectic" name="pe" value="cachectic"><label for="pe_cachectic">Cachectic</label>
-                         <input type="checkbox" id="pe_pallor" name="pe" value="pallor"><label for="pe_pallor">Pallor</label>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_ill_appearing" name="pe" value="ill_appearing"><label for="pe_ill_appearing">Ill Appearing</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_cachectic" name="pe" value="cachectic"><label for="pe_cachectic">Cachectic</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_pallor" name="pe" value="pallor"><label for="pe_pallor">Pallor</label></span>
                     </div>
                     <h4>HEENT</h4>
                     <div class="checkbox-group">
-                         <input type="checkbox" id="pe_pupils_unequal" name="pe" value="pupils_unequal"><label for="pe_pupils_unequal">Unequal Pupils</label>
-                         <input type="checkbox" id="pe_tm_bulging" name="pe" value="tm_bulging"><label for="pe_tm_bulging">TM Bulging</label>
-                         <input type="checkbox" id="pe_pharyngeal_erythema" name="pe" value="pharyngeal_erythema"><label for="pe_pharyngeal_erythema">Pharyngeal Erythema</label>
-                         <input type="checkbox" id="pe_conjunctival_injection" name="pe" value="conjunctival_injection"><label for="pe_conjunctival_injection">Conjunctival Injection</label>
-                         <input type="checkbox" id="pe_eye_discharge_type" name="pe" value="eye_discharge_type"><label for="pe_eye_discharge_type">Eye Discharge (Purulent/Watery)</label> <!-- Consider making this radio/select -->
-                         <input type="checkbox" id="pe_eyelid_swelling_localized" name="pe" value="eyelid_swelling_localized"><label for="pe_eyelid_swelling_localized">Localized Eyelid Swelling</label>
-                         <input type="checkbox" id="pe_eyelid_erythema" name="pe" value="eyelid_erythema"><label for="pe_eyelid_erythema">Eyelid Erythema</label>
-                         <input type="checkbox" id="pe_nasal_discharge_purulent" name="pe" value="nasal_discharge_purulent"><label for="pe_nasal_discharge_purulent">Purulent Nasal Discharge</label>
-                         <input type="checkbox" id="pe_sinus_tenderness" name="pe" value="sinus_tenderness"><label for="pe_sinus_tenderness">Sinus Tenderness to Palpation</label>
-                         <input type="checkbox" id="pe_nystagmus" name="pe" value="nystagmus"><label for="pe_nystagmus">Nystagmus</label>
-                         <input type="checkbox" id="pe_positive_dix_hallpike" name="pe" value="positive_dix_hallpike"><label for="pe_positive_dix_hallpike">Positive Dix-Hallpike</label>
-                         <input type="checkbox" id="pe_temporal_artery_tenderness" name="pe" value="temporal_artery_tenderness"><label for="pe_temporal_artery_tenderness">Temporal Artery Tenderness</label>
-                         <input type="checkbox" id="pe_tragal_tenderness" name="pe" value="tragal_tenderness"><label for="pe_tragal_tenderness">Tragal Tenderness</label>
-                         <input type="checkbox" id="pe_external_canal_erythema_edema" name="pe" value="external_canal_erythema_edema"><label for="pe_external_canal_erythema_edema">External Ear Canal Swelling/Redness</label>
-                         <input type="checkbox" id="pe_allergic_shiners" name="pe" value="allergic_shiners"><label for="pe_allergic_shiners">Allergic Shiners</label>
-                         <input type="checkbox" id="pe_nasal_turbinate_pallor" name="pe" value="nasal_turbinate_pallor"><label for="pe_nasal_turbinate_pallor">Pale/Boggy Nasal Turbinates</label>
-                         <input type="checkbox" id="pe_stridor" name="pe" value="stridor"><label for="pe_stridor">Stridor</label>
-                         <input type="checkbox" id="pe_uvular_deviation" name="pe" value="uvular_deviation"><label for="pe_uvular_deviation">Uvular Deviation</label>
-                         <input type="checkbox" id="pe_trismus" name="pe" value="trismus"><label for="pe_trismus">Trismus (Lockjaw)</label>
-                         <input type="checkbox" id="pe_corneal_edema" name="pe" value="corneal_edema"><label for="pe_corneal_edema">Corneal Edema/Clouding</label>
-                         <input type="checkbox" id="pe_mid_dilated_pupil" name="pe" value="mid_dilated_pupil"><label for="pe_mid_dilated_pupil">Mid-Dilated Pupil (Fixed)</label>
-                         <input type="checkbox" id="pe_visual_field_defect" name="pe" value="visual_field_defect"><label for="pe_visual_field_defect">Visual Field Defect</label>
-                         <input type="checkbox" id="pe_goiter_tenderness" name="pe" value="goiter_tenderness"><label for="pe_goiter_tenderness">Goiter / Thyroid Tenderness</label>
-                         <input type="checkbox" id="pe_oral_ulcers" name="pe" value="oral_ulcers"><label for="pe_oral_ulcers">Oral Ulcers</label>
-                         <input type="checkbox" id="pe_dry_mucous_membranes" name="pe" value="dry_mucous_membranes"><label for="pe_dry_mucous_membranes">Dry Mucous Membranes</label>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_pupils_unequal" name="pe" value="pupils_unequal"><label for="pe_pupils_unequal">Unequal Pupils</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_tm_bulging" name="pe" value="tm_bulging"><label for="pe_tm_bulging">TM Bulging</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_pharyngeal_erythema" name="pe" value="pharyngeal_erythema"><label for="pe_pharyngeal_erythema">Pharyngeal Erythema</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_conjunctival_injection" name="pe" value="conjunctival_injection"><label for="pe_conjunctival_injection">Conjunctival Injection</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_eye_discharge_type" name="pe" value="eye_discharge_type"><label for="pe_eye_discharge_type">Eye Discharge (Purulent/Watery)</label></span> <!-- Consider making this radio/select -->
+                         <span class="checkbox-item"><input type="checkbox" id="pe_eyelid_swelling_localized" name="pe" value="eyelid_swelling_localized"><label for="pe_eyelid_swelling_localized">Localized Eyelid Swelling</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_eyelid_erythema" name="pe" value="eyelid_erythema"><label for="pe_eyelid_erythema">Eyelid Erythema</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_nasal_discharge_purulent" name="pe" value="nasal_discharge_purulent"><label for="pe_nasal_discharge_purulent">Purulent Nasal Discharge</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_sinus_tenderness" name="pe" value="sinus_tenderness"><label for="pe_sinus_tenderness">Sinus Tenderness to Palpation</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_nystagmus" name="pe" value="nystagmus"><label for="pe_nystagmus">Nystagmus</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_positive_dix_hallpike" name="pe" value="positive_dix_hallpike"><label for="pe_positive_dix_hallpike">Positive Dix-Hallpike</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_temporal_artery_tenderness" name="pe" value="temporal_artery_tenderness"><label for="pe_temporal_artery_tenderness">Temporal Artery Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_tragal_tenderness" name="pe" value="tragal_tenderness"><label for="pe_tragal_tenderness">Tragal Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_external_canal_erythema_edema" name="pe" value="external_canal_erythema_edema"><label for="pe_external_canal_erythema_edema">External Ear Canal Swelling/Redness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_allergic_shiners" name="pe" value="allergic_shiners"><label for="pe_allergic_shiners">Allergic Shiners</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_nasal_turbinate_pallor" name="pe" value="nasal_turbinate_pallor"><label for="pe_nasal_turbinate_pallor">Pale/Boggy Nasal Turbinates</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_stridor" name="pe" value="stridor"><label for="pe_stridor">Stridor</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_uvular_deviation" name="pe" value="uvular_deviation"><label for="pe_uvular_deviation">Uvular Deviation</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_trismus" name="pe" value="trismus"><label for="pe_trismus">Trismus (Lockjaw)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_corneal_edema" name="pe" value="corneal_edema"><label for="pe_corneal_edema">Corneal Edema/Clouding</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_mid_dilated_pupil" name="pe" value="mid_dilated_pupil"><label for="pe_mid_dilated_pupil">Mid-Dilated Pupil (Fixed)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_visual_field_defect" name="pe" value="visual_field_defect"><label for="pe_visual_field_defect">Visual Field Defect</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_goiter_tenderness" name="pe" value="goiter_tenderness"><label for="pe_goiter_tenderness">Goiter / Thyroid Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_oral_ulcers" name="pe" value="oral_ulcers"><label for="pe_oral_ulcers">Oral Ulcers</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_dry_mucous_membranes" name="pe" value="dry_mucous_membranes"><label for="pe_dry_mucous_membranes">Dry Mucous Membranes</label></span>
                     </div>
                      <h4>Cardiovascular</h4>
                     <div class="checkbox-group">
-                         <input type="checkbox" id="pe_murmur" name="pe" value="murmur"><label for="pe_murmur">Murmur</label>
-                         <input type="checkbox" id="pe_jvd" name="pe" value="jvd"><label for="pe_jvd">JVD</label>
-                         <input type="checkbox" id="pe_pedal_edema" name="pe" value="pedal_edema"><label for="pe_pedal_edema">Pedal Edema</label>
-                         <input type="checkbox" id="pe_leg_swelling_unilateral" name="pe" value="leg_swelling_unilateral"><label for="pe_leg_swelling_unilateral">Unilateral Leg Swelling</label>
-                         <input type="checkbox" id="pe_leg_tenderness_calf" name="pe" value="leg_tenderness_calf"><label for="pe_leg_tenderness_calf">Calf Tenderness</label>
-                         <input type="checkbox" id="pe_unequal_pulses_bp" name="pe" value="unequal_pulses_bp"><label for="pe_unequal_pulses_bp">Unequal Pulses / BP</label>
-                         <input type="checkbox" id="pe_decreased_pedal_pulses" name="pe" value="decreased_pedal_pulses"><label for="pe_decreased_pedal_pulses">Decreased Pedal Pulses</label>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_murmur" name="pe" value="murmur"><label for="pe_murmur">Murmur</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_jvd" name="pe" value="jvd"><label for="pe_jvd">JVD</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_pedal_edema" name="pe" value="pedal_edema"><label for="pe_pedal_edema">Pedal Edema</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_leg_swelling_unilateral" name="pe" value="leg_swelling_unilateral"><label for="pe_leg_swelling_unilateral">Unilateral Leg Swelling</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_leg_tenderness_calf" name="pe" value="leg_tenderness_calf"><label for="pe_leg_tenderness_calf">Calf Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_unequal_pulses_bp" name="pe" value="unequal_pulses_bp"><label for="pe_unequal_pulses_bp">Unequal Pulses / BP</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_decreased_pedal_pulses" name="pe" value="decreased_pedal_pulses"><label for="pe_decreased_pedal_pulses">Decreased Pedal Pulses</label></span>
                     </div>
                     <h4>Respiratory</h4>
                     <div class="checkbox-group">
-                         <input type="checkbox" id="pe_rales" name="pe" value="rales"><label for="pe_rales">Rales/Crackles</label>
-                         <input type="checkbox" id="pe_rhonchi" name="pe" value="rhonchi"><label for="pe_rhonchi">Rhonchi</label>
-                         <input type="checkbox" id="pe_wheezes" name="pe" value="wheezes"><label for="pe_wheezes">Wheezes</label>
-                         <input type="checkbox" id="pe_decreased_breath_sounds" name="pe" value="decreased_breath_sounds"><label for="pe_decreased_breath_sounds">Decreased Breath Sounds</label>
-                         <input type="checkbox" id="pe_dullness_to_percussion" name="pe" value="dullness_to_percussion"><label for="pe_dullness_to_percussion">Dullness to Percussion (Lung)</label>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_rales" name="pe" value="rales"><label for="pe_rales">Rales/Crackles</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_rhonchi" name="pe" value="rhonchi"><label for="pe_rhonchi">Rhonchi</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_wheezes" name="pe" value="wheezes"><label for="pe_wheezes">Wheezes</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_decreased_breath_sounds" name="pe" value="decreased_breath_sounds"><label for="pe_decreased_breath_sounds">Decreased Breath Sounds</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_dullness_to_percussion" name="pe" value="dullness_to_percussion"><label for="pe_dullness_to_percussion">Dullness to Percussion (Lung)</label></span>
                     </div>
                      <h4>Abdomen</h4>
                     <div class="checkbox-group">
-                         <input type="checkbox" id="pe_tenderness" name="pe" value="tenderness"><label for="pe_tenderness">Tenderness to Palpation</label>
-                         <input type="checkbox" id="pe_rebound" name="pe" value="rebound"><label for="pe_rebound">Rebound Tenderness</label>
-                         <input type="checkbox" id="pe_guarding" name="pe" value="guarding"><label for="pe_guarding">Guarding</label>
-                          <input type="checkbox" id="pe_distension" name="pe" value="distension"><label for="pe_distension">Distension</label>
-                          <input type="checkbox" id="pe_pulsatile_abdominal_mass" name="pe" value="pulsatile_abdominal_mass"><label for="pe_pulsatile_abdominal_mass">Pulsatile Abdominal Mass</label>
-                          <input type="checkbox" id="pe_jaundice" name="pe" value="jaundice"><label for="pe_jaundice">Jaundice / Scleral Icterus</label>
-                          <input type="checkbox" id="pe_ascites" name="pe" value="ascites"><label for="pe_ascites">Ascites / Fluid Wave</label>
-                          <input type="checkbox" id="pe_splenomegaly" name="pe" value="splenomegaly"><label for="pe_splenomegaly">Splenomegaly</label>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_tenderness" name="pe" value="tenderness"><label for="pe_tenderness">Tenderness to Palpation</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_rebound" name="pe" value="rebound"><label for="pe_rebound">Rebound Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_guarding" name="pe" value="guarding"><label for="pe_guarding">Guarding</label></span>
+                          <span class="checkbox-item"><input type="checkbox" id="pe_distension" name="pe" value="distension"><label for="pe_distension">Distension</label></span>
+                          <span class="checkbox-item"><input type="checkbox" id="pe_pulsatile_abdominal_mass" name="pe" value="pulsatile_abdominal_mass"><label for="pe_pulsatile_abdominal_mass">Pulsatile Abdominal Mass</label></span>
+                          <span class="checkbox-item"><input type="checkbox" id="pe_jaundice" name="pe" value="jaundice"><label for="pe_jaundice">Jaundice / Scleral Icterus</label></span>
+                          <span class="checkbox-item"><input type="checkbox" id="pe_ascites" name="pe" value="ascites"><label for="pe_ascites">Ascites / Fluid Wave</label></span>
+                          <span class="checkbox-item"><input type="checkbox" id="pe_splenomegaly" name="pe" value="splenomegaly"><label for="pe_splenomegaly">Splenomegaly</label></span>
                     </div>
                      <h4>Genitourinary</h4>
                      <div class="checkbox-group">
-                         <input type="checkbox" id="pe_cva_tenderness" name="pe" value="tenderness"><label for="pe_cva_tenderness">CVA Tenderness</label> <!-- Made specific -->
-                         <input type="checkbox" id="pe_suprapubic_tenderness" name="pe" value="tenderness"><label for="pe_suprapubic_tenderness">Suprapubic Tenderness</label> <!-- Made specific -->
-                         <input type="checkbox" id="pe_testicular_tenderness" name="pe" value="testicular_tenderness"><label for="pe_testicular_tenderness">Testicular Tenderness</label>
-                         <input type="checkbox" id="pe_testicular_swelling" name="pe" value="testicular_swelling"><label for="pe_testicular_swelling">Testicular Swelling</label>
-                         <input type="checkbox" id="pe_absent_cremasteric_reflex" name="pe" value="absent_cremasteric_reflex"><label for="pe_absent_cremasteric_reflex">Absent Cremasteric Reflex</label>
-                         <input type="checkbox" id="pe_cervical_motion_tenderness" name="pe" value="cervical_motion_tenderness"><label for="pe_cervical_motion_tenderness">Cervical Motion Tenderness (CMT)</label>
-                         <input type="checkbox" id="pe_adnexal_tenderness" name="pe" value="adnexal_tenderness"><label for="pe_adnexal_tenderness">Adnexal Tenderness</label>
-                         <input type="checkbox" id="pe_prostate_tenderness" name="pe" value="prostate_tenderness"><label for="pe_prostate_tenderness">Prostate Tenderness (DRE)</label>
-                         <input type="checkbox" id="pe_enlarged_prostate" name="pe" value="enlarged_prostate"><label for="pe_enlarged_prostate">Enlarged Prostate (DRE)</label>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_cva_tenderness" name="pe" value="tenderness"><label for="pe_cva_tenderness">CVA Tenderness</label></span> <!-- Made specific -->
+                         <span class="checkbox-item"><input type="checkbox" id="pe_suprapubic_tenderness" name="pe" value="tenderness"><label for="pe_suprapubic_tenderness">Suprapubic Tenderness</label></span> <!-- Made specific -->
+                         <span class="checkbox-item"><input type="checkbox" id="pe_testicular_tenderness" name="pe" value="testicular_tenderness"><label for="pe_testicular_tenderness">Testicular Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_testicular_swelling" name="pe" value="testicular_swelling"><label for="pe_testicular_swelling">Testicular Swelling</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_absent_cremasteric_reflex" name="pe" value="absent_cremasteric_reflex"><label for="pe_absent_cremasteric_reflex">Absent Cremasteric Reflex</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_cervical_motion_tenderness" name="pe" value="cervical_motion_tenderness"><label for="pe_cervical_motion_tenderness">Cervical Motion Tenderness (CMT)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_adnexal_tenderness" name="pe" value="adnexal_tenderness"><label for="pe_adnexal_tenderness">Adnexal Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_prostate_tenderness" name="pe" value="prostate_tenderness"><label for="pe_prostate_tenderness">Prostate Tenderness (DRE)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_enlarged_prostate" name="pe" value="enlarged_prostate"><label for="pe_enlarged_prostate">Enlarged Prostate (DRE)</label></span>
                      </div>
                      <h4>Musculoskeletal</h4>
                      <div class="checkbox-group">
-                         <input type="checkbox" id="pe_tenderness_lumbar" name="pe" value="tenderness"><label for="pe_tenderness_lumbar">Lumbar Tenderness</label> <!-- Made specific -->
-                         <input type="checkbox" id="pe_positive_slr" name="pe" value="positive_slr"><label for="pe_positive_slr">Positive Straight Leg Raise</label>
-                         <input type="checkbox" id="pe_knee_crepitus" name="pe" value="knee_crepitus"><label for="pe_knee_crepitus">Knee Crepitus</label>
-                         <input type="checkbox" id="pe_knee_tenderness_jointline" name="pe" value="knee_tenderness_jointline"><label for="pe_knee_tenderness_jointline">Knee Joint Line Tenderness</label>
-                         <input type="checkbox" id="pe_knee_effusion" name="pe" value="knee_effusion"><label for="pe_knee_effusion">Knee Effusion (Swelling)</label>
-                         <input type="checkbox" id="pe_positive_mcmurray" name="pe" value="positive_mcmurray"><label for="pe_positive_mcmurray">Positive McMurray Test</label>
-                         <input type="checkbox" id="pe_positive_lachman" name="pe" value="positive_lachman"><label for="pe_positive_lachman">Positive Lachman Test</label>
-                         <input type="checkbox" id="pe_positive_anterior_drawer" name="pe" value="positive_anterior_drawer"><label for="pe_positive_anterior_drawer">Positive Anterior Drawer Test</label>
-                         <input type="checkbox" id="pe_joint_erythema" name="pe" value="joint_erythema"><label for="pe_joint_erythema">Joint Erythema</label>
-                         <input type="checkbox" id="pe_joint_warmth" name="pe" value="joint_warmth"><label for="pe_joint_warmth">Joint Warmth</label>
-                         <input type="checkbox" id="pe_joint_tenderness_severe" name="pe" value="joint_tenderness_severe"><label for="pe_joint_tenderness_severe">Severe Joint Tenderness</label>
-                         <input type="checkbox" id="pe_pain_with_rom" name="pe" value="pain_with_rom"><label for="pe_pain_with_rom">Pain with Passive ROM (Joint)</label>
-                         <input type="checkbox" id="pe_costochondral_tenderness" name="pe" value="costochondral_tenderness"><label for="pe_costochondral_tenderness">Costochondral Tenderness</label>
-                         <input type="checkbox" id="pe_painful_arc" name="pe" value="painful_arc"><label for="pe_painful_arc">Painful Arc (Shoulder)</label>
-                         <input type="checkbox" id="pe_positive_impingement_signs" name="pe" value="positive_impingement_signs"><label for="pe_positive_impingement_signs">Positive Impingement Signs (Shoulder)</label>
-                         <input type="checkbox" id="pe_rotator_cuff_weakness" name="pe" value="rotator_cuff_weakness"><label for="pe_rotator_cuff_weakness">Rotator Cuff Weakness</label>
-                         <input type="checkbox" id="pe_joint_tenderness_swelling" name="pe" value="joint_tenderness_swelling"><label for="pe_joint_tenderness_swelling">Joint Tenderness/Swelling (Symmetric, Small Joints)</label>
-                         <input type="checkbox" id="pe_point_tenderness_over_bursa" name="pe" value="point_tenderness_over_bursa"><label for="pe_point_tenderness_over_bursa">Point Tenderness over Bursa</label>
-                         <input type="checkbox" id="pe_tenderness_over_tendon" name="pe" value="tenderness_over_tendon"><label for="pe_tenderness_over_tendon">Tenderness over Tendon</label>
-                         <input type="checkbox" id="pe_proximal_muscle_weakness" name="pe" value="proximal_muscle_weakness"><label for="pe_proximal_muscle_weakness">Proximal Muscle Weakness</label>
-                         <input type="checkbox" id="pe_multiple_tender_points" name="pe" value="multiple_tender_points"><label for="pe_multiple_tender_points">Multiple Tender Points (Fibro)</label>
-                         <input type="checkbox" id="pe_arthritis" name="pe" value="arthritis"><label for="pe_arthritis">Arthritis (General)</label>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_tenderness_lumbar" name="pe" value="tenderness"><label for="pe_tenderness_lumbar">Lumbar Tenderness</label></span> <!-- Made specific -->
+                         <span class="checkbox-item"><input type="checkbox" id="pe_positive_slr" name="pe" value="positive_slr"><label for="pe_positive_slr">Positive Straight Leg Raise</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_knee_crepitus" name="pe" value="knee_crepitus"><label for="pe_knee_crepitus">Knee Crepitus</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_knee_tenderness_jointline" name="pe" value="knee_tenderness_jointline"><label for="pe_knee_tenderness_jointline">Knee Joint Line Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_knee_effusion" name="pe" value="knee_effusion"><label for="pe_knee_effusion">Knee Effusion (Swelling)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_positive_mcmurray" name="pe" value="positive_mcmurray"><label for="pe_positive_mcmurray">Positive McMurray Test</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_positive_lachman" name="pe" value="positive_lachman"><label for="pe_positive_lachman">Positive Lachman Test</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_positive_anterior_drawer" name="pe" value="positive_anterior_drawer"><label for="pe_positive_anterior_drawer">Positive Anterior Drawer Test</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_joint_erythema" name="pe" value="joint_erythema"><label for="pe_joint_erythema">Joint Erythema</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_joint_warmth" name="pe" value="joint_warmth"><label for="pe_joint_warmth">Joint Warmth</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_joint_tenderness_severe" name="pe" value="joint_tenderness_severe"><label for="pe_joint_tenderness_severe">Severe Joint Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_pain_with_rom" name="pe" value="pain_with_rom"><label for="pe_pain_with_rom">Pain with Passive ROM (Joint)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_costochondral_tenderness" name="pe" value="costochondral_tenderness"><label for="pe_costochondral_tenderness">Costochondral Tenderness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_painful_arc" name="pe" value="painful_arc"><label for="pe_painful_arc">Painful Arc (Shoulder)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_positive_impingement_signs" name="pe" value="positive_impingement_signs"><label for="pe_positive_impingement_signs">Positive Impingement Signs (Shoulder)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_rotator_cuff_weakness" name="pe" value="rotator_cuff_weakness"><label for="pe_rotator_cuff_weakness">Rotator Cuff Weakness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_joint_tenderness_swelling" name="pe" value="joint_tenderness_swelling"><label for="pe_joint_tenderness_swelling">Joint Tenderness/Swelling (Symmetric, Small Joints)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_point_tenderness_over_bursa" name="pe" value="point_tenderness_over_bursa"><label for="pe_point_tenderness_over_bursa">Point Tenderness over Bursa</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_tenderness_over_tendon" name="pe" value="tenderness_over_tendon"><label for="pe_tenderness_over_tendon">Tenderness over Tendon</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_proximal_muscle_weakness" name="pe" value="proximal_muscle_weakness"><label for="pe_proximal_muscle_weakness">Proximal Muscle Weakness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_multiple_tender_points" name="pe" value="multiple_tender_points"><label for="pe_multiple_tender_points">Multiple Tender Points (Fibro)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_arthritis" name="pe" value="arthritis"><label for="pe_arthritis">Arthritis (General)</label></span>
                     </div>
                      <h4>Skin</h4>
                     <div class="checkbox-group">
-                         <input type="checkbox" id="pe_skin_erythema" name="pe" value="skin_erythema"><label for="pe_skin_erythema">Skin Erythema (Redness)</label>
-                         <input type="checkbox" id="pe_skin_warmth" name="pe" value="skin_warmth"><label for="pe_skin_warmth">Skin Warmth</label>
-                         <input type="checkbox" id="pe_skin_swelling" name="pe" value="skin_swelling"><label for="pe_skin_swelling">Skin Swelling</label>
-                         <input type="checkbox" id="pe_tenderness_skin" name="pe" value="tenderness"><label for="pe_tenderness_skin">Skin Tenderness</label> <!-- Made specific -->
-                         <input type="checkbox" id="pe_wheals" name="pe" value="wheals"><label for="pe_wheals">Wheals (Hives)</label>
-                         <input type="checkbox" id="pe_petechiae" name="pe" value="petechiae"><label for="pe_petechiae">Petechiae</label>
-                         <input type="checkbox" id="pe_splinter_hemorrhages" name="pe" value="splinter_hemorrhages"><label for="pe_splinter_hemorrhages">Splinter Hemorrhages</label>
-                         <input type="checkbox" id="pe_spider_angiomata" name="pe" value="spider_angiomata"><label for="pe_spider_angiomata">Spider Angiomata</label>
-                         <input type="checkbox" id="pe_palmar_erythema" name="pe" value="palmar_erythema"><label for="pe_palmar_erythema">Palmar Erythema</label>
-                         <input type="checkbox" id="pe_hyperpigmentation" name="pe" value="hyperpigmentation"><label for="pe_hyperpigmentation">Hyperpigmentation</label>
-                         <input type="checkbox" id="pe_malar_rash" name="pe" value="malar_rash"><label for="pe_malar_rash">Malar Rash (Butterfly)</label>
-                         <input type="checkbox" id="pe_angioedema" name="pe" value="angioedema"><label for="pe_angioedema">Angioedema</label>
-                         <input type="checkbox" id="pe_lymphadenopathy" name="pe" value="lymphadenopathy"><label for="pe_lymphadenopathy">Lymphadenopathy</label>
-                         <input type="checkbox" id="pe_vesicles_bullae" name="pe" value="vesicles_bullae"><label for="pe_vesicles_bullae">Vesicles / Bullae</label>
-                         <input type="checkbox" id="pe_plaques_silvery_scale" name="pe" value="plaques_silvery_scale"><label for="pe_plaques_silvery_scale">Plaques with Silvery Scale</label>
-                         <input type="checkbox" id="pe_dry_skin_lichenification" name="pe" value="dry_skin_lichenification"><label for="pe_dry_skin_lichenification">Dry Skin / Lichenification</label>
-                         <input type="checkbox" id="pe_dermatomal_vesicular_rash" name="pe" value="dermatomal_vesicular_rash"><label for="pe_dermatomal_vesicular_rash">Dermatomal Vesicular Rash</label>
-                         <input type="checkbox" id="pe_annular_lesion_scaling" name="pe" value="annular_lesion_scaling"><label for="pe_annular_lesion_scaling">Annular Lesion with Scaling</label>
-                         <input type="checkbox" id="pe_fluctuance" name="pe" value="fluctuance"><label for="pe_fluctuance">Fluctuance</label>
-                         <input type="checkbox" id="pe_induration" name="pe" value="induration"><label for="pe_induration">Induration</label>
-                         <input type="checkbox" id="pe_poor_skin_turgor" name="pe" value="poor_skin_turgor"><label for="pe_poor_skin_turgor">Poor Skin Turgor</label>
-                         <input type="checkbox" id="pe_burrows" name="pe" value="burrows"><label for="pe_burrows">Burrows (Scabies)</label>
-                         <input type="checkbox" id="pe_honey_crusted_lesions" name="pe" value="honey_crusted_lesions"><label for="pe_honey_crusted_lesions">Honey-Crusted Lesions</label>
-                         <input type="checkbox" id="pe_koilonychia" name="pe" value="koilonychia"><label for="pe_koilonychia">Koilonychia (Spoon Nails)</label>
-                         <input type="checkbox" id="pe_skin_lesions_specific" name="pe" value="skin_lesions_specific"><label for="pe_skin_lesions_specific">Specific Skin Lesions (e.g., Erythema Nodosum)</label>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_skin_erythema" name="pe" value="skin_erythema"><label for="pe_skin_erythema">Skin Erythema (Redness)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_skin_warmth" name="pe" value="skin_warmth"><label for="pe_skin_warmth">Skin Warmth</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_skin_swelling" name="pe" value="skin_swelling"><label for="pe_skin_swelling">Skin Swelling</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_tenderness_skin" name="pe" value="tenderness"><label for="pe_tenderness_skin">Skin Tenderness</label></span> <!-- Made specific -->
+                         <span class="checkbox-item"><input type="checkbox" id="pe_wheals" name="pe" value="wheals"><label for="pe_wheals">Wheals (Hives)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_petechiae" name="pe" value="petechiae"><label for="pe_petechiae">Petechiae</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_splinter_hemorrhages" name="pe" value="splinter_hemorrhages"><label for="pe_splinter_hemorrhages">Splinter Hemorrhages</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_spider_angiomata" name="pe" value="spider_angiomata"><label for="pe_spider_angiomata">Spider Angiomata</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_palmar_erythema" name="pe" value="palmar_erythema"><label for="pe_palmar_erythema">Palmar Erythema</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_hyperpigmentation" name="pe" value="hyperpigmentation"><label for="pe_hyperpigmentation">Hyperpigmentation</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_malar_rash" name="pe" value="malar_rash"><label for="pe_malar_rash">Malar Rash (Butterfly)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_angioedema" name="pe" value="angioedema"><label for="pe_angioedema">Angioedema</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_lymphadenopathy" name="pe" value="lymphadenopathy"><label for="pe_lymphadenopathy">Lymphadenopathy</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_vesicles_bullae" name="pe" value="vesicles_bullae"><label for="pe_vesicles_bullae">Vesicles / Bullae</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_plaques_silvery_scale" name="pe" value="plaques_silvery_scale"><label for="pe_plaques_silvery_scale">Plaques with Silvery Scale</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_dry_skin_lichenification" name="pe" value="dry_skin_lichenification"><label for="pe_dry_skin_lichenification">Dry Skin / Lichenification</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_dermatomal_vesicular_rash" name="pe" value="dermatomal_vesicular_rash"><label for="pe_dermatomal_vesicular_rash">Dermatomal Vesicular Rash</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_annular_lesion_scaling" name="pe" value="annular_lesion_scaling"><label for="pe_annular_lesion_scaling">Annular Lesion with Scaling</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_fluctuance" name="pe" value="fluctuance"><label for="pe_fluctuance">Fluctuance</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_induration" name="pe" value="induration"><label for="pe_induration">Induration</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_poor_skin_turgor" name="pe" value="poor_skin_turgor"><label for="pe_poor_skin_turgor">Poor Skin Turgor</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_burrows" name="pe" value="burrows"><label for="pe_burrows">Burrows (Scabies)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_honey_crusted_lesions" name="pe" value="honey_crusted_lesions"><label for="pe_honey_crusted_lesions">Honey-Crusted Lesions</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_koilonychia" name="pe" value="koilonychia"><label for="pe_koilonychia">Koilonychia (Spoon Nails)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_skin_lesions_specific" name="pe" value="skin_lesions_specific"><label for="pe_skin_lesions_specific">Specific Skin Lesions (e.g., Erythema Nodosum)</label></span>
                     </div>
                      <h4>Neuro</h4>
                      <div class="checkbox-group">
-                         <input type="checkbox" id="pe_oriented_aao" name="pe" value="oriented_aao"><label for="pe_oriented_aao">Oriented (A&Ox3/4)</label>
-                         <input type="checkbox" id="pe_altered_mental_status" name="pe" value="altered_mental_status"><label for="pe_altered_mental_status">Altered Mental Status / Confused</label>
-                         <input type="checkbox" id="pe_focal_neuro_deficit" name="pe" value="focal_neuro_deficit"><label for="pe_focal_neuro_deficit">Focal Neurologic Deficit (Motor/Sensory)</label>
-                         <input type="checkbox" id="pe_abnormal_gait" name="pe" value="abnormal_gait"><label for="pe_abnormal_gait">Abnormal Gait</label>
-                         <input type="checkbox" id="pe_tremor_pe" name="pe" value="tremor"><label for="pe_tremor_pe">Tremor on Exam</label> <!-- Renamed from ROS tremor -->
-                         <input type="checkbox" id="pe_post_ictal_state" name="pe" value="post_ictal_state"><label for="pe_post_ictal_state">Post-ictal State</label>
-                         <input type="checkbox" id="pe_nuchal_rigidity" name="pe" value="nuchal_rigidity"><label for="pe_nuchal_rigidity">Nuchal Rigidity</label>
-                         <input type="checkbox" id="pe_kernigs_brudzinskis" name="pe" value="kernigs_brudzinskis"><label for="pe_kernigs_brudzinskis">Kernig's / Brudzinski's Sign</label>
-                         <input type="checkbox" id="pe_decreased_sensation_stocking_glove" name="pe" value="decreased_sensation_stocking_glove"><label for="pe_decreased_sensation_stocking_glove">Decreased Sensation (Stocking-Glove)</label>
-                         <input type="checkbox" id="pe_areflexia" name="pe" value="areflexia"><label for="pe_areflexia">Areflexia / Hyporeflexia</label>
-                         <input type="checkbox" id="pe_ptosis_pe" name="pe" value="ptosis"><label for="pe_ptosis_pe">Ptosis on Exam</label>
-                         <input type="checkbox" id="pe_diplopia_pe" name="pe" value="diplopia"><label for="pe_diplopia_pe">Diplopia on Exam</label>
-                         <input type="checkbox" id="pe_fatigable_weakness" name="pe" value="fatigable_weakness"><label for="pe_fatigable_weakness">Fatigable Weakness</label>
-                         <input type="checkbox" id="pe_rigidity" name="pe" value="rigidity"><label for="pe_rigidity">Rigidity (Cogwheel/Lead Pipe)</label>
-                         <input type="checkbox" id="pe_bradykinesia" name="pe" value="bradykinesia"><label for="pe_bradykinesia">Bradykinesia</label>
-                         <input type="checkbox" id="pe_pupils_dilated_constricted" name="pe" value="pupils_dilated_constricted"><label for="pe_pupils_dilated_constricted">Pupils Dilated or Constricted</label>
-                         <input type="checkbox" id="pe_positive_tinel_phalen" name="pe" value="positive_tinel_phalen"><label for="pe_positive_tinel_phalen">Positive Tinel's / Phalen's</label>
-                         <input type="checkbox" id="pe_facial_droop_unilateral_upper_lower" name="pe" value="facial_droop_unilateral_upper_lower"><label for="pe_facial_droop_unilateral_upper_lower">Unilateral Facial Droop (Upper & Lower)</label>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_oriented_aao" name="pe" value="oriented_aao"><label for="pe_oriented_aao">Oriented (A&Ox3/4)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_altered_mental_status" name="pe" value="altered_mental_status"><label for="pe_altered_mental_status">Altered Mental Status / Confused</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_focal_neuro_deficit" name="pe" value="focal_neuro_deficit"><label for="pe_focal_neuro_deficit">Focal Neurologic Deficit (Motor/Sensory)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_abnormal_gait" name="pe" value="abnormal_gait"><label for="pe_abnormal_gait">Abnormal Gait</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_tremor_pe" name="pe" value="tremor"><label for="pe_tremor_pe">Tremor on Exam</label></span> <!-- Renamed from ROS tremor -->
+                         <span class="checkbox-item"><input type="checkbox" id="pe_post_ictal_state" name="pe" value="post_ictal_state"><label for="pe_post_ictal_state">Post-ictal State</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_nuchal_rigidity" name="pe" value="nuchal_rigidity"><label for="pe_nuchal_rigidity">Nuchal Rigidity</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_kernigs_brudzinskis" name="pe" value="kernigs_brudzinskis"><label for="pe_kernigs_brudzinskis">Kernig's / Brudzinski's Sign</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_decreased_sensation_stocking_glove" name="pe" value="decreased_sensation_stocking_glove"><label for="pe_decreased_sensation_stocking_glove">Decreased Sensation (Stocking-Glove)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_areflexia" name="pe" value="areflexia"><label for="pe_areflexia">Areflexia / Hyporeflexia</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_ptosis_pe" name="pe" value="ptosis"><label for="pe_ptosis_pe">Ptosis on Exam</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_diplopia_pe" name="pe" value="diplopia"><label for="pe_diplopia_pe">Diplopia on Exam</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_fatigable_weakness" name="pe" value="fatigable_weakness"><label for="pe_fatigable_weakness">Fatigable Weakness</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_rigidity" name="pe" value="rigidity"><label for="pe_rigidity">Rigidity (Cogwheel/Lead Pipe)</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_bradykinesia" name="pe" value="bradykinesia"><label for="pe_bradykinesia">Bradykinesia</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_pupils_dilated_constricted" name="pe" value="pupils_dilated_constricted"><label for="pe_pupils_dilated_constricted">Pupils Dilated or Constricted</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_positive_tinel_phalen" name="pe" value="positive_tinel_phalen"><label for="pe_positive_tinel_phalen">Positive Tinel's / Phalen's</label></span>
+                         <span class="checkbox-item"><input type="checkbox" id="pe_facial_droop_unilateral_upper_lower" name="pe" value="facial_droop_unilateral_upper_lower"><label for="pe_facial_droop_unilateral_upper_lower">Unilateral Facial Droop (Upper & Lower)</label></span>
                      </div>
                 </div> <!-- End Physical Exam -->
             <!-- Form tag moved up to wrap everything -->
