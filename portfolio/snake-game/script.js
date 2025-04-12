@@ -18,37 +18,49 @@ let score = 0;
 let changingDirection = false; // Prevent rapid 180-degree turns
 let gameRunning = true;
 let gameLoopInterval = null;
-let highScores = []; // Added for leaderboard
-const MAX_HIGH_SCORES = 5; // Added: Max scores to keep
+let highScores = []; // Will be populated from Firestore
+const MAX_HIGH_SCORES = 5; // Max scores to keep
 
-// --- Leaderboard Functions --- Added Section
-const initialHighScores = [
-    { name: "AI Pro", score: 150 },
-    { name: "SnakeMaster", score: 100 },
-    { name: "PixelEater", score: 70 },
-    { name: "GridRunner", score: 40 },
-    { name: "Noob", score: 10 }
-];
+// --- Firebase Initialization --- Added Section
+const firebaseConfig = {
+  apiKey: "AIzaSyD0UXPmEWedaOQrnC4OwThzje9LZMDr_LU",
+  authDomain: "snake-game-leaderboard-733a3.firebaseapp.com",
+  projectId: "snake-game-leaderboard-733a3",
+  storageBucket: "snake-game-leaderboard-733a3.firebasestorage.app", // Corrected key
+  messagingSenderId: "589878348449",
+  appId: "1:589878348449:web:40c4d2dd80d9f33f653ee0",
+  measurementId: "G-V0FBH6PBD5"
+};
 
-function loadHighScores() {
-    const storedScores = localStorage.getItem('snakeHighScores');
-    if (storedScores) {
-        highScores = JSON.parse(storedScores);
-    } else {
-        // Use initial scores if nothing is stored
-        highScores = [...initialHighScores];
-        saveHighScores(); // Save initial scores to localStorage
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore(); // Get Firestore instance
+const highScoresCollection = db.collection('highscores'); // Reference to the collection
+
+// --- Leaderboard Functions (Firestore Version) --- Modified Section
+
+async function loadHighScores() {
+    try {
+        const snapshot = await highScoresCollection
+            .orderBy('score', 'desc')
+            .limit(MAX_HIGH_SCORES)
+            .get();
+
+        highScores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Store doc id too
+        console.log("Loaded scores:", highScores); // Debugging
+    } catch (error) {
+        console.error("Error loading high scores:", error);
+        highScores = []; // Reset on error
     }
-    // Ensure scores are sorted on load
-    highScores.sort((a, b) => b.score - a.score);
 }
 
-function saveHighScores() {
-    localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
-}
+// No separate saveHighScores needed, done within updateLeaderboard
 
 function displayHighScores() {
     highScoresList.innerHTML = ''; // Clear existing list
+    if (highScores.length === 0) {
+        highScoresList.innerHTML = '<li>Loading scores or no scores yet...</li>';
+    }
     highScores.forEach(scoreEntry => {
         const li = document.createElement('li');
         li.textContent = `${scoreEntry.name}: ${scoreEntry.score}`;
@@ -57,26 +69,52 @@ function displayHighScores() {
     leaderboardDiv.style.display = 'block'; // Make sure it's visible
 }
 
-function updateLeaderboard(newScore) {
-    // Check if the score is high enough
-    const lowestScore = highScores.length < MAX_HIGH_SCORES ? 0 : highScores[MAX_HIGH_SCORES - 1].score;
+async function updateLeaderboard(newScore) {
+    try {
+        // Fetch current scores to check qualification and count
+        const snapshot = await highScoresCollection.orderBy('score', 'desc').get();
+        const currentScores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-    if (newScore > lowestScore) {
-        const name = prompt(`New high score! Enter your name (max 10 chars):`);
-        const playerName = name ? name.substring(0, 10) : "Anonymous"; // Limit name length
+        const lowestScore = currentScores.length < MAX_HIGH_SCORES ? 0 : currentScores[currentScores.length - 1].score;
 
-        highScores.push({ name: playerName, score: newScore });
-        highScores.sort((a, b) => b.score - a.score); // Sort descending
-        highScores = highScores.slice(0, MAX_HIGH_SCORES); // Keep only top scores
+        if (newScore > lowestScore) {
+            const name = prompt(`New high score (${newScore})! Enter your name (max 10 chars):`);
+            const playerName = name ? name.substring(0, 10) : "Anonymous";
 
-        saveHighScores();
-        displayHighScores();
+            // Add the new score
+            await highScoresCollection.add({
+                name: playerName,
+                score: newScore,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // Use server time
+            });
+            console.log("New score added to Firestore.");
+
+            // If leaderboard is now too large, remove the actual lowest score from Firestore
+            if (currentScores.length >= MAX_HIGH_SCORES) {
+                 // Refetch ordered scores to be sure we delete the correct one
+                 const updatedSnapshot = await highScoresCollection.orderBy('score', 'asc').limit(1).get();
+                 if (!updatedSnapshot.empty) {
+                    const lowestDocId = updatedSnapshot.docs[0].id;
+                    await highScoresCollection.doc(lowestDocId).delete();
+                    console.log("Removed lowest score from Firestore.");
+                 }
+            }
+
+            // Reload and display updated scores
+            await loadHighScores();
+            displayHighScores();
+
+        } else {
+             console.log("Score not high enough for leaderboard.");
+        }
+    } catch (error) {
+        console.error("Error updating leaderboard:", error);
     }
 }
 
 
 // --- Game Initialization ---
-function initializeGame() {
+async function initializeGame() { // Make async
     snake = [{ x: 10, y: 10 }];
     dx = 0;
     dy = 0;
@@ -86,7 +124,7 @@ function initializeGame() {
     gameRunning = true;
     gameOverDiv.style.display = 'none';
     placeFood();
-    loadHighScores(); // Load scores on init
+    await loadHighScores(); // Load scores on init (await)
     displayHighScores(); // Display scores on init
     if (gameLoopInterval) clearInterval(gameLoopInterval); // Clear previous interval if restarting
     gameLoopInterval = setInterval(gameLoop, 100); // Start game loop (100ms = 10fps)
@@ -210,15 +248,68 @@ function checkCollision() {
 }
 
 // --- Game Over ---
-function gameOver() {
+async function gameOver() { // Make async
     gameRunning = false;
     gameOverDiv.style.display = 'block';
     clearInterval(gameLoopInterval); // Stop the loop
-    updateLeaderboard(score); // Update leaderboard on game over
+    await updateLeaderboard(score); // Update leaderboard on game over (await)
+}
+
+// --- Touch Controls --- Added Section
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+function handleTouchStart(event) {
+    touchStartX = event.changedTouches[0].screenX;
+    touchStartY = event.changedTouches[0].screenY;
+}
+
+function handleTouchEnd(event) {
+    touchEndX = event.changedTouches[0].screenX;
+    touchEndY = event.changedTouches[0].screenY;
+    handleSwipe();
+}
+
+function handleSwipe() {
+    if (changingDirection || !gameRunning) return; // Don't change direction if already changing or game over
+
+    const dxSwipe = touchEndX - touchStartX;
+    const dySwipe = touchEndY - touchStartY;
+    const absDx = Math.abs(dxSwipe);
+    const absDy = Math.abs(dySwipe);
+
+    // Determine swipe direction (only if swipe is significant enough)
+    if (Math.max(absDx, absDy) > 30) { // Minimum swipe distance threshold
+        // Prevent reversing direction
+        const goingUp = dy === -1;
+        const goingDown = dy === 1;
+        const goingRight = dx === 1;
+        const goingLeft = dx === -1;
+
+        if (absDx > absDy) {
+            // Horizontal swipe
+            if (dxSwipe > 0 && !goingLeft) { dx = 1; dy = 0; changingDirection = true; } // Right
+            else if (dxSwipe < 0 && !goingRight) { dx = -1; dy = 0; changingDirection = true; } // Left
+        } else {
+            // Vertical swipe
+            if (dySwipe > 0 && !goingUp) { dx = 0; dy = 1; changingDirection = true; } // Down
+            else if (dySwipe < 0 && !goingDown) { dx = 0; dy = -1; changingDirection = true; } // Up
+        }
+    }
 }
 
 // --- Event Listeners ---
 document.addEventListener('keydown', changeDirection);
+canvas.addEventListener('touchstart', handleTouchStart, false); // Listen on canvas
+canvas.addEventListener('touchend', handleTouchEnd, false);   // Listen on canvas
+
+// Prevent scrolling when swiping on canvas
+canvas.addEventListener('touchmove', function(event) {
+    event.preventDefault();
+}, { passive: false });
+
 
 // --- Start Game ---
 initializeGame(); // Start the game when script loads
