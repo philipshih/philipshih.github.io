@@ -121,6 +121,28 @@ footer,
   }
 }
 
+// Media query for small screens adjustments
+@media (max-width: 600px) { // Changed breakpoint to 600px
+  .nav {
+    // Hide the "About" list item
+    .nav-link-about {
+      display: none; 
+    }
+    // Make password container and input shrink more aggressively
+    .password-entry-container {
+      min-width: 90px; // Reduced container min-width (adjust if needed)
+      margin: 0 0.25rem; // Slightly reduce horizontal margin
+    }
+    .password-entry-container input[type="password"] {
+      min-width: 30px; // Significantly reduced input min-width (adjust if needed)
+    }
+    // Reduce padding on remaining links
+    li {
+      padding: 0 0.5rem 0 0; // Reduced padding
+    }
+  }
+}
+
 footer {
   font-family: $sans-serif;
   padding: 2rem 0;
