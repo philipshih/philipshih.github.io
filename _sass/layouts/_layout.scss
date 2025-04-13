@@ -19,8 +19,11 @@ footer,
 
   &-container {
     margin: 1rem auto;
-    position: relative;
-    text-align: center;
+    // position: relative; // Removed for Flexbox
+    // text-align: center; // Removed for Flexbox
+    display: flex; // Use Flexbox
+    justify-content: space-between; // Space out items
+    align-items: center; // Vertically align items
   }
 
   &-title {
@@ -36,11 +39,35 @@ footer,
     }
   }
 
+  .password-entry-container {
+    display: flex; // Align input and button horizontally
+    align-items: center; // Vertically align input and button
+
+    input[type="password"] {
+      margin-left: 10px; // Keep the left margin
+      padding: 5px;
+      border-radius: 3px;
+      border: 1px solid #ccc; // Use variable $shadow-color or define a border color? Using #ccc for now.
+    }
+
+    button {
+      padding: 5px 10px;
+      margin-left: 5px;
+      border-radius: 3px;
+      border: 1px solid #ccc; // Use variable $shadow-color or define a border color? Using #ccc for now.
+      cursor: pointer;
+      // Add hover/focus styles if desired
+    }
+  }
+
   ul {
     list-style-type: none;
-    margin: 1rem 0 0;
+    // margin: 1rem 0 0; // Adjusted by flex align-items
+    margin: 0; // Reset margin
     padding: 0;
-    text-align: center;
+    // text-align: center; // Handled by flex justify-content on parent
+    display: flex; // Make list items flex too for alignment if needed
+    align-items: center; // Align items vertically if needed
   }
 
   li {
@@ -69,13 +96,15 @@ footer,
 @media (min-width: 600px) {
   .nav {
     &-container {
-      text-align: left;
+      // text-align: left; // Not needed with flex
     }
 
     ul {
-      bottom: 0;
-      position: absolute;
-      right: 0;
+      // bottom: 0; // Not needed with flex align-items
+      // position: absolute; // Not needed with flex
+      // right: 0; // Not needed with flex
+      // Styles for ul itself might not be needed here anymore
+      // if flex on container handles positioning.
     }
   }
 }

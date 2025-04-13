@@ -29,6 +29,10 @@
         <a href="/">
           <h2 class="nav-title">Philip Shih</h2>
         </a>
+        <div class="password-entry-container">
+          <input type="password" id="secret-password" placeholder="Password">
+          <button onclick="checkPassword()">Enter</button>
+        </div>
         <ul>
           <li><a href="/">About</a></li>
           <li><a href="/portfolio/">Fun Stuff</a></li>
@@ -81,8 +85,42 @@
 
     <footer>
       <span>
-        &copy;  Philip Shih <time datetime="2025-04-13 01:15:20 -0700">2025</time>
+        &copy;  Philip Shih <time datetime="2025-04-13 13:20:22 -0700">2025</time>
       </span>
     </footer>
+
+    <script>
+      function checkPassword() {
+        const passwordInput = document.getElementById('secret-password');
+        const password = passwordInput.value;
+        // IMPORTANT: Replace 'YOUR_SECRET_PASSWORD' with your actual desired password
+        const correctPassword = 'YOUR_SECRET_PASSWORD'; 
+
+        if (password === correctPassword) {
+          alert('Access Granted! \n(You can replace this alert with code to reveal hidden content or redirect)');
+          // Example: Reveal a hidden section
+          // const hiddenSection = document.getElementById('hidden-section');
+          // if (hiddenSection) {
+          //   hiddenSection.style.display = 'block'; 
+          // }
+          
+          // Example: Redirect to a hidden page
+          // window.location.href = '/hidden-page'; 
+
+        } else {
+          alert('Incorrect password. Enter the password I gave you to access this part of the site.');
+        }
+        // Clear the input field after attempt
+        passwordInput.value = ''; 
+      }
+
+      // Optional: Allow pressing Enter key in the password field to submit
+      document.getElementById('secret-password').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault(); // Prevent default form submission if it were in a form
+          checkPassword();
+        }
+      });
+    </script>
   </body>
 </html>
