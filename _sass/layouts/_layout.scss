@@ -22,8 +22,9 @@ footer,
     // position: relative; // Removed for Flexbox
     // text-align: center; // Removed for Flexbox
     display: flex; // Use Flexbox
-    justify-content: space-between; // Space out items
+    justify-content: space-between; // REVERTED: Space out items to center middle one
     align-items: center; // Vertically align items
+    flex-wrap: nowrap; // Prevent items from wrapping to the next line
   }
 
   &-title {
@@ -31,7 +32,9 @@ footer,
     color: $default-color;
     display: inline-block;
     margin: 0;
-    padding-right: .2rem;
+    padding-right: .5rem; // Slightly increase padding for spacing
+    white-space: nowrap; // Prevent title from wrapping
+    flex-shrink: 0; // Prevent title from shrinking
 
     &:hover,
     &:focus {
@@ -42,21 +45,27 @@ footer,
   .password-entry-container {
     display: flex; // Align input and button horizontally
     align-items: center; // Vertically align input and button
+    flex-shrink: 1; // Allow this container to shrink
+    // flex-grow: 1; // REMOVED - Prevent unnecessary growing
+    min-width: 140px; // Set minimum width based on smallest input + button (adjust if needed)
+    margin: 0 0.5rem; // Add some horizontal margin
 
     input[type="password"] {
-      margin-left: 10px; // Keep the left margin
       padding: 5px;
       border-radius: 3px;
-      border: 1px solid #ccc; // Use variable $shadow-color or define a border color? Using #ccc for now.
+      border: 1px solid #ccc;
+      width: 150px; // SET default width (adjust as needed)
+      min-width: 80px; // SET minimum input width (adjust as needed)
+      flex-shrink: 1; // Allow input itself to shrink if needed
     }
 
     button {
       padding: 5px 10px;
       margin-left: 5px;
       border-radius: 3px;
-      border: 1px solid #ccc; // Use variable $shadow-color or define a border color? Using #ccc for now.
+      border: 1px solid #ccc;
       cursor: pointer;
-      // Add hover/focus styles if desired
+      flex-shrink: 0; // Prevent button from shrinking
     }
   }
 
@@ -68,6 +77,8 @@ footer,
     // text-align: center; // Handled by flex justify-content on parent
     display: flex; // Make list items flex too for alignment if needed
     align-items: center; // Align items vertically if needed
+    flex-shrink: 0; // Prevent the links list from shrinking excessively
+    // margin-left: auto; // REMOVED: Not needed with space-between
   }
 
   li {
@@ -75,7 +86,8 @@ footer,
     color: $default-color;
     display: inline-block;
     opacity: .6;
-    padding: 0 2rem 0 0;
+    padding: 0 1rem 0 0; // Reduce padding slightly for smaller screens if needed
+    white-space: nowrap; // Prevent link text wrapping
 
     &:last-child {
       padding-right: 0;
