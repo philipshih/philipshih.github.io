@@ -2,8 +2,8 @@
 layout: post # Or keep the default layout handling if 'post' isn't strictly needed for portfolio items
 title: "Imaging Vision Sandbox"
 date: 2023-11-15
-type: Web App / ML Demo
-info: "Interactively apply image augmentations and classify images using TensorFlow.js (MobileNet) in-browser."
+type: Web App
+info: "Applies augmentations and classify images using TensorFlow (MobileNet) in-browser."
 tech: "JavaScript, HTML Canvas, CSS, TensorFlow.js" # Updated tech
 app_url: "/portfolio/vision-sandbox/index.html" # Keep for reference, but not used for linking anymore
 ---

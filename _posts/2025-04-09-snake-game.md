@@ -3,7 +3,7 @@ layout: post
 title: "Snake"
 date: 2022-08-20
 type: Web Game
-info: "Classic Snake game using HTML Canvas and JavaScript, with Firebase leaderboard."
+info: "Play snake with me by logging your score."
 tech: "JavaScript, HTML Canvas, CSS, Firebase" # Updated tech
 app_url: "/portfolio/snake-game/index.html" # Keep for reference, but not used for linking anymore
 ---
