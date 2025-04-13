@@ -703,8 +703,8 @@ function generateDdx() {
     diagnoses.forEach(dx => dx.score = 0);
 
     // Get selected inputs
-    const age = document.getElementById('age').value;
-    const sex = document.querySelector('input[name="sex"]:checked')?.value; // Changed from gender
+    const ageRange = document.getElementById('age-range').value; // Changed from age input
+    const sex = document.querySelector('input[name="sex"]:checked')?.value;
     const selectedVitals = Array.from(document.querySelectorAll('input[name="vitals"]:checked')).map(el => el.value);
     const selectedRos = Array.from(document.querySelectorAll('input[name="ros"]:checked')).map(el => el.value);
     const selectedPe = Array.from(document.querySelectorAll('input[name="pe"]:checked')).map(el => el.value);

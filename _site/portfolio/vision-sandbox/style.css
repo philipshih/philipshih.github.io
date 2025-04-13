@@ -1,6 +1,5 @@
 body {
     font-family: sans-serif;
-    line-height: 1.6;
     margin: 20px;
     background-color: #f4f4f4;
     color: #333;
@@ -8,125 +7,119 @@ body {
 
 h1, h2 {
     text-align: center;
-    color: #555;
+    color: #333;
 }
 
 .container {
     display: flex;
     flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    gap: 30px;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    max-width: 1200px; /* Limit overall width */
-    margin: 20px auto; /* Center the container */
+    gap: 20px;
+    justify-content: center;
 }
 
 .controls {
     flex: 1; /* Take up available space */
-    min-width: 250px; /* Minimum width before wrapping */
-    padding-right: 20px; /* Spacing between controls and image */
-    border-right: 1px solid #eee; /* Separator line */
-}
-
-.image-display {
-    flex: 2; /* Take up more space */
-    min-width: 300px; /* Minimum width */
-    text-align: center;
+    min-width: 250px; /* Minimum width */
+    max-width: 350px; /* Maximum width */
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .control-group {
     margin-bottom: 15px;
 }
 
-label {
+.control-group label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-input[type="range"] {
+.control-group input[type="range"] {
     width: 100%;
     cursor: pointer;
 }
 
-input[type="file"] {
+.control-group input[type="file"] {
+    display: block;
+    margin-top: 5px;
+}
+
+.details {
+    font-size: 0.9em;
+    color: #555;
+    background-color: #e9ecef;
+    padding: 8px;
+    border-radius: 4px;
     margin-bottom: 15px;
+}
+.details p {
+    margin: 3px 0;
+}
+
+.image-display {
+    flex: 2; /* Take up more space */
+    min-width: 300px; /* Minimum width */
+    text-align: center;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative; /* Needed for crop overlay */
+}
+
+#image-canvas {
+    max-width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    border: 1px solid #ccc;
+    cursor: crosshair; /* Indicate cropping possibility */
+}
+
+.caption {
+    margin-top: 10px;
+    font-style: italic;
+    color: #555;
 }
 
 button {
-    display: block;
-    width: 100%;
-    padding: 10px;
+    padding: 8px 15px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1em;
-    margin-top: 20px;
+    transition: background-color 0.2s;
+    margin-right: 5px; /* Space between buttons */
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
-#image-canvas {
-    max-width: 100%; /* Ensure canvas is responsive */
-    height: auto;
-    border: 1px solid #ccc;
-    background-color: #eee; /* Placeholder background */
-    display: block; /* Remove extra space below canvas */
-    margin: 0 auto; /* Center canvas */
+button#reset-button {
+    background-color: #6c757d;
+}
+button#reset-button:hover {
+    background-color: #5a6268;
 }
 
-#loading-message {
-    font-style: italic;
-    color: #888;
-}
-
-/* Style for value displays next to labels */
-label span {
-    font-weight: normal;
-    font-style: italic;
-    color: #666;
-    margin-left: 5px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-    .controls {
-        border-right: none; /* Remove border on smaller screens */
-        padding-right: 0;
-        margin-bottom: 20px; /* Add space below controls */
-    }
-}
-
-/* Style for classification result */
-.caption {
-    margin-top: 15px;
-    font-size: 0.9em;
-    color: #555;
-    min-height: 2.5em; /* Reserve space */
-    text-align: center;
-}
-
-.caption p {
-    margin: 0;
-    padding: 5px;
-    background-color: #f0f0f0;
-    border-radius: 4px;
-    display: inline-block; /* Fit content */
-}
-
-/* Style for crop selection */
-#selection-rect {
+/* Crop Area Styling */
+.crop-overlay {
     position: absolute;
-    border: 2px dashed #007bff;
-    pointer-events: none; /* Allow clicks to pass through */
+    border: 2px dashed rgba(255, 0, 0, 0.7);
+    pointer-events: none; /* Allow clicks to go through to canvas */
     display: none; /* Hidden initially */
+}
+
+/* Footer Styling */
+.copyright-footer {
+    margin-top: 30px; /* More space above the footer */
+    padding: 10px 0;
+    text-align: center;
+    font-size: 0.8em;
+    color: #6c757d; /* Gray color */
+    width: 100%;
+    border-top: 1px solid #ddd;
 }

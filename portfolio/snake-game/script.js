@@ -155,8 +155,8 @@ function clearCanvas() {
 }
 
 function drawSnakeSegment(segment) {
-    ctx.fillStyle = 'green';
-    ctx.strokeStyle = 'darkgreen';
+    ctx.fillStyle = 'blue'; // Changed snake color
+    ctx.strokeStyle = 'darkblue'; // Changed snake border color
     ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
     ctx.strokeRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
 }
@@ -166,8 +166,8 @@ function drawSnake() {
 }
 
 function drawFood() {
-    ctx.fillStyle = 'red';
-    ctx.strokeStyle = 'darkred';
+    ctx.fillStyle = 'gold'; // Changed food color
+    ctx.strokeStyle = 'darkgoldenrod'; // Changed food border color
     ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
     ctx.strokeRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 }
@@ -199,6 +199,11 @@ function placeFood() {
 }
 
 function changeDirection(event) {
+    // Prevent default browser scroll behavior for arrow keys
+    if ([37, 38, 39, 40].includes(event.keyCode)) {
+        event.preventDefault();
+    }
+
     if (changingDirection) return; // Prevent changing direction multiple times per frame
 
     const LEFT_KEY = 37;
@@ -319,3 +324,46 @@ canvas.addEventListener('touchmove', function(event) {
 
 // --- Start Game ---
 initializeGame(); // Start the game when script loads
+
+// --- Iframe Height Communication ---
+function sendHeightToParent() {
+    let height = 0;
+    const instructions = document.querySelector('.instructions');
+    const leaderboard = document.getElementById('leaderboard');
+    const footer = document.querySelector('.copyright-footer'); // Keep footer reference
+
+    // Find the bottom-most element among instructions, leaderboard, and footer
+    let lastElement = instructions;
+    if (leaderboard && (!lastElement || leaderboard.getBoundingClientRect().bottom > lastElement.getBoundingClientRect().bottom)) {
+        lastElement = leaderboard;
+    }
+     if (footer && (!lastElement || footer.getBoundingClientRect().bottom > lastElement.getBoundingClientRect().bottom)) {
+         lastElement = footer;
+     }
+
+
+    if (lastElement) {
+        const rect = lastElement.getBoundingClientRect();
+        height = rect.bottom + window.scrollY; // Position of bottom edge relative to document top
+    } else {
+        // Fallback if no relevant elements found
+        height = document.body.scrollHeight;
+    }
+
+     // Add a small buffer just in case
+     height += 20; // Increased buffer slightly
+
+    window.parent.postMessage({ frameHeight: height }, '*'); // Send to parent
+    console.log("Sent height (Snake - v2):", height); // Debugging log
+}
+
+// Send height initially and on resize
+window.addEventListener('load', sendHeightToParent);
+window.addEventListener('resize', sendHeightToParent);
+// Also send after game over might change layout (e.g., leaderboard display)
+const originalGameOver = gameOver;
+gameOver = async function() {
+    await originalGameOver.apply(this, arguments);
+    // Add a small delay to allow DOM updates before sending height
+    setTimeout(sendHeightToParent, 100);
+};

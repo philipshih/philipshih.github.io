@@ -2,10 +2,29 @@
 layout: post # Or keep the default layout handling if 'post' isn't strictly needed for portfolio items
 title: "Imaging Vision Sandbox"
 date: 2023-11-15
-type: Web App / ML Demo # Category for the portfolio item
-info: "Interactively apply image augmentations (rotate, scale, etc.) and classify images using TensorFlow.js (MobileNet) directly in your browser." # Short description
-tech: "JavaScript, HTML Canvas, CSS, TensorFlow.js" # Technologies used
-app_url: "/portfolio/vision-sandbox/index.html" # Direct link to the app - UPDATED PATH
+type: Web App / ML Demo
+info: "Interactively apply image augmentations and classify images using TensorFlow.js (MobileNet) in-browser."
+tech: "JavaScript, HTML Canvas, CSS, TensorFlow.js (MobileNet)" # Updated tech
+app_url: "/portfolio/vision-sandbox/index.html" # Keep for reference, but not used for linking anymore
 ---
 
-Related to some of my ongoing research. The Vision Sandbox lets you upload an image, apply various augmentation techniques (rotation, scaling, brightness, contrast, noise, blur, shear), crop the image, and see it classified in real-time using a pre-trained MobileNet model (TensorFlow.js). Image details (resolution, type) are displayed, and a watermark is added. You can explore how augmentations and cropping affect the image and classification.
+Related to some of my ongoing research. This tool I made lets you upload an image, apply various augmentation techniques (rotation, scaling, brightness, contrast, noise, blur, shear), crop the image, and see it classified in real-time using a pre-trained MobileNet model (TensorFlow.js). You can explore how augmentations and cropping affect the image and classification.
+
+<div class="app-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px; overflow: hidden;"> <!-- Removed min-height, resize, overflow:auto; Added overflow:hidden -->
+    <iframe id="vision-iframe" src="/portfolio/vision-sandbox/index.html" width="100%" style="border:none; display: block;" scrolling="no"></iframe> <!-- Removed height, added id, scrolling=no, display:block -->
+</div>
+
+<script>
+    window.addEventListener('message', function(event) {
+        // Basic security check
+        // if (event.origin !== window.location.origin) return;
+
+        if (event.data && typeof event.data.frameHeight === 'number') {
+            const iframe = document.getElementById('vision-iframe');
+            if (iframe) {
+                // Add a small buffer
+                iframe.style.height = (event.data.frameHeight + 20) + 'px';
+            }
+        }
+    });
+</script>

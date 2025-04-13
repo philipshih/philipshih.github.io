@@ -3,6 +3,9 @@ layout: post
 title: "Differential Diagnosis Generator"
 date: 2025-04-09
 categories: medical tools
+type: Medical Tool / Demo # Added type
+info: "Generates potential diagnoses based on selected symptoms and signs." # Added info
+tech: "JavaScript, HTML, CSS" # Added tech
 ---
 
 <div class="ddx-generator-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px;">

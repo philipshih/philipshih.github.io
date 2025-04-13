@@ -455,3 +455,37 @@ initializeCropSelection(); // Set up mouse listeners for cropping
 loadModel();
 // Then load the default image
 loadImage(defaultImageSrc);
+
+// --- Iframe Height Communication ---
+function sendHeightToParent() {
+    // Use scrollHeight for the body to get the full content height
+    const height = document.body.scrollHeight;
+    // Send message to parent window (the Jekyll post page)
+    window.parent.postMessage({ frameHeight: height }, '*');
+}
+
+// Send height initially and whenever the window is resized
+window.addEventListener('load', sendHeightToParent);
+window.addEventListener('resize', sendHeightToParent);
+
+// Also send after potentially height-changing operations
+// Hook into loadImage and applyCrop completion (within their onload/finally blocks)
+// and resetControls
+const originalLoadImageOnload = originalImage.onload;
+originalImage.onload = function() {
+    if (originalLoadImageOnload) originalLoadImageOnload.apply(this, arguments);
+    setTimeout(sendHeightToParent, 100); // Delay after image load/redraw
+};
+
+const originalApplyCrop = applyCrop;
+applyCrop = function() {
+    originalApplyCrop.apply(this, arguments);
+    // The actual redraw happens in the new image's onload, so height is sent there.
+    // If crop fails and reverts, resetControls is called, which also sends height.
+};
+
+const originalResetControls = resetControls;
+resetControls = function() {
+    originalResetControls.apply(this, arguments);
+    setTimeout(sendHeightToParent, 100); // Delay after reset/redraw
+};

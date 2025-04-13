@@ -41,7 +41,27 @@
   <h2 class="post-title">Snake</h2>
   <div class="post-line"></div>
 
-  <p>Wanted to be able to play Snake on my site. Use the arrow keys to control the snake and eat the red food squares to grow longer. Avoid hitting the walls or the snake’s own body. Press Enter to restart if you lose.</p>
+  <p>Play snake with me by logging your score below. Use the arrow keys to control the snake.</p>
+
+<div class="app-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px; overflow: hidden;">
+    <iframe id="snake-iframe" src="/portfolio/snake-game/index.html" width="100%" height="650px" style="border:none; display: block;" scrolling="no"></iframe> <!-- Reverted height to 650px -->
+</div>
+
+<script>
+    window.addEventListener('message', function(event) {
+        // Basic security check
+        // if (event.origin !== window.location.origin) return;
+
+        if (event.data && typeof event.data.frameHeight === 'number') {
+            const iframe = document.getElementById('snake-iframe');
+            if (iframe) {
+                // Add a small buffer
+                iframe.style.height = (event.data.frameHeight + 20) + 'px';
+            }
+        }
+    });
+</script>
+
 
 
 </div>
@@ -59,7 +79,7 @@
 
     <footer>
       <span>
-        &copy;  Philip Shih <time datetime="2025-04-12 16:11:44 -0700">2025</time>
+        &copy;  Philip Shih <time datetime="2025-04-12 17:37:22 -0700">2025</time>
       </span>
     </footer>
   </body>

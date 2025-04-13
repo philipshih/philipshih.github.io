@@ -236,19 +236,104 @@ h1 {
 
 
 .canvas-container {
+    position: relative; /* Needed for absolute positioning of children */
     border: 1px solid #dee2e6;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    flex-grow: 1; /* Allow container to take remaining vertical space */
+    /* flex-grow: 1; /* Remove flex-grow */
     width: 100%; /* Span full width */
-    display: flex; /* Use flex to help canvas fill it */
+    /* display: flex; /* Remove display flex */
     margin-top: 15px; /* Add some space above the canvas */
+    height: 550px; /* Set a fixed height for the canvas area */
+    overflow: auto; /* Add scrollbars IF the canvas content overflows */
+    box-sizing: border-box; /* Include border/padding in height */
 }
+
+/* New styles for the view controls container */
+.view-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(248, 249, 250, 0.85); /* Light background, slightly transparent */
+    padding: 8px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column; /* Stack controls vertically */
+    align-items: flex-end; /* Align items to the right */
+    gap: 8px; /* Space between button and zoom control */
+    z-index: 10; /* Ensure it's above the canvas drawing */
+}
+
+/* Style the reset button within the view controls */
+.view-controls #resetViewBtn {
+    padding: 6px 12px; /* Slightly larger padding */
+    font-size: 0.9em;
+    background-color: #17a2b8; /* Teal color, similar to step controls */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.view-controls #resetViewBtn:hover {
+    background-color: #138496; /* Darker teal on hover */
+}
+
+/* Adjust zoom control styles now that it's inside view-controls */
+.view-controls #zoom-control {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Smaller gap for zoom elements */
+}
+
+.view-controls #zoom-control label {
+    font-weight: normal; /* Less prominent label */
+    font-size: 0.85em;
+    color: #333;
+}
+.view-controls #zoom-control input[type="range"] {
+    width: 80px; /* Slightly smaller slider */
+}
+.view-controls #zoom-control span {
+    font-size: 0.85em;
+    min-width: 30px;
+    text-align: right;
+    color: #333;
+}
+
+/* New style for copyright inside canvas */
+#canvas-copyright {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 0.75em;
+    color: #adb5bd; /* Light gray color */
+    z-index: 10; /* Ensure it's above canvas drawing but below controls */
+    background-color: rgba(255, 255, 255, 0.7); /* Slight white background */
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
 
 #bstCanvas {
     display: block;
-    width: 100%; /* Fill container width */
-    height: 100%; /* Fill container height */
+    /* width/height will be set dynamically by JS or default */
+    /* Remove fixed height from canvas itself */
 }
 
 /* Basic node styling (drawn on canvas, but can add related styles here if needed) */
+
+/* Footer Styling */
+.copyright-footer {
+    margin-top: 20px; /* Space above the footer */
+    padding: 10px 0;
+    text-align: center;
+    font-size: 0.8em;
+    color: #6c757d; /* Gray color */
+    width: 100%;
+    /* Optional: Add a border top */
+    /* border-top: 1px solid #dee2e6; */
+}
+
+/* Removed Fixed Zoom Control Styling as it's now part of .view-controls */

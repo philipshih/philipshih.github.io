@@ -154,8 +154,34 @@
                  width: 100%; /* Explicitly set full width */
                  flex: none; /* Ensure it doesn't flex */
                  box-sizing: border-box;
-                 min-width: 0; /* Reset min-width from base styles if needed */
-            }
+                  min-width: 0; /* Reset min-width from base styles if needed */
+             }
+         }
+        /* Footer Styling */
+        .copyright-footer {
+            margin-top: 20px; /* Space above the footer */
+            padding: 10px 0;
+            text-align: center;
+            font-size: 0.8em;
+            color: #6c757d; /* Gray color */
+            width: 100%;
+            background-color: #fff; /* Match header background */
+            border-top: 1px solid #ddd; /* Match header border */
+        }
+        /* Style for inline label and select */
+        .inline-input-group {
+            display: flex;
+            align-items: center; /* Vertically align label and select */
+            gap: 10px; /* Space between label and select */
+            margin-bottom: 10px; /* Space below the group */
+        }
+        .inline-input-group label {
+            margin-bottom: 0; /* Remove default bottom margin for label */
+            flex-shrink: 0; /* Prevent label from shrinking */
+        }
+        .inline-input-group select {
+            padding: 5px; /* Match input padding */
+            /* Add other styling as needed */
         }
     </style>
 </head>
@@ -172,8 +198,19 @@
                     <!-- Removed opening form tag from here -->
                     <div class="input-section">
                         <h3>Demographics</h3>
-                        <label for="age">Age:</label>
-                    <input type="number" id="age" name="age" min="0" max="120">
+                        <div class="inline-input-group"> <!-- Wrapper for inline display -->
+                            <label for="age-range">Age:</label>
+                            <select id="age-range" name="age_range">
+                                <option value="">Select Age Range</option>
+                                <option value="neonate">Neonate (0-28 days)</option>
+                                <option value="infant">Infant (1-12 months)</option>
+                                <option value="child">Child (1-12 years)</option>
+                                <option value="adolescent">Adolescent (13-18 years)</option>
+                                <option value="adult_young">Adult (19-40 years)</option>
+                                <option value="adult_middle">Adult (41-64 years)</option>
+                                <option value="adult_older">Older Adult (65+ years)</option>
+                            </select>
+                        </div>
 
                     <div style="margin-top: 10px;"> <!-- Wrapper div for inline layout -->
                         <label style="display: inline-block; margin-right: 10px; margin-bottom: 0;">Sex at birth:</label>
@@ -515,5 +552,8 @@
     </div><!-- End main-content -->
     </form> <!-- Moved closing form tag here -->
     <script src="script.js"></script>
+    <footer class="copyright-footer">
+        <p>Thanks for trying—please forward any feedback or suggestions to my UCSF email linked on my homepage.</p>
+    </footer>
 </body>
 </html>
