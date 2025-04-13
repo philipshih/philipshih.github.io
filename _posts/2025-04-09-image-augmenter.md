@@ -4,7 +4,7 @@ title: "Imaging Vision Sandbox"
 date: 2023-11-15
 type: Web App / ML Demo
 info: "Interactively apply image augmentations and classify images using TensorFlow.js (MobileNet) in-browser."
-tech: "JavaScript, HTML Canvas, CSS, TensorFlow.js (MobileNet)" # Updated tech
+tech: "JavaScript, HTML Canvas, CSS, TensorFlow.js" # Updated tech
 app_url: "/portfolio/vision-sandbox/index.html" # Keep for reference, but not used for linking anymore
 ---
 
