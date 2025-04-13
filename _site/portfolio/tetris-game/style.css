@@ -1,0 +1,119 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center;
+    justify-content: flex-start; /* Align items to the top */
+    min-height: 100vh;
+    background-color: #f8f9fa; /* Lighter page background */
+    margin: 0;
+    padding: 20px 0; /* Add padding top and bottom */
+    overflow: hidden; /* Prevent body scrolling */
+    box-sizing: border-box;
+}
+
+.game-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    width: fit-content; /* Let container shrink to content */
+    margin: 0 auto 20px auto; /* Center the container horizontally, add bottom margin */
+    padding: 10px; /* Add some padding around the game elements */
+    /* background-color: #fff; /* Optional: background for the direct container */
+    /* border-radius: 8px; /* Optional: rounded corners */
+}
+
+#gameCanvas {
+    border: 1px solid #adb5bd; /* Lighter border */
+    background-color: #e9ecef; /* Slightly darker canvas background */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* Subtle inner shadow */
+}
+
+.game-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 180px; /* Slightly narrower info panel */
+    font-size: 0.95em; /* Slightly smaller base font for info */
+}
+
+#gameOver {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+}
+
+#leaderboard,
+.hold-piece-container,
+.next-piece-container {
+    border: 1px solid #dee2e6; /* Lighter border */
+    padding: 12px; /* Slightly more padding */
+    background-color: #fff;
+    border-radius: 6px; /* Rounded corners */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Subtle shadow */
+    text-align: center;
+}
+
+#leaderboard h2,
+.hold-piece-container h3,
+.next-piece-container h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+    color: #495057; /* Darker grey text */
+    border-bottom: 1px solid #eee; /* Lighter separator */
+    padding-bottom: 6px;
+}
+
+#highScores {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9em; /* Smaller font for scores */
+}
+
+#highScores li {
+    margin-bottom: 5px;
+    color: #6c757d; /* Grey text for scores */
+}
+#highScores li:last-child {
+    margin-bottom: 0;
+}
+
+
+.copyright-footer {
+    padding: 10px 0; /* Reduced padding */
+    text-align: center;
+    color: #6c757d; /* Standard grey */
+    font-size: 0.85em; /* Slightly smaller */
+    width: 100%;
+    background-color: transparent; /* Remove background */
+    margin-bottom: 15px; /* Add space below the copyright */
+    /* Removed margin-top and border-top */
+}
+
+/* Style for the individual blocks */
+.block {
+    box-sizing: border-box; /* Include border in size */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Much lighter border for blocks */
+    box-shadow: inset 0 0 1px rgba(0,0,0,0.1); /* Subtle inset shadow */
+}
+
+
+#nextPieceCanvas,
+#holdPieceCanvas {
+    background-color: #e9ecef; /* Match game board background */
+    border: 1px solid #ced4da; /* Slightly darker border than container */
+    display: block;
+    margin: 5px auto 0 auto; /* Adjust margin */
+    border-radius: 4px; /* Rounded corners for preview */
+}
+
+/* Pause Indicator Style */
+#pauseIndicator {
+    text-align: center;
+    padding: 5px;
+    background-color: rgba(255, 193, 7, 0.8); /* Semi-transparent warning yellow */
+    border-radius: 4px;
+    margin-top: 5px;
+}

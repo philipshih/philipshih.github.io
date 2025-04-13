@@ -8,6 +8,8 @@ tech: "JavaScript, HTML Canvas, CSS" # Updated tech
 app_url: "/portfolio/bst-visualizer/index.html" # Keep for reference, but not used for linking anymore
 ---
 
+ You can begin by selecting "Random Tree" to preview the visualization. 
+ 
  Enter numeric values to insert nodes into the tree. Use the search function to see the traversal path highlight nodes. 
 
 <div class="app-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px;">

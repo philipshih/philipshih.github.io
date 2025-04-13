@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Game</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firestore product -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+</head>
+<body>
+    <footer class="copyright-footer">
+        &copy; Philip Shih 2025
+    </footer>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="300" height="600"></canvas>
+        <div class="game-info">
+            <p>Score: <span id="score">0</span>&nbsp;&nbsp;|&nbsp;&nbsp;Time: <span id="timer">00:00</span></p> <!-- Combined Score and Time -->
+            <div class="hold-piece-container">
+                 <h3>Hold:</h3>
+                 <canvas id="holdPieceCanvas" width="80" height="80"></canvas> <!-- Reduced size -->
+            </div>
+             <div class="next-piece-container">
+                 <h3>Next:</h3>
+                 <canvas id="nextPieceCanvas" width="80" height="80"></canvas> <!-- Reduced size -->
+            </div>
+            <div id="pauseIndicator" style="display: none; color: orange; font-weight: bold;">Paused (P)</div>
+            <div id="gameOver" style="display: none;">
+                <h2>Game Over!</h2>
+                <p>Press Enter to play again.</p>
+            </div>
+            <div id="leaderboard">
+                <h2>High Scores</h2>
+                <ul id="highScores">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+            <!-- Removed empty next-piece-container div -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

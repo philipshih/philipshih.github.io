@@ -492,7 +492,57 @@ findPredecessorBtn.addEventListener('click', async () => { const v = parseInt(su
 // New Advanced Search Listeners
 findKthSmallestBtn.addEventListener('click', async () => await visualizeKthSmallest());
 findKthLargestBtn.addEventListener('click', async () => await visualizeKthLargest());
-findRangeBtn.addEventListener('click', async () => await visualizeRangeSearch());
+findRangeBtn.addEventListener('click', async () => {
+    // Call the visualization function when the button is clicked
+    await visualizeRangeSearch();
+});
+
+// --- Random Tree Generation Function --- (Extracted Logic)
+async function generateRandomTree(count) {
+    if (isVisualizing) return;
+    if (isNaN(count) || count <= 0 || count > 50) {
+        setMessage("Invalid node count for random tree (1-50).");
+        return;
+    }
+    root = null;
+    scale = 1.0;
+    viewOffsetX = 0;
+    viewOffsetY = 0;
+    zoomSlider.value = 1.0;
+    zoomValueSpan.textContent = '1.0x';
+    drawTree();
+    updatePropertiesDisplay();
+    setMessage(`Generating ${count} random nodes.`);
+    const genVals = new Set();
+    let att = 0;
+    while (genVals.size < count && att < count * 5) {
+        genVals.add(Math.floor(Math.random() * 100) + 1);
+        att++;
+    }
+    disableMainControls();
+    let insCount = 0;
+    for (const v of genVals) {
+        // Use insert directly, it handles visualization flags and steps
+        await insert(v);
+        insCount++;
+        if (cancelViz) {
+            setMessage("Random generation cancelled.");
+            break; // Exit loop if cancelled during insertion
+        }
+    }
+    enableMainControls(); // Re-enable controls after loop finishes or cancels
+    if (!cancelViz) {
+        setMessage(`Generated/inserted ${insCount} nodes.`);
+}
+updatePropertiesDisplay(); // Update properties after generation
+}
+
+// --- Event Listeners (Continued) ---
+randomTreeBtn.addEventListener('click', async () => {
+    const count = parseInt(randomCountInput.value);
+    await generateRandomTree(count); // Call the extracted function
+});
+
 stepNextBtn.addEventListener('click', () => { if (stepResolve) { stepResolve(); stepResolve = null; stepPromise = null; } });
 stepPauseResumeBtn.addEventListener('click', () => { isPaused = !isPaused; stepPauseResumeBtn.textContent = isPaused ? 'Resume' : 'Pause'; if (!isPaused && stepResolve) { stepResolve(); stepResolve = null; stepPromise = null; } });
 stepRunBtn.addEventListener('click', () => { runToEnd = true; isPaused = false; stepPauseResumeBtn.textContent = 'Pause'; if (stepResolve) { stepResolve(); stepResolve = null; stepPromise = null; } });
@@ -609,6 +659,17 @@ window.addEventListener('resize', resizeCanvas); // Also resize on window resize
 updatePropertiesDisplay();
 setMessage(lastActionMessage);
 canvas.style.cursor = 'grab';
+
+// Generate initial random tree on DOM load (revised approach)
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (!isVisualizing && root === null) { // Check if tree is empty and not busy
+            randomCountInput.value = 10; // Set input value to 10
+            randomTreeBtn.click(); // Simulate click on the button
+            console.log("Initial random tree generation triggered via button click.");
+        }
+    }, 500); // Delay of 500ms
+});
 
 // Helper function needed by context menu listener & hover
 function findNodeAtPosition(node, worldX, worldY) { if (node === null) return null; const distance = Math.sqrt(Math.pow(worldX - node.x, 2) + Math.pow(worldY - node.y, 2)); if (distance <= NODE_RADIUS) return node; let foundNode = findNodeAtPosition(node.left, worldX, worldY); if (foundNode) return foundNode; return findNodeAtPosition(node.right, worldX, worldY); }

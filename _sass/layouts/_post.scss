@@ -13,9 +13,9 @@
   }
 
   &-title {
-    text-shadow: 0 1px 2px #3f3f3f;
+    /* text-shadow: 0 1px 2px #3f3f3f; */ /* Removed text shadow */
     font-family: $sans-serif;
-    font-size: 3rem;
+    font-size: 2.2rem; /* Reduced font size */
     margin: 1rem 0;
     text-align: center;
   }

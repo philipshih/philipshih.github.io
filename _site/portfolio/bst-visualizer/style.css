@@ -2,10 +2,10 @@ body {
     font-family: sans-serif;
     display: flex;
     flex-direction: column;
-    /* align-items: center; Removed to allow full width */
     min-height: 100vh; /* Ensure body takes full viewport height */
     margin: 0; /* Remove default margin */
     background-color: #f8f9fa;
+    overflow: hidden; /* Prevent scrolling on the body itself */
 }
 
 /* Style for copyright notice at the top of the app */
@@ -250,13 +250,13 @@ h1 {
     border: 1px solid #dee2e6;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    /* flex-grow: 1; /* Remove flex-grow */
+    flex-grow: 1; /* Allow container to grow vertically */
     width: 100%; /* Span full width */
-    /* display: flex; /* Remove display flex */
     margin-top: 15px; /* Add some space above the canvas */
-    height: 550px; /* Set a fixed height for the canvas area */
-    overflow: auto; /* Add scrollbars IF the canvas content overflows */
+    /* height: 550px; /* Remove fixed height */
+    overflow: hidden; /* Prevent scrollbars within the container */
     box-sizing: border-box; /* Include border/padding in height */
+    display: flex; /* Use flex to help canvas fill space */
 }
 
 /* New styles for the view controls container */
@@ -328,8 +328,8 @@ h1 {
 
 #bstCanvas {
     display: block;
-    /* width/height will be set dynamically by JS or default */
-    /* Remove fixed height from canvas itself */
+    width: 100%; /* Make canvas fill container width */
+    height: 100%; /* Make canvas fill container height */
 }
 
 /* Basic node styling (drawn on canvas, but can add related styles here if needed) */

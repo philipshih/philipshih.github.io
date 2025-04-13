@@ -16,6 +16,7 @@ const blurSlider = document.getElementById('blur');
 const shearSlider = document.getElementById('shear');
 const cropButton = document.getElementById('crop-button');
 const resetButton = document.getElementById('reset-button');
+const downloadButton = document.getElementById('download-button'); // Added Download Button Element
 
 // Value display elements
 const rotationValueSpan = document.getElementById('rotation-value');
@@ -30,7 +31,8 @@ let originalImage = null; // Holds the *current* base image (could be original o
 let sourceImage = null; // Always holds the initially loaded image before any crops
 let currentImageType = 'jpeg'; // Default assumption for initial image
 let imageLoaded = false;
-let mobilenetModel = null; // Variable to hold the loaded model
+let mobilenetModel = null; // Reverted variable name
+
 
 // Crop state variables
 let isSelecting = false;
@@ -38,14 +40,14 @@ let cropStartX, cropStartY, cropEndX, cropEndY;
 let selectionRectDiv = null; // Will create this div dynamically
 
 // Use the user-provided image path
-const defaultImageSrc = '../../assets/img/Skin_rashes.jpg'; // Updated default image
+const defaultImageSrc = '../../assets/img/DSC_0535.jpg'; // Set new default image
 
-// --- ML Model Loading ---
+// --- ML Model Loading (Reverted to @tensorflow-models/mobilenet) ---
 async function loadModel() {
     console.log('Loading MobileNet model...');
     classificationResultDiv.innerHTML = '<p>Loading classification model...</p>';
     try {
-        mobilenetModel = await mobilenet.load();
+        mobilenetModel = await mobilenet.load(); // Use the library's load function
         console.log('MobileNet model loaded successfully.');
         classificationResultDiv.innerHTML = '<p>Model loaded. Ready to classify.</p>';
         // Classify the initial image once the model is loaded
@@ -55,6 +57,7 @@ async function loadModel() {
     } catch (error) {
         console.error('Error loading MobileNet model:', error);
         classificationResultDiv.innerHTML = '<p>Error loading classification model.</p>';
+        mobilenetModel = null; // Ensure model is null on error
     }
 }
 
@@ -84,12 +87,12 @@ function loadImage(src) {
         resetControls(); // Reset sliders when new image loads
         drawImage(); // Draw the image first
         // Classify the newly loaded image if model is ready
-        if (mobilenetModel) {
-             classifyImage();
-        } else {
-            classificationResultDiv.innerHTML = '<p>Waiting for model to load...</p>';
-        }
-    };
+        if (mobilenetModel) { // Reverted check
+              classifyImage();
+         } else {
+             classificationResultDiv.innerHTML = '<p>Model loading, please wait...</p>'; // Keep updated text
+         }
+     };
     originalImage.onerror = () => {
         loadingMessage.innerText = 'Error loading default image. Please check path or upload one.';
         console.error("Error loading image:", src);
@@ -172,7 +175,7 @@ function drawImage() {
     addWatermark();
 
     // Classify the image after drawing/augmenting if model is loaded
-    if (mobilenetModel) {
+    if (mobilenetModel) { // Reverted check
         classifyImage();
     }
 }
@@ -194,6 +197,7 @@ function initializeCropSelection() {
     if (!selectionRectDiv) {
         selectionRectDiv = document.createElement('div');
         selectionRectDiv.id = 'selection-rect';
+        selectionRectDiv.className = 'crop-overlay'; // *** ADDED CLASS ***
         // Append to the same container as the canvas for correct positioning
         canvas.parentNode.appendChild(selectionRectDiv);
     }
@@ -228,15 +232,20 @@ function updateSelection(e) {
 
     // Ensure coordinates stay within canvas bounds
     cropEndX = Math.max(0, Math.min(canvas.width, cropEndX));
-    cropEndY = Math.max(0, Math.min(canvas.height, cropEndY));
+    // Calculate position relative to the canvas's actual position on the page
+    const canvasRect = canvas.getBoundingClientRect();
+    const parentRect = canvas.parentNode.getBoundingClientRect(); // Get parent's position for offset calculation
+    const offsetX = canvasRect.left - parentRect.left; // Canvas offset within its parent
+    const offsetY = canvasRect.top - parentRect.top;
 
     const width = Math.abs(cropEndX - cropStartX);
     const height = Math.abs(cropEndY - cropStartY);
     const left = Math.min(cropStartX, cropEndX);
     const top = Math.min(cropStartY, cropEndY);
 
-    selectionRectDiv.style.left = `${left}px`;
-    selectionRectDiv.style.top = `${top}px`;
+    // Position the overlay relative to the canvas's parent
+    selectionRectDiv.style.left = `${offsetX + left}px`;
+    selectionRectDiv.style.top = `${offsetY + top}px`;
     selectionRectDiv.style.width = `${width}px`;
     selectionRectDiv.style.height = `${height}px`;
 }
@@ -281,12 +290,16 @@ function applyCrop() {
     tempCtx.drawImage(imgToCrop, 0, 0);
 
     // Calculate crop coordinates relative to the natural image size
-    // (assuming canvas display size matches natural size for simplicity here,
-    // might need adjustment if canvas is scaled via CSS)
-    const naturalSx = sx * (imgToCrop.naturalWidth / canvas.width);
-    const naturalSy = sy * (imgToCrop.naturalHeight / canvas.height);
-    const naturalSWidth = sWidth * (imgToCrop.naturalWidth / canvas.width);
-    const naturalSHeight = Math.round(sHeight * (imgToCrop.naturalHeight / canvas.height)); // Use Math.round for integer dimensions
+    // Use getBoundingClientRect for displayed size vs naturalWidth/Height for original
+    const displayWidth = canvas.getBoundingClientRect().width;
+    const displayHeight = canvas.getBoundingClientRect().height;
+    const scaleX = imgToCrop.naturalWidth / displayWidth;
+    const scaleY = imgToCrop.naturalHeight / displayHeight;
+
+    const naturalSx = Math.round(sx * scaleX);
+    const naturalSy = Math.round(sy * scaleY);
+    const naturalSWidth = Math.round(sWidth * scaleX);
+    const naturalSHeight = Math.round(sHeight * scaleY);
 
 
     try {
@@ -336,7 +349,7 @@ function applyCrop() {
             shearSlider.value = 0;
             drawImage(); // Redraw with the new cropped image and default augmentations
             // Explicitly classify the newly cropped and drawn image
-            if (mobilenetModel) {
+            if (mobilenetModel) { // Reverted check
                 classifyImage();
             }
         };
@@ -359,25 +372,29 @@ function applyCrop() {
 }
 
 
-// --- Image Classification ---
+// --- Image Classification (Reverted to @tensorflow-models/mobilenet) ---
 async function classifyImage() {
-    if (!mobilenetModel || !imageLoaded || !canvas) {
+    if (!mobilenetModel || !imageLoaded || !canvas) { // Reverted check
         console.log("Model or image not ready for classification.");
         return;
     }
     classificationResultDiv.innerHTML = '<p>Classifying...</p>';
 
     try {
-        // Get the current image data from the canvas
-        // Note: Using the canvas directly works with MobileNet
-        const predictions = await mobilenetModel.classify(canvas);
+        // Use the library's classify method
+        const predictions = await mobilenetModel.classify(canvas, 5); // Request top 5
 
         if (predictions && predictions.length > 0) {
-            const topPrediction = predictions[0];
-            const className = topPrediction.className.split(',')[0]; // Get primary class name
-            const probability = (topPrediction.probability * 100).toFixed(1);
-            classificationResultDiv.innerHTML = `<p>Identified as: <strong>${className}</strong> (${probability}%)</p>`;
-            console.log('Classification results:', predictions);
+            let resultsHtml = '<p><strong>Top Predictions:</strong></p><ul>';
+            predictions.forEach(prediction => {
+                // The library returns class names directly
+                const className = prediction.className.split(',')[0]; // Get primary class name
+                const probability = (prediction.probability * 100).toFixed(1);
+                resultsHtml += `<li>${className}: ${probability}%</li>`;
+            });
+            resultsHtml += '</ul>';
+            classificationResultDiv.innerHTML = resultsHtml;
+            console.log('Classification results (Top 5):', predictions);
         } else {
             classificationResultDiv.innerHTML = '<p>Could not classify image.</p>';
         }
@@ -448,6 +465,28 @@ function resetControls() {
 }
 
 resetButton.addEventListener('click', resetControls);
+
+// --- Download Functionality --- Added
+function downloadImage() {
+    if (!imageLoaded || !canvas) {
+        alert("No image loaded to download.");
+        return;
+    }
+    try {
+        const dataUrl = canvas.toDataURL('image/png'); // Get canvas content as PNG data URL
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'augmented-image.png'; // Set default filename
+        document.body.appendChild(link); // Append link to body (required for Firefox)
+        link.click(); // Simulate click to trigger download
+        document.body.removeChild(link); // Clean up the temporary link
+    } catch (error) {
+        console.error("Error generating image for download:", error);
+        alert("Failed to generate image for download.");
+    }
+}
+
+downloadButton.addEventListener('click', downloadImage); // Added event listener
 
 // --- Initial Load ---
 initializeCropSelection(); // Set up mouse listeners for cropping

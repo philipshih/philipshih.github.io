@@ -41,7 +41,9 @@
   <h2 class="post-title">Imaging Vision Sandbox</h2>
   <div class="post-line"></div>
 
-  <p>Related to some of my ongoing research. This tool I made lets you upload an image, apply various augmentation techniques (rotation, scaling, brightness, contrast, noise, blur, shear), crop the image, and see it classified in real-time using a pre-trained MobileNet model (TensorFlow.js). You can explore how augmentations and cropping affect the image and classification.</p>
+  <p>The vision sandbox lets you upload an image, apply various augmentation techniques (contrast, noise, shear, etc.), crop the image, and see it classified in real-time using a pre-trained MobileNet model.</p>
+
+<p>Prediction accuracy is limited because requiring real-time inference on browsers imposes constraints on the models we can use.</p>
 
 <div class="app-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px; overflow: hidden;"> <!-- Removed min-height, resize, overflow:auto; Added overflow:hidden -->
     <iframe id="vision-iframe" src="/portfolio/vision-sandbox/index.html" width="100%" style="border:none; display: block;" scrolling="no"></iframe> <!-- Removed height, added id, scrolling=no, display:block -->
@@ -71,8 +73,6 @@
     <a href="/2024-05-10/bst-visualizer" class="left next">Prev</a>
   
   
-    <a href="/2022-08-20/snake-game" class="right next">Next</a>
-  
 
   <a href="#" class="top">Top</a>
 </div>
@@ -81,7 +81,7 @@
 
     <footer>
       <span>
-        &copy;  Philip Shih <time datetime="2025-04-12 17:58:12 -0700">2025</time>
+        &copy;  Philip Shih <time datetime="2025-04-13 01:07:47 -0700">2025</time>
       </span>
     </footer>
   </body>

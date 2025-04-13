@@ -8,7 +8,9 @@ tech: "JavaScript, HTML Canvas, CSS, TensorFlow.js" # Updated tech
 app_url: "/portfolio/vision-sandbox/index.html" # Keep for reference, but not used for linking anymore
 ---
 
-Related to some of my ongoing research. This tool I made lets you upload an image, apply various augmentation techniques (rotation, scaling, brightness, contrast, noise, blur, shear), crop the image, and see it classified in real-time using a pre-trained MobileNet model (TensorFlow.js). You can explore how augmentations and cropping affect the image and classification.
+The vision sandbox lets you upload an image, apply various augmentation techniques (contrast, noise, shear, etc.), crop the image, and see it classified in real-time using a pre-trained MobileNet model. 
+
+Prediction accuracy is limited because requiring real-time inference on browsers imposes constraints on the models we can use. 
 
 <div class="app-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px; overflow: hidden;"> <!-- Removed min-height, resize, overflow:auto; Added overflow:hidden -->
     <iframe id="vision-iframe" src="/portfolio/vision-sandbox/index.html" width="100%" style="border:none; display: block;" scrolling="no"></iframe> <!-- Removed height, added id, scrolling=no, display:block -->
