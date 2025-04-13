@@ -8,6 +8,16 @@ body {
     background-color: #f8f9fa;
 }
 
+/* Style for copyright notice at the top of the app */
+.app-copyright {
+    font-size: 0.75em;
+    color: #adb5bd; /* Light gray */
+    text-align: center;
+    padding: 5px 0;
+    margin-bottom: 10px; /* Space below copyright */
+}
+
+
 /* Add padding back to main content areas, excluding the canvas container */
 h1, .controls, .message-area, .properties-area, .step-controls {
     margin-left: 20px;

@@ -5,6 +5,16 @@ body {
     color: #333;
 }
 
+/* Style for copyright notice at the top of the app */
+.app-copyright {
+    font-size: 0.75em;
+    color: #adb5bd; /* Light gray */
+    text-align: center;
+    padding-bottom: 10px; /* Space below copyright */
+    margin-bottom: 10px; /* Space below copyright */
+    border-bottom: 1px solid #eee; /* Optional separator */
+}
+
 h1, h2 {
     text-align: center;
     color: #333;
