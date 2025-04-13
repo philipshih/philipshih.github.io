@@ -5,9 +5,25 @@ date: 2025-01-05
 type: Tool
 info: "Generates differential diagnoses based on selected findings and symptom scoring system."
 tech: "JavaScript, HTML, CSS"
-app_url: "/portfolio/ddx-generator/index.html"
+app_url: "/portfolio/ddx-generator/index.html" # Keep for reference
 ---
 
-Made this to demonstrate how a differential diagnoses can be dynamically generated based on user input. Select patient findings (age, history, physical exam) using the expandable sections and checkboxes, and the tool will suggest potential diagnoses (with examples for rash, chest pain, and shortness of breath) with illustrative likelihoods and basic plans.
+<!-- Description removed, iframe added below -->
+<div class="ddx-generator-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px; overflow: hidden;">
+    <iframe id="ddx-iframe" src="/portfolio/ddx-generator/index.html" width="100%" style="border:none; display: block;" scrolling="no"></iframe> <!-- Added ID, removed fixed height -->
+</div>
 
-This is a portfolio demonstration project ONLY, using a highly simplified knowledge base. It is NOT a real medical tool so do NOT use this for actual diagnosis or treatment decisions. 
+<script>
+    window.addEventListener('message', function(event) {
+        // Basic security check
+        // if (event.origin !== window.location.origin) return;
+
+        if (event.data && typeof event.data.frameHeight === 'number') {
+            const iframe = document.getElementById('ddx-iframe');
+            if (iframe) {
+                // Add a small buffer
+                iframe.style.height = (event.data.frameHeight + 20) + 'px';
+            }
+        }
+    });
+</script>
