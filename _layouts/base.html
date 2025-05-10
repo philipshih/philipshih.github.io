@@ -34,22 +34,13 @@
       function checkPassword() {
         const passwordInput = document.getElementById('secret-password');
         const password = passwordInput.value;
-        // IMPORTANT: Replace 'YOUR_SECRET_PASSWORD' with your actual desired password
-        const correctPassword = 'YOUR_SECRET_PASSWORD'; 
+        const correctPassword = 'E916!'; 
 
         if (password === correctPassword) {
-          alert('Access Granted! \n(You can replace this alert with code to reveal hidden content or redirect)');
-          // Example: Reveal a hidden section
-          // const hiddenSection = document.getElementById('hidden-section');
-          // if (hiddenSection) {
-          //   hiddenSection.style.display = 'block'; 
-          // }
-          
-          // Example: Redirect to a hidden page
-          // window.location.href = '{{ '/hidden-page' | prepend: site.baseurl }}'; 
-
+          // Redirect to the Spotify access page
+          window.location.href = '{{ "/spotify_access.html" | relative_url }}';
         } else {
-          alert('Incorrect password. Enter the password I gave you to access this part of the site.');
+          alert('Incorrect password.');
         }
         // Clear the input field after attempt
         passwordInput.value = ''; 
