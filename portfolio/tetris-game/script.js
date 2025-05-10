@@ -13,6 +13,7 @@ const pauseIndicator = document.getElementById('pauseIndicator');
 const timerSpan = document.getElementById('timer'); // Added Timer Element
 const gameMusic = document.getElementById('gameMusic'); // Added Music Element
 const toggleMusicButton = document.getElementById('toggleMusicButton'); // Added Music Toggle Button
+const nowPlayingMessage = document.getElementById('nowPlayingMessage'); // Added Now Playing Message Element
 
 // --- Game Constants ---
 const COLS = 10; // Number of columns in the grid
@@ -837,11 +838,17 @@ async function initializeGame() {
 // --- Music Control ---
 function toggleMusic() {
     if (gameMusic.paused) {
-        gameMusic.play().catch(e => console.error("Error playing music:", e));
+        gameMusic.play().catch(e => {
+            console.error("Error playing music:", e);
+            nowPlayingMessage.textContent = 'Error loading music.';
+            setTimeout(() => nowPlayingMessage.textContent = '', 3000); // Clear after 3s
+        });
         toggleMusicButton.textContent = 'Music ON';
+        nowPlayingMessage.textContent = 'Now Playing: Darude - Sandstorm';
     } else {
         gameMusic.pause();
         toggleMusicButton.textContent = 'Music OFF';
+        nowPlayingMessage.textContent = ''; // Clear message when music is off
     }
 }
 
