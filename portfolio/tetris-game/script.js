@@ -11,6 +11,8 @@ const holdPieceCanvas = document.getElementById('holdPieceCanvas');
 const holdCtx = holdPieceCanvas.getContext('2d');
 const pauseIndicator = document.getElementById('pauseIndicator');
 const timerSpan = document.getElementById('timer'); // Added Timer Element
+const gameMusic = document.getElementById('gameMusic'); // Added Music Element
+const toggleMusicButton = document.getElementById('toggleMusicButton'); // Added Music Toggle Button
 
 // --- Game Constants ---
 const COLS = 10; // Number of columns in the grid
@@ -236,9 +238,9 @@ function spawnNewPiece() {
 }
 
 // Helper function to draw pieces in the side panels (Next/Hold)
-function drawSidePanelPiece(ctx, canvas, piece) {
-    ctx.fillStyle = EMPTY_COLOR; // Background
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+function drawSidePanelPiece(ctxParam, canvasParam, piece) { // Renamed params to avoid conflict
+    ctxParam.fillStyle = EMPTY_COLOR; // Background
+    ctxParam.fillRect(0, 0, canvasParam.width, canvasParam.height);
 
     if (!piece) return;
 
@@ -248,24 +250,39 @@ function drawSidePanelPiece(ctx, canvas, piece) {
     const shapeHeight = shape.length;
 
     // Calculate offsets to center the piece
-    const offsetX = (canvas.width - shapeWidth * NEXT_HOLD_BLOCK_SIZE) / 2;
-    const offsetY = (canvas.height - shapeHeight * NEXT_HOLD_BLOCK_SIZE) / 2;
+    const offsetX = (canvasParam.width - shapeWidth * NEXT_HOLD_BLOCK_SIZE) / 2;
+    const offsetY = (canvasParam.height - shapeHeight * NEXT_HOLD_BLOCK_SIZE) / 2;
 
     shape.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value) {
-                ctx.fillStyle = color;
-                ctx.fillRect(
+                // Draw block color
+                ctxParam.fillStyle = color;
+                ctxParam.fillRect(
                     offsetX + x * NEXT_HOLD_BLOCK_SIZE,
                     offsetY + y * NEXT_HOLD_BLOCK_SIZE,
                     NEXT_HOLD_BLOCK_SIZE, NEXT_HOLD_BLOCK_SIZE
                 );
-                ctx.strokeStyle = BORDER_COLOR;
-                ctx.strokeRect(
+                // Draw block border
+                ctxParam.strokeStyle = BORDER_COLOR;
+                ctxParam.strokeRect(
                     offsetX + x * NEXT_HOLD_BLOCK_SIZE,
                     offsetY + y * NEXT_HOLD_BLOCK_SIZE,
                     NEXT_HOLD_BLOCK_SIZE, NEXT_HOLD_BLOCK_SIZE
-                ); // Removed extra parenthesis here
+                );
+
+                // Add the character "石"
+                const char = "石";
+                const fontSize = NEXT_HOLD_BLOCK_SIZE * 0.6; // Adjust size as needed
+                ctxParam.font = `${fontSize}px Arial`;
+                ctxParam.fillStyle = 'rgba(255, 255, 255, 0.7)'; // Semi-transparent white
+                ctxParam.textAlign = 'center';
+                ctxParam.textBaseline = 'middle';
+                ctxParam.fillText(
+                    char,
+                    offsetX + x * NEXT_HOLD_BLOCK_SIZE + NEXT_HOLD_BLOCK_SIZE / 2,
+                    offsetY + y * NEXT_HOLD_BLOCK_SIZE + NEXT_HOLD_BLOCK_SIZE / 2 + fontSize * 0.05 // Slight Y offset
+                );
             }
         });
     });
@@ -306,6 +323,15 @@ function drawBlock(x, y, color) {
     ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
     ctx.strokeStyle = BORDER_COLOR;
     ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+
+    // Add the character "石"
+    const char = "石";
+    const fontSize = BLOCK_SIZE * 0.6; // Adjust size as needed
+    ctx.font = `${fontSize}px Arial`;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; // Semi-transparent white for broad visibility
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(char, x * BLOCK_SIZE + BLOCK_SIZE / 2, y * BLOCK_SIZE + BLOCK_SIZE / 2 + fontSize * 0.05); // Slight Y offset for better centering
 }
 
 function drawBoard() {
@@ -798,12 +824,28 @@ async function initializeGame() {
     console.log("Game initialized.");
 }
 
+// --- Music Control ---
+function toggleMusic() {
+    if (gameMusic.paused) {
+        gameMusic.play().catch(e => console.error("Error playing music:", e));
+        toggleMusicButton.textContent = 'Music ON';
+    } else {
+        gameMusic.pause();
+        toggleMusicButton.textContent = 'Music OFF';
+    }
+}
+
 // --- Event Listeners ---
 document.addEventListener('keydown', handleKeyDown);
 canvas.addEventListener('touchstart', handleTouchStart, { passive: false }); // Use passive: false to allow preventDefault
 canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+toggleMusicButton.addEventListener('click', toggleMusic); // Added listener for music button
 
 // --- Start Game ---
+// Preload music - browser might restrict autoplay until user interaction
+gameMusic.preload = 'auto'; 
+// gameMusic.volume = 0.5; // Optional: set default volume
+
 initializeGame(); // Start the game when script loads
 
 // --- Iframe Height Communication ---

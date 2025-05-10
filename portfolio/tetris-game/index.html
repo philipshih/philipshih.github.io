@@ -18,6 +18,7 @@
         <canvas id="gameCanvas" width="300" height="600"></canvas>
         <div class="game-info">
             <p>Score: <span id="score">0</span>&nbsp;&nbsp;|&nbsp;&nbsp;Time: <span id="timer">00:00</span></p> <!-- Combined Score and Time -->
+            <button id="toggleMusicButton">Music OFF</button> <!-- Music Toggle Button -->
             <div class="hold-piece-container">
                  <h3>Hold:</h3>
                  <canvas id="holdPieceCanvas" width="80" height="80"></canvas> <!-- Reduced size -->
@@ -41,6 +42,10 @@
         </div>
     </div>
 
+    <audio id="gameMusic" loop>
+        <source src="assets/darude-sandstorm.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
     <script src="script.js"></script>
 </body>
 </html>
