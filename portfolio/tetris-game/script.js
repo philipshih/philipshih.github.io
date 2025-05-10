@@ -12,7 +12,8 @@ const holdCtx = holdPieceCanvas.getContext('2d');
 const pauseIndicator = document.getElementById('pauseIndicator');
 const timerSpan = document.getElementById('timer'); // Added Timer Element
 const gameMusic = document.getElementById('gameMusic'); // Added Music Element
-const toggleMusicButton = document.getElementById('toggleMusicButton'); // Added Music Toggle Button
+const musicToggleCheckbox = document.getElementById('musicToggleCheckbox'); // New Checkbox
+const musicToggleLabel = document.getElementById('musicToggleLabel'); // New Label
 const nowPlayingMessage = document.getElementById('nowPlayingMessage'); // Added Now Playing Message Element
 
 // --- Game Constants ---
@@ -837,17 +838,20 @@ async function initializeGame() {
 
 // --- Music Control ---
 function toggleMusic() {
-    if (gameMusic.paused) {
+    if (musicToggleCheckbox.checked) {
         gameMusic.play().catch(e => {
             console.error("Error playing music:", e);
             nowPlayingMessage.textContent = 'Error loading music.';
-            setTimeout(() => nowPlayingMessage.textContent = '', 3000); // Clear after 3s
+            setTimeout(() => {
+                nowPlayingMessage.textContent = '';
+                if (gameMusic.paused) musicToggleCheckbox.checked = false; // Uncheck if still paused
+            }, 3000);
         });
-        toggleMusicButton.textContent = 'Music ON';
+        musicToggleLabel.textContent = 'Music ON';
         nowPlayingMessage.textContent = 'Now Playing: Darude - Sandstorm';
     } else {
         gameMusic.pause();
-        toggleMusicButton.textContent = 'Music OFF';
+        musicToggleLabel.textContent = 'Music OFF';
         nowPlayingMessage.textContent = ''; // Clear message when music is off
     }
 }
@@ -856,7 +860,7 @@ function toggleMusic() {
 document.addEventListener('keydown', handleKeyDown);
 canvas.addEventListener('touchstart', handleTouchStart, { passive: false }); // Use passive: false to allow preventDefault
 canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
-toggleMusicButton.addEventListener('click', toggleMusic); // Added listener for music button
+musicToggleCheckbox.addEventListener('change', toggleMusic); // Listen to checkbox change
 
 // --- Start Game ---
 // Preload music - browser might restrict autoplay until user interaction

@@ -141,3 +141,77 @@ body {
     margin-bottom: 10px;
     height: 1.2em; /* Reserve space to prevent layout shift */
 }
+
+.music-toggle-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.music-toggle-label {
+    margin-left: 8px;
+    font-size: 0.9em;
+}
+
+/* The switch - the box around the slider */
+.ios-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px; /* Width of the switch */
+  height: 28px; /* Height of the switch */
+}
+
+/* Hide default HTML checkbox */
+.ios-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px; /* Height of the knob */
+  width: 20px; /* Width of the knob */
+  left: 4px; /* Position from left */
+  bottom: 4px; /* Position from bottom */
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3; /* Blue when checked */
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(22px); /* Move knob to the right */
+  -ms-transform: translateX(22px);
+  transform: translateX(22px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 28px; /* Fully rounded switch */
+}
+
+.slider.round:before {
+  border-radius: 50%; /* Rounded knob */
+}

@@ -18,7 +18,13 @@
         <canvas id="gameCanvas" width="300" height="600"></canvas>
         <div class="game-info">
             <p>Score: <span id="score">0</span>&nbsp;&nbsp;|&nbsp;&nbsp;Time: <span id="timer">00:00</span></p> <!-- Combined Score and Time -->
-            <button id="toggleMusicButton">Music OFF</button> <!-- Music Toggle Button -->
+            <div class="music-toggle-container">
+                <label class="ios-switch">
+                    <input type="checkbox" id="musicToggleCheckbox">
+                    <span class="slider round"></span>
+                </label>
+                <span id="musicToggleLabel" class="music-toggle-label">Music OFF</span>
+            </div>
             <div id="nowPlayingMessage"></div> <!-- Now Playing Message Area -->
             <div class="hold-piece-container">
                  <h3>Hold:</h3>
