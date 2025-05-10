@@ -456,13 +456,23 @@ function mergePiece() {
     currentPiece.shape.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value) {
-                // Only merge if the block is within the visible board area
-                if (currentPiece.y + y >= 0) {
-                     board[currentPiece.y + y][currentPiece.x + x] = currentPiece.color;
+                let boardY = currentPiece.y + y;
+                let boardX = currentPiece.x + x;
+                if (boardY < 0) {
+                    // If any part of the piece locks above the visible board, it's game over.
+                    // This can happen if a piece is rotated into an off-screen position and locks.
+                    // Or if the stack is too high for a piece to fully enter.
+                    gameOver(); 
+                    // We might want to set a flag here to prevent further actions in the current game cycle.
+                    // For now, gameOver() should stop the game loop.
+                    return; // Exit early from forEach if game over
                 }
+                board[boardY][boardX] = currentPiece.color;
             }
         });
+        if (!gameRunning) return; // Exit outer loop if game over
     });
+    if (!gameRunning) return; // Exit function if game over
 }
 
 function clearLines() {
