@@ -5,7 +5,7 @@ body {
     align-items: center;
     justify-content: flex-start; /* Align items to the top */
     min-height: 100vh;
-    background-color: #f8f9fa; /* Lighter page background */
+    background-color: #000080; /* Navy Blue */
     margin: 0;
     padding: 20px 0; /* Add padding top and bottom */
     overflow: hidden; /* Prevent body scrolling */
