@@ -205,109 +205,60 @@
                 return;
             }
 
-            outputArea.value = "Generating prompt...";
+            outputArea.value = "Constructing dynamic prompt for backend...";
 
-            let prompt = `You are ShihGPT-MD, an attending-level physician model.
-Remove all patient names and MRNs.
-Reanalyze every question and recommendation for accuracy with the rigor of an attending.
-
-Patient Information:
----
-${patientInfo}
----
-`;
+            // Construct a much shorter "dynamic prompt" for the backend
+            let dynamic_prompt = `Patient Information:\n---\n${patientInfo}\n---\n`;
 
             if (epicSmartPhrase.trim() !== "") {
-                prompt += `\nEPIC SmartPhrase Template to use for output format:
----
-${epicSmartPhrase}
----
-Instruct the model to fill this template. If information for a field is not available, leave the field placeholder as is or indicate 'not available'.
-`;
+                dynamic_prompt += `\nUse EPIC SmartPhrase Template for output format:\n---\n${epicSmartPhrase}\n---\n`;
             } else {
-                prompt += `\nSelected Predefined Template: ${selectedTemplate}\n`;
+                dynamic_prompt += `\nUse Predefined Template: ${selectedTemplate}\n`;
             }
 
-            prompt += "\nSelected Options:\n";
+            dynamic_prompt += "\nUser-Selected Options for this request:\n";
             let hasSelectedOption = false;
-            checkboxOptions.forEach(opt => { // Assuming checkboxOptions is globally available
+            checkboxOptions.forEach(opt => { // checkboxOptions should be accessible here
                 const checkbox = document.getElementById(opt.id);
                 if (checkbox && checkbox.checked) {
-                    prompt += `- ${opt.label}\n`;
+                    dynamic_prompt += `- ${opt.label}\n`;
                     hasSelectedOption = true;
                 }
             });
             if (!hasSelectedOption) {
-                prompt += "- (No specific checkbox options selected)\n";
+                dynamic_prompt += "- (Using default behaviors as per core instructions for non-specified options)\n";
             }
+            dynamic_prompt += "\n--- END OF DYNAMIC REQUEST ---";
             
-            prompt += `
-Core Instructions:
-- If this is a new patient, generate initial questions based on their case that are thorough, guideline-concordant, and relevant for diagnostic clarity. Also begin a working impression and full assessment and plan using available data. Use current clinical guidelines where appropriate.
-- Update the note each time new information (text, image, audio) is received, placing the new content in the appropriate section. If data is missing (e.g. vital signs, labs, imaging), state which ones are needed, why, and under what criteria.
-- Include:
-    - Impression: 1-liner with age, sex (if known), relevant background, and primary concern or diagnosis
-    - Subjective: HPI + relevant PMH, SHx, FHx, ROS
-    - Objective: Include available vitals, PE, labs/imaging
-    - Assessment & Plan: Fully reasoned differential, most likely diagnosis, relevant pathophysiology, and plan with specific interventions and follow-up
-
-Output Formatting based on selections:
-- If "Generate SHN" is selected: Rephrase full note using standard clinical abbreviations while maintaining clarity.
-- If "Generate VSHN" is selected: Distill into ultra-concise, rapid-style shorthand, omitting non-critical detail and avoiding uncommon abbreviations or unnecessary caps.
-(If both SHN and VSHN are selected, prioritize VSHN or clarify desired combined behavior).
-
-Reasoning Detail:
-- If "Include full pathophysiologic reasoning" is selected, ensure this is present in the Assessment & Plan.
-- If "Include guideline citations if relevant" is selected, add these where appropriate.
-
-Data Type Emphasis:
-- Adapt interaction if "Expect image input", "Expect audio input", or "Expect structured vitals/labs" is indicated.
-
-Documentation Type:
-- Prioritize the selected format (SOAP, Full H&P, Discharge, Pre-op) if no EPIC SmartPhrase is provided.
-
-Specialty Context:
-- Tailor questions, assessment, and plan to the selected specialty (OB/GYN, Derm, Peds, Ortho, Internal Medicine).
-
-Output Features:
-- If "Include checklist of missing objective data" is selected, provide this.
-- If "Generate initial patient questions" is selected, ensure these are present for new patients.
-- If "Insert TTS audio" is selected, note that the output text should be suitable for TTS (backend would handle actual audio).
-
-Redaction:
-- Default: "Confirm data is de-identified".
-- If "Remove dates (convert to relative time)" is selected, apply this.
-- If "Strip nonstandard abbreviations" is selected, ensure output clarity.
-
----
-BEGIN MODEL RESPONSE BASED ON ABOVE INSTRUCTIONS AND PATIENT DATA:
-`;
-            // Display the generated prompt locally for a moment (optional)
-            // outputArea.value = "Generated Prompt (for verification):\n" + prompt; 
-            // outputArea.value += "\n\nSending to backend... Please wait.";
-
             const serviceAbbreviation = getSelectedServiceAbbreviation();
-            outputArea.value = `Sending prompt to backend for service: ${serviceAbbreviation}... Please wait.`;
+            outputArea.value = `Sending dynamic prompt to backend for service: ${serviceAbbreviation}... Please wait.`;
 
             try {
-                const response = await fetch('http://10.0.0.208:5000/generate_note', { // Updated to local IP
+                const backend_response = await fetch('http://10.0.0.208:5000/generate_note', { // Updated to local IP
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        prompt: prompt,
+                        prompt: dynamic_prompt, // Send the shorter, dynamic prompt
                         service_abbreviation: serviceAbbreviation
                     }),
                 });
 
-                const result = await response.json();
+                const result = await backend_response.json();
+                let resultDisplay = "";
 
-                if (response.ok) {
-                    outputArea.value = `Success from backend:\nFilename: ${result.filename}\nMessage: ${result.message}\n\nLLM Response:\n---\n${result.llm_response}`;
-                } else {
-                    outputArea.value = `Error from backend: ${result.error}\nDetails: ${result.details || 'N/A'}`;
+                if (result.prompt_feedback && result.prompt_feedback !== "N/A") {
+                    resultDisplay += `Prompt Feedback from API:\n${result.prompt_feedback}\n\n---\n`;
                 }
+
+                if (backend_response.ok) {
+                    resultDisplay += `Success from backend:\nFilename: ${result.filename}\nMessage: ${result.message}\n\nLLM Response:\n---\n${result.llm_response}`;
+                } else {
+                    resultDisplay += `Error from backend: ${result.error}\nDetails: ${result.details || 'N/A'}`;
+                }
+                outputArea.value = resultDisplay;
+
             } catch (error) {
                 console.error('Error sending prompt to backend:', error);
                 outputArea.value = `Network error or backend server not running.\nCould not connect to the ShihGPT-MD backend at http://10.0.0.208:5000.\nPlease ensure the Python Flask server (shihgptmd_backend.py) is running and accessible on your network (check firewall).\nDetails: ${error.message}`;
