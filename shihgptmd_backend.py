@@ -73,7 +73,7 @@ def get_llm_response(dynamic_prompt_from_frontend):
             print(feedback_str) # Log it on backend
 
         # Correctly check against the enum value for STOP
-        if response.candidates and response.candidates[0].finish_reason == genai.types.Candidate.FinishReason.STOP:
+        if response.candidates and response.candidates[0].finish_reason == genai.types.FinishReason.STOP:
             if response.candidates[0].content and response.candidates[0].content.parts:
                 return response.candidates[0].content.parts[0].text, feedback_str
             else:
