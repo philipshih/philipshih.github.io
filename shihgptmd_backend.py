@@ -62,11 +62,8 @@ def get_llm_response(dynamic_prompt_from_frontend):
         # print(f"DEBUG: Sending combined prompt to Gemini model {GEMINI_MODEL} (first 500 chars):\n{full_prompt_to_gemini[:500]}...")
         print(f"Sending combined prompt to Gemini model {GEMINI_MODEL}...")
 
-
-        generation_config = genai.types.GenerationConfig(
-            max_output_tokens=8192, 
-        )
-        response = model.generate_content(full_prompt_to_gemini, generation_config=generation_config)
+        # Removing explicit generation_config to let the model use its defaults for output tokens
+        response = model.generate_content(full_prompt_to_gemini)
         
         feedback_str = ""
         if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
