@@ -10,7 +10,7 @@ from watchdog.events import FileSystemEventHandler
 
 # --- Configuration ---
 # GEMINI_API_KEY is now expected as an environment variable
-GEMINI_MODEL = "gemini-2.5-pro-exp-03-25"
+GEMINI_MODEL = "gemini-1.5-pro-latest" # Changed to a more standard large model for testing
 NOTES_DIRECTORY = r"C:\Users\phili\OneDrive\Desktop\ShihGPTMD" # This is where notes are saved AND where we watch for new inputs.
                                                             # Consider separate input/output folders later if needed.
 INPUT_FILE_EXTENSION = ".txt" # Watch for .txt files for now
