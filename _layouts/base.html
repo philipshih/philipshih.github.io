@@ -290,7 +290,7 @@ BEGIN MODEL RESPONSE BASED ON ABOVE INSTRUCTIONS AND PATIENT DATA:
             outputArea.value = `Sending prompt to backend for service: ${serviceAbbreviation}... Please wait.`;
 
             try {
-                const response = await fetch('http://127.0.0.1:5000/generate_note', {
+                const response = await fetch('http://10.0.0.208:5000/generate_note', { // Updated to local IP
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -310,7 +310,7 @@ BEGIN MODEL RESPONSE BASED ON ABOVE INSTRUCTIONS AND PATIENT DATA:
                 }
             } catch (error) {
                 console.error('Error sending prompt to backend:', error);
-                outputArea.value = `Network error or backend server not running.\nCould not connect to the ShihGPT-MD backend at http://127.0.0.1:5000.\nPlease ensure the Python Flask server (shihgptmd_backend.py) is running.\nDetails: ${error.message}`;
+                outputArea.value = `Network error or backend server not running.\nCould not connect to the ShihGPT-MD backend at http://10.0.0.208:5000.\nPlease ensure the Python Flask server (shihgptmd_backend.py) is running and accessible on your network (check firewall).\nDetails: ${error.message}`;
             }
         }
         
