@@ -1,0 +1,13 @@
+# Jekyll build output
+_site/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# ShihGPTMD notes directory (if you decide not to commit example notes)
+# shihgptmd_notes/

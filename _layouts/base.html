@@ -2,6 +2,20 @@
 <html lang="en">
 
   {% include head.html %}
+  <style>
+    /* Styles from shihgptmd.html */
+    body { font-family: sans-serif; /* Existing body styles might be in main.css */ }
+    .shihgptmd-container { max-width: 900px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+    .hidden { display: none !important; } /* Added !important to ensure override */
+    .shihgptmd-container label { display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold; }
+    .shihgptmd-container textarea, .shihgptmd-container select { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+    .shihgptmd-container button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .shihgptmd-container button:hover { background-color: #0056b3; }
+    .text-hidden-on-white { color: white !important; background-color: white !important; border-color: white !important; }
+    #mainOutputArea, #patientInfoInput, #epicSmartPhraseInput { min-height: 150px; }
+    .checkbox-area label { font-weight: normal; display: inline-block; margin-right: 15px;}
+    .section-title { margin-top: 20px; margin-bottom:10px; font-size: 1.2em; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+  </style>
 
   <body>
     <nav class="nav">
@@ -20,9 +34,49 @@
     </div>
   </nav>
 
-    <main>
+    <main id="mainPageContent">
       {{ content }}
     </main>
+
+    <div id="shihGptMdAppContainer" class="shihgptmd-container hidden">
+        <h1>ShihGPT-MD Interface</h1>
+
+        <div class="checkbox-area">
+            <input type="checkbox" id="hideTextCheckbox" name="hideTextCheckbox">
+            <label for="hideTextCheckbox">Hide screen text (white on white)</label>
+        </div>
+
+        <h2 class="section-title">Patient Information</h2>
+        <textarea id="patientInfoInput" placeholder="Enter patient information here..."></textarea>
+
+        <h2 class="section-title">EPIC SmartPhrase Template (Optional)</h2>
+        <textarea id="epicSmartPhraseInput" placeholder="Paste EPIC SmartPhrase template here if desired..."></textarea>
+
+        <h2 class="section-title">Note Options</h2>
+        <label for="templateSelector">Select Predefined Template:</label>
+        <select id="templateSelector">
+            <option value="general_soap">General SOAP Note</option>
+            <option value="ob_l_d">OB L&D</option>
+            <option value="derm_lesion">Derm Lesion</option>
+            <option value="peds_well_visit">Peds Well Visit</option>
+            <!-- Add more templates as needed -->
+        </select>
+
+        <h3>Checkbox Options:</h3>
+        <div id="checkboxOptionsContainer" style="margin-bottom: 20px;">
+            <!-- Checkboxes will be dynamically added here by JS -->
+        </div>
+
+        <button id="generatePromptButton" style="margin-top:20px;">Generate Full Prompt for LLM</button>
+
+        <h2 class="section-title">Generated Prompt / Output Note</h2>
+        <textarea id="mainOutputArea" placeholder="Generated prompt or LLM output will appear here..." readonly></textarea>
+        
+        <h2 class="section-title">Synced Notes (from Google Drive)</h2>
+        <div id="googleDriveEmbed" style="width: 100%; height: 400px; border: 1px solid #ddd; margin-top: 10px;">
+            <iframe src="https://drive.google.com/embeddedfolderview?id=18ihng8DZEWsoXa499e4WFMp7asj4RWMk#list" style="width:100%; height:100%; border:0;"></iframe>
+        </div>
+    </div>
 
     <footer>
       <span>
@@ -34,25 +88,266 @@
       function checkPassword() {
         const passwordInput = document.getElementById('secret-password');
         const password = passwordInput.value;
-        const correctPassword = 'E916!'; 
+        const correctPassword = 'E916!'; // Keep this password or change as needed
 
         if (password === correctPassword) {
-          // Redirect to the Spotify access page
-          window.location.href = '{{ "/spotify_access.html" | relative_url }}';
+          // Hide main page content and show ShihGPTMD app
+          document.getElementById('mainPageContent').classList.add('hidden');
+          document.getElementById('shihGptMdAppContainer').classList.remove('hidden');
+          // Optionally hide the password input area itself
+          // document.querySelector('.password-entry-container').classList.add('hidden');
+          initializeShihGptMdApp(); // Call to initialize app features
         } else {
           alert('Incorrect password.');
         }
-        // Clear the input field after attempt
         passwordInput.value = ''; 
       }
 
-      // Optional: Allow pressing Enter key in the password field to submit
       document.getElementById('secret-password').addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
-          event.preventDefault(); // Prevent default form submission if it were in a form
+          event.preventDefault(); 
           checkPassword();
         }
       });
+
+      // ShihGPTMD App JavaScript
+      function initializeShihGptMdApp() {
+        const checkboxOptions = [
+            { id: "genSHN", label: "Generate SHN (Short-hand Notation)", group: "Output Format" },
+            { id: "genVSHN", label: "Generate VSHN (Very Short-hand Notation)", group: "Output Format" },
+            { id: "incPathophys", label: "Include full pathophysiologic reasoning", group: "Reasoning Detail" },
+            { id: "incGuidelines", label: "Include guideline citations if relevant", group: "Reasoning Detail" },
+            { id: "expectImage", label: "Expect image input", group: "Data Type Emphasis" },
+            { id: "expectAudio", label: "Expect audio input", group: "Data Type Emphasis" },
+            { id: "expectStructured", label: "Expect structured vitals/labs", group: "Data Type Emphasis" },
+            { id: "formatSOAP", label: "SOAP format", group: "Documentation Type", checked: true },
+            { id: "formatHnP", label: "Full H&P", group: "Documentation Type" },
+            { id: "formatDischarge", label: "Discharge summary", group: "Documentation Type" },
+            { id: "formatPreOp", label: "Pre-op note", group: "Documentation Type" },
+            { id: "specOBGYN", label: "OB/GYN", group: "Specialty Context" },
+            { id: "specDerm", label: "Derm", group: "Specialty Context" },
+            { id: "specPeds", label: "Peds", group: "Specialty Context" },
+            { id: "specOrtho", label: "Ortho", group: "Specialty Context" },
+            { id: "specIM", label: "Internal Medicine", group: "Specialty Context" },
+            { id: "incMissingData", label: "Include checklist of missing objective data", group: "Output Features" },
+            { id: "genPatientQuestions", label: "Generate initial patient questions", group: "Output Features" },
+            { id: "incTTS", label: "Insert TTS audio (if supported by backend)", group: "Output Features" },
+            { id: "confirmDeidentified", label: "Confirm data is de-identified", group: "Redaction", checked: true },
+            { id: "removeDates", label: "Remove dates (convert to relative time)", group: "Redaction" },
+            { id: "stripNonStandardAbbr", label: "Strip nonstandard abbreviations", group: "Redaction" }
+        ];
+
+        function populateCheckboxOptions() {
+            const container = document.getElementById('checkboxOptionsContainer');
+            if (!container) return;
+            container.innerHTML = ''; 
+            let currentGroup = "";
+            checkboxOptions.forEach(opt => {
+                if (opt.group !== currentGroup) {
+                    currentGroup = opt.group;
+                    const groupTitle = document.createElement('h4');
+                    groupTitle.textContent = currentGroup;
+                    groupTitle.style.marginTop = '15px';
+                    groupTitle.style.marginBottom = '5px';
+                    container.appendChild(groupTitle);
+                }
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = opt.id;
+                checkbox.name = opt.id;
+                checkbox.value = opt.id;
+                if (opt.checked) {
+                    checkbox.checked = true;
+                }
+
+                const labelEl = document.createElement('label');
+                labelEl.htmlFor = opt.id;
+                labelEl.appendChild(document.createTextNode(opt.label));
+                labelEl.style.fontWeight = 'normal';
+                labelEl.style.marginLeft = '5px';
+                labelEl.style.marginRight = '15px';
+
+                const div = document.createElement('div');
+                div.appendChild(checkbox);
+                div.appendChild(labelEl);
+                container.appendChild(div);
+            });
+        }
+
+        function getSelectedServiceAbbreviation() {
+            // Attempt to infer from specialty checkboxes. This is a simple inference.
+            // You might want a more explicit way to set this (e.g., a dedicated input or dropdown for filename service).
+            const specialtyCheckboxes = [
+                { id: "specOBGYN", abbr: "OBGYN" },
+                { id: "specDerm", abbr: "DERM" },
+                { id: "specPeds", abbr: "PEDS" },
+                { id: "specOrtho", abbr: "ORTHO" },
+                { id: "specIM", abbr: "IM" }
+            ];
+            for (const spec of specialtyCheckboxes) {
+                const checkbox = document.getElementById(spec.id);
+                if (checkbox && checkbox.checked) {
+                    return spec.abbr;
+                }
+            }
+            return "GENERAL"; // Default if no specific specialty is checked
+        }
+
+        async function submitPromptToBackend() {
+            const patientInfo = document.getElementById('patientInfoInput').value;
+            const epicSmartPhrase = document.getElementById('epicSmartPhraseInput').value;
+            const selectedTemplate = document.getElementById('templateSelector').value;
+            const outputArea = document.getElementById('mainOutputArea');
+            
+            if (!outputArea) {
+                console.error("Output area not found!");
+                alert("Error: Output area not found on the page.");
+                return;
+            }
+
+            outputArea.value = "Generating prompt...";
+
+            let prompt = `You are ShihGPT-MD, an attending-level physician model.
+Remove all patient names and MRNs.
+Reanalyze every question and recommendation for accuracy with the rigor of an attending.
+
+Patient Information:
+---
+${patientInfo}
+---
+`;
+
+            if (epicSmartPhrase.trim() !== "") {
+                prompt += `\nEPIC SmartPhrase Template to use for output format:
+---
+${epicSmartPhrase}
+---
+Instruct the model to fill this template. If information for a field is not available, leave the field placeholder as is or indicate 'not available'.
+`;
+            } else {
+                prompt += `\nSelected Predefined Template: ${selectedTemplate}\n`;
+            }
+
+            prompt += "\nSelected Options:\n";
+            let hasSelectedOption = false;
+            checkboxOptions.forEach(opt => { // Assuming checkboxOptions is globally available
+                const checkbox = document.getElementById(opt.id);
+                if (checkbox && checkbox.checked) {
+                    prompt += `- ${opt.label}\n`;
+                    hasSelectedOption = true;
+                }
+            });
+            if (!hasSelectedOption) {
+                prompt += "- (No specific checkbox options selected)\n";
+            }
+            
+            prompt += `
+Core Instructions:
+- If this is a new patient, generate initial questions based on their case that are thorough, guideline-concordant, and relevant for diagnostic clarity. Also begin a working impression and full assessment and plan using available data. Use current clinical guidelines where appropriate.
+- Update the note each time new information (text, image, audio) is received, placing the new content in the appropriate section. If data is missing (e.g. vital signs, labs, imaging), state which ones are needed, why, and under what criteria.
+- Include:
+    - Impression: 1-liner with age, sex (if known), relevant background, and primary concern or diagnosis
+    - Subjective: HPI + relevant PMH, SHx, FHx, ROS
+    - Objective: Include available vitals, PE, labs/imaging
+    - Assessment & Plan: Fully reasoned differential, most likely diagnosis, relevant pathophysiology, and plan with specific interventions and follow-up
+
+Output Formatting based on selections:
+- If "Generate SHN" is selected: Rephrase full note using standard clinical abbreviations while maintaining clarity.
+- If "Generate VSHN" is selected: Distill into ultra-concise, rapid-style shorthand, omitting non-critical detail and avoiding uncommon abbreviations or unnecessary caps.
+(If both SHN and VSHN are selected, prioritize VSHN or clarify desired combined behavior).
+
+Reasoning Detail:
+- If "Include full pathophysiologic reasoning" is selected, ensure this is present in the Assessment & Plan.
+- If "Include guideline citations if relevant" is selected, add these where appropriate.
+
+Data Type Emphasis:
+- Adapt interaction if "Expect image input", "Expect audio input", or "Expect structured vitals/labs" is indicated.
+
+Documentation Type:
+- Prioritize the selected format (SOAP, Full H&P, Discharge, Pre-op) if no EPIC SmartPhrase is provided.
+
+Specialty Context:
+- Tailor questions, assessment, and plan to the selected specialty (OB/GYN, Derm, Peds, Ortho, Internal Medicine).
+
+Output Features:
+- If "Include checklist of missing objective data" is selected, provide this.
+- If "Generate initial patient questions" is selected, ensure these are present for new patients.
+- If "Insert TTS audio" is selected, note that the output text should be suitable for TTS (backend would handle actual audio).
+
+Redaction:
+- Default: "Confirm data is de-identified".
+- If "Remove dates (convert to relative time)" is selected, apply this.
+- If "Strip nonstandard abbreviations" is selected, ensure output clarity.
+
+---
+BEGIN MODEL RESPONSE BASED ON ABOVE INSTRUCTIONS AND PATIENT DATA:
+`;
+            // Display the generated prompt locally for a moment (optional)
+            // outputArea.value = "Generated Prompt (for verification):\n" + prompt; 
+            // outputArea.value += "\n\nSending to backend... Please wait.";
+
+            const serviceAbbreviation = getSelectedServiceAbbreviation();
+            outputArea.value = `Sending prompt to backend for service: ${serviceAbbreviation}... Please wait.`;
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/generate_note', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        service_abbreviation: serviceAbbreviation
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    outputArea.value = `Success from backend:\nFilename: ${result.filename}\nMessage: ${result.message}\n\nLLM Response:\n---\n${result.llm_response}`;
+                } else {
+                    outputArea.value = `Error from backend: ${result.error}\nDetails: ${result.details || 'N/A'}`;
+                }
+            } catch (error) {
+                console.error('Error sending prompt to backend:', error);
+                outputArea.value = `Network error or backend server not running.\nCould not connect to the ShihGPT-MD backend at http://127.0.0.1:5000.\nPlease ensure the Python Flask server (shihgptmd_backend.py) is running.\nDetails: ${error.message}`;
+            }
+        }
+        
+        const hideCheckbox = document.getElementById('hideTextCheckbox');
+        const textAreasToHide = [
+            document.getElementById('patientInfoInput'),
+            document.getElementById('epicSmartPhraseInput'),
+            document.getElementById('mainOutputArea')
+        ];
+
+        if (hideCheckbox) {
+            hideCheckbox.addEventListener('change', function() {
+                textAreasToHide.forEach(textArea => {
+                    if (textArea) {
+                        if (this.checked) {
+                            textArea.classList.add('text-hidden-on-white');
+                        } else {
+                            textArea.classList.remove('text-hidden-on-white');
+                        }
+                    }
+                });
+            });
+        }
+
+        populateCheckboxOptions(); // This function should be defined within initializeShihGptMdApp or globally accessible
+
+        const generateButton = document.getElementById('generatePromptButton');
+        if (generateButton) {
+            generateButton.addEventListener('click', submitPromptToBackend); // Changed to new function name
+        }
+        console.log("ShihGPTMD app features ready to be initialized upon password success.");
+      }
+      // Call initializeShihGptMdApp() only after successful password entry,
+      // which is handled in the modified checkPassword function.
+      // Ensure checkboxOptions is defined in a scope accessible by submitPromptToBackend if it's called from initializeShihGptMdApp
+      // For simplicity, ensure checkboxOptions is defined before initializeShihGptMdApp or within it if not already.
+      // It seems checkboxOptions is defined globally in the previous version of this script, which is fine.
     </script>
   </body>
 </html>
