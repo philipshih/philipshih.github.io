@@ -9,14 +9,39 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # --- Configuration ---
-GEMINI_API_KEY = "AIzaSyBuvgHZkeZ2kM85Out-H-VUAUjAFmHS-6s" # User provided API Key
+# GEMINI_API_KEY is now expected as an environment variable
 GEMINI_MODEL = "gemini-2.5-pro-exp-03-25"
 NOTES_DIRECTORY = r"C:\Users\phili\OneDrive\Desktop\ShihGPTMD" # This is where notes are saved AND where we watch for new inputs.
                                                             # Consider separate input/output folders later if needed.
 INPUT_FILE_EXTENSION = ".txt" # Watch for .txt files for now
 
+# Load API Key from environment variable
+GEMINI_API_KEY_FROM_ENV = os.environ.get("GEMINI_API_KEY")
+if not GEMINI_API_KEY_FROM_ENV:
+    print("CRITICAL ERROR: The GEMINI_API_KEY environment variable is not set.")
+    print("Please set this environment variable before running the script.")
+    # exit(1) # Or raise an exception to stop execution if not running as a server that needs to start first
+    # For Flask, it's better to let it start and fail on request, or check before app.run
+    # For now, genai.configure will fail if key is None.
+
 # Configure the Gemini API client
-genai.configure(api_key=GEMINI_API_KEY)
+genai.configure(api_key=GEMINI_API_KEY_FROM_ENV)
+
+# Core ShihGPT-MD Instructions - To be prepended by the backend
+SHIHGPTMD_SYSTEM_INSTRUCTION = "You are ShihGPT-MD, an attending-level physician model. Remove all patient names and MRNs. Reanalyze every question and recommendation for accuracy with the rigor of an attending. Follow all formatting and content instructions precisely based on the user's request and the core operational instructions."
+
+SHIHGPTMD_CORE_OPERATIONAL_INSTRUCTIONS = """
+Core Operational Instructions for ShihGPT-MD:
+- If this is a new patient, generate initial questions based on their case that are thorough, guideline-concordant, and relevant for diagnostic clarity. Also begin a working impression and full assessment and plan using available data. Use current clinical guidelines where appropriate.
+- Update the note each time new information (text, image, audio) is received, placing the new content in the appropriate section. If data is missing (e.g. vital signs, labs, imaging), state which ones are needed, why, and under what criteria.
+- Include in the output note:
+    - Impression: 1-liner with age, sex (if known), relevant background, and primary concern or diagnosis
+    - Subjective: HPI + relevant PMH, SHx, FHx, ROS
+    - Objective: Include available vitals, PE, labs/imaging
+    - Assessment & Plan: Fully reasoned differential, most likely diagnosis, relevant pathophysiology, and plan with specific interventions and follow-up
+
+(The dynamic part of the prompt from the user will specify output formatting like SHN/VSHN, reasoning details, data types, documentation types, specialty context, specific output features, and redaction preferences.)
+"""
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -24,32 +49,46 @@ CORS(app) # Enable CORS for all routes, allowing requests from your GitHub Pages
 
 # --- Helper Functions (largely same as before) ---
 
-def get_llm_response(full_prompt_text):
+def get_llm_response(dynamic_prompt_from_frontend):
     """
-    Sends the full prompt to the Google Gemini API and returns the response.
+    Combines core instructions with dynamic prompt and sends to Gemini API.
+    Returns the response text and any prompt feedback.
     """
     try:
+        # Combine backend instructions with the dynamic part from the frontend
+        full_prompt_to_gemini = f"{SHIHGPTMD_SYSTEM_INSTRUCTION}\n\n{SHIHGPTMD_CORE_OPERATIONAL_INSTRUCTIONS}\n\nDynamic Request from Frontend:\n---\n{dynamic_prompt_from_frontend}\n---"
+        
         model = genai.GenerativeModel(GEMINI_MODEL)
-        print(f"Sending full prompt to Gemini model {GEMINI_MODEL}...")
-        response = model.generate_content(full_prompt_text)
+        # print(f"DEBUG: Sending combined prompt to Gemini model {GEMINI_MODEL} (first 500 chars):\n{full_prompt_to_gemini[:500]}...")
+        print(f"Sending combined prompt to Gemini model {GEMINI_MODEL}...")
+
+
+        generation_config = genai.types.GenerationConfig(
+            max_output_tokens=8192, 
+        )
+        response = model.generate_content(full_prompt_to_gemini, generation_config=generation_config)
+        
+        feedback_str = ""
+        if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
+            feedback_str = f"Prompt Feedback: {response.prompt_feedback}"
+            print(feedback_str) # Log it on backend
 
         if response.candidates and response.candidates[0].finish_reason == "STOP":
             if response.candidates[0].content and response.candidates[0].content.parts:
-                return response.candidates[0].content.parts[0].text
+                return response.candidates[0].content.parts[0].text, feedback_str
             else:
                 print("Gemini API response has no content parts.")
-                return "Error: No content in response from Gemini."
+                return "Error: No content in response from Gemini.", feedback_str
         else:
             reason = response.candidates[0].finish_reason if response.candidates else 'Unknown'
-            print(f"Gemini API call did not finish successfully. Finish reason: {reason}")
-            if response.prompt_feedback:
-                print(f"Prompt Feedback: {response.prompt_feedback}")
-            if hasattr(response, 'error') and response.error:
-                 print(f"API Error: {response.error}")
-            return f"Error: Gemini API call failed. Details: {reason}"
+            error_detail = f"Gemini API call did not finish successfully. Finish reason: {reason}"
+            print(error_detail)
+            # No specific 'response.error' attribute, error details are usually in finish_reason or prompt_feedback for safety issues
+            return f"Error: {error_detail}", feedback_str
+            
     except Exception as e:
         print(f"Error calling Google Gemini API: {e}")
-        return f"Error: Exception during API call - {str(e)}"
+        return f"Error: Exception during API call - {str(e)}", "" # No feedback string on general exception
 
 def generate_filename(service_abbreviation):
     """
@@ -132,28 +171,22 @@ Core Instructions:
 ---
 BEGIN MODEL RESPONSE BASED ON ABOVE INSTRUCTIONS AND PATIENT DATA:
 """
-                print(f"Processing content from: {event.src_path}")
-                llm_output = get_llm_response(auto_prompt)
+                # The 'auto_prompt' here is the dynamic part for file-based inputs.
+                # The get_llm_response function will prepend the static core instructions.
+                print(f"Processing content from: {event.src_path} as dynamic prompt for file watcher.")
+                llm_text_output, prompt_feedback_details = get_llm_response(auto_prompt) 
 
-                if llm_output and not llm_output.startswith("Error:"):
-                    # Modify filename to indicate auto-processing and avoid overwriting original input if named similarly
+                if prompt_feedback_details:
+                    print(f"File Watcher - Prompt Feedback for {event.src_path}: {prompt_feedback_details}")
+
+                if llm_text_output and not llm_text_output.startswith("Error:"):
                     original_filename = os.path.basename(event.src_path)
-                    # Using "AUTO" as service, can be refined
-                    service_abbr_auto = "AUTO_FROM_" + os.path.splitext(original_filename)[0] # e.g. AUTO_FROM_patient_info
-                    
-                    # We need a slightly different naming to avoid conflict if input file is also a note draft
-                    # Let's make a new filename for the output note
-                    output_note_filename = generate_filename(service_abbr_auto) 
-                    
-                    # Save the LLM output to a new file
-                    save_note_to_file(output_note_filename, llm_output)
+                    service_abbr_auto = "AUTO_FROM_" + os.path.splitext(original_filename)[0]
+                    output_note_filename = generate_filename(service_abbr_auto)
+                    save_note_to_file(output_note_filename, llm_text_output)
                     print(f"LLM response for {original_filename} saved to {output_note_filename}")
-                    
-                    # Optionally, delete or move the processed input file
-                    # os.remove(event.src_path)
-                    # print(f"Deleted processed input file: {event.src_path}")
                 else:
-                    print(f"Failed to get LLM response for {event.src_path}")
+                    print(f"Failed to get LLM response for {event.src_path}. Details: {llm_text_output}")
 
             except Exception as e:
                 print(f"Error processing file {event.src_path}: {e}")
@@ -174,20 +207,26 @@ def handle_generate_note():
         service_abbr = "GENERAL" # Default if empty after stripping
 
     print(f"Received request for service: {service_abbr}")
-    llm_output = get_llm_response(full_prompt)
+    # 'full_prompt' from the frontend is now considered the 'dynamic_prompt_from_frontend'
+    llm_text_output, prompt_feedback_details = get_llm_response(full_prompt) 
 
-    if llm_output and not llm_output.startswith("Error:"):
+    response_data = {"prompt_feedback": prompt_feedback_details if prompt_feedback_details else "N/A"}
+
+    if llm_text_output and not llm_text_output.startswith("Error:"):
         note_filename = generate_filename(service_abbr)
-        if save_note_to_file(note_filename, llm_output):
-            return jsonify({
-                "message": "Note generated and saved successfully.",
-                "filename": note_filename,
-                "llm_response": llm_output # Optionally return the response
-            }), 200
+        if save_note_to_file(note_filename, llm_text_output):
+            response_data["message"] = "Note generated and saved successfully."
+            response_data["filename"] = note_filename
+            response_data["llm_response"] = llm_text_output
+            return jsonify(response_data), 200
         else:
-            return jsonify({"error": "Failed to save the note."}), 500
+            response_data["error"] = "Failed to save the note."
+            return jsonify(response_data), 500
     else:
-        return jsonify({"error": "Failed to get a valid response from LLM.", "details": llm_output}), 500
+        response_data["error"] = "Failed to get a valid response from LLM."
+        # llm_text_output already contains the error message from get_llm_response
+        response_data["details"] = llm_text_output 
+        return jsonify(response_data), 500
 
 def start_file_watcher():
     # This function is now correctly defined at the top level.
