@@ -16,31 +16,31 @@ NOTES_DIRECTORY = r"C:\Users\phili\OneDrive\Desktop\ShihGPTMD" # This is where n
 INPUT_FILE_EXTENSION = ".txt" # Watch for .txt files for now
 
 # Load API Key from environment variable
-GEMINI_API_KEY_FROM_ENV = os.environ.get("GEMINI_API_KEY")
-if not GEMINI_API_KEY_FROM_ENV:
-    print("CRITICAL ERROR: The GEMINI_API_KEY environment variable is not set.")
-    print("Please set this environment variable before running the script.")
-    # exit(1) # Or raise an exception to stop execution if not running as a server that needs to start first
-    # For Flask, it's better to let it start and fail on request, or check before app.run
-    # For now, genai.configure will fail if key is None.
+# Try 'GEMINI_API_KEY' first, then 'GOOGLE_API_KEY' as a fallback based on error message
+API_KEY_TO_USE = os.environ.get("GEMINI_API_KEY")
+if not API_KEY_TO_USE:
+    print("GEMINI_API_KEY environment variable not found. Trying GOOGLE_API_KEY...")
+    API_KEY_TO_USE = os.environ.get("GOOGLE_API_KEY")
+
+if not API_KEY_TO_USE:
+    print("CRITICAL ERROR: Neither GEMINI_API_KEY nor GOOGLE_API_KEY environment variable is set.")
+    print("Please set one of these environment variables before running the script.")
+    # For Flask, genai.configure will fail if API_KEY_TO_USE is None, leading to an error on first API call.
+    # This print is for startup diagnostics.
 
 # Configure the Gemini API client
-genai.configure(api_key=GEMINI_API_KEY_FROM_ENV)
+genai.configure(api_key=API_KEY_TO_USE)
 
-# Core ShihGPT-MD Instructions - To be prepended by the backend
-SHIHGPTMD_SYSTEM_INSTRUCTION = "You are ShihGPT-MD, an attending-level physician model. Remove all patient names and MRNs. Reanalyze every question and recommendation for accuracy with the rigor of an attending. Follow all formatting and content instructions precisely based on the user's request and the core operational instructions."
+# Core ShihGPT-MD Instructions - To be prepended by the backend (CONCISE VERSION)
+SHIHGPTMD_SYSTEM_INSTRUCTION = "You are ShihGPT-MD, an attending-level physician AI. Prioritize accuracy, PII removal (names, MRNs), and adherence to user-specified formatting (SHN, VSHN, templates) and content requests (pathophysiology, guidelines, etc.) from the dynamic prompt."
 
 SHIHGPTMD_CORE_OPERATIONAL_INSTRUCTIONS = """
-Core Operational Instructions for ShihGPT-MD:
-- If this is a new patient, generate initial questions based on their case that are thorough, guideline-concordant, and relevant for diagnostic clarity. Also begin a working impression and full assessment and plan using available data. Use current clinical guidelines where appropriate.
-- Update the note each time new information (text, image, audio) is received, placing the new content in the appropriate section. If data is missing (e.g. vital signs, labs, imaging), state which ones are needed, why, and under what criteria.
-- Include in the output note:
-    - Impression: 1-liner with age, sex (if known), relevant background, and primary concern or diagnosis
-    - Subjective: HPI + relevant PMH, SHx, FHx, ROS
-    - Objective: Include available vitals, PE, labs/imaging
-    - Assessment & Plan: Fully reasoned differential, most likely diagnosis, relevant pathophysiology, and plan with specific interventions and follow-up
+Key Tasks:
+1. New Patient: Generate guideline-concordant questions, initial impression, and A&P.
+2. Updates: Integrate new info into the correct note section. Identify missing data if critical.
+3. Note Structure: Always include Impression, Subjective (HPI, relevant PMH/SHx/FHx/ROS), Objective (vitals, PE, labs/imaging if available), and a fully reasoned Assessment & Plan (differential, likely Dx, brief pathophys, interventions, F/U).
 
-(The dynamic part of the prompt from the user will specify output formatting like SHN/VSHN, reasoning details, data types, documentation types, specialty context, specific output features, and redaction preferences.)
+Refer to the 'Dynamic Request from Frontend' for specific output format, detail level, and other user preferences for THIS request.
 """
 
 # Initialize Flask app
