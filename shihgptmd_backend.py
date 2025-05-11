@@ -55,49 +55,63 @@ def get_llm_response(dynamic_prompt_from_frontend):
     Returns the response text and any prompt feedback.
     """
     try:
-        # Combine backend instructions with the dynamic part from the frontend
         full_prompt_to_gemini = f"{SHIHGPTMD_SYSTEM_INSTRUCTION}\n\n{SHIHGPTMD_CORE_OPERATIONAL_INSTRUCTIONS}\n\nDynamic Request from Frontend:\n---\n{dynamic_prompt_from_frontend}\n---"
         
         model = genai.GenerativeModel(GEMINI_MODEL)
-        # print(f"DEBUG: Sending combined prompt to Gemini model {GEMINI_MODEL} (first 500 chars):\n{full_prompt_to_gemini[:500]}...")
         print(f"Sending combined prompt to Gemini model {GEMINI_MODEL}...")
 
         generation_config = genai.types.GenerationConfig(
-            max_output_tokens=4096 # Re-adding with a moderate value
+            max_output_tokens=4096 
         )
         response = model.generate_content(full_prompt_to_gemini, generation_config=generation_config)
         
         feedback_str = ""
         if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
-            feedback_str = f"Prompt Feedback: {response.prompt_feedback}"
-            print(feedback_str) # Log it on backend
+            feedback_str = f"Prompt Feedback: {str(response.prompt_feedback)}" # Ensure it's a string
+            print(feedback_str)
 
-        # Correctly check against the enum value for STOP
-        if response.candidates and response.candidates[0].finish_reason == genai.types.FinishReason.STOP:
-            if response.candidates[0].content and response.candidates[0].content.parts:
-                return response.candidates[0].content.parts[0].text, feedback_str
-            else:
-                print("Gemini API response has no content parts.")
-                return "Error: No content in response from Gemini.", feedback_str
-        else:
-            reason = response.candidates[0].finish_reason if (response.candidates and len(response.candidates) > 0) else 'Unknown reason (no candidates)'
-            error_detail = f"Gemini API call did not finish successfully. Finish reason: {reason}"
-            print(error_detail)
-            print("--- Full Gemini Response (or parts if very large) ---")
+        # Check if there are candidates and content
+        if response.candidates and len(response.candidates) > 0:
+            candidate = response.candidates[0]
+            actual_finish_reason = candidate.finish_reason
+            
+            # Try to use the enum for STOP, default to integer 1 if enum path fails
+            stop_reason_enum_value = 1 # Default integer for STOP
             try:
-                # Attempt to print the response object, which might be large.
-                # Be cautious with very large responses in production logs.
-                print(f"Raw response object: {response}") 
-                if response.candidates:
-                    print(f"Candidate details: {response.candidates[0]}")
+                stop_reason_enum_value = genai.types.FinishReason.STOP
+            except AttributeError:
+                print("Note: genai.types.FinishReason.STOP not found, relying on integer value 1 for STOP reason.")
+
+            if candidate.content and candidate.content.parts:
+                # We have content, this is the primary success path
+                if actual_finish_reason != stop_reason_enum_value:
+                     print(f"Warning: Response has content, but finish_reason was not '{stop_reason_enum_value}'. Actual reason: {actual_finish_reason} (type: {type(actual_finish_reason)})")
+                return candidate.content.parts[0].text, feedback_str
+            else:
+                # No content, but we have a candidate, so the finish_reason is important
+                error_detail = f"Gemini API call did not finish successfully (no content parts). Finish reason: {actual_finish_reason}"
+                print(error_detail)
+                print("--- Full Gemini Response (Candidate available) ---")
+                try:
+                    print(f"Raw response object: {response}")
+                    print(f"Candidate details: {candidate}")
+                except Exception as print_e:
+                    print(f"Error trying to print response/candidate details: {print_e}")
+                return f"Error: {error_detail}", feedback_str
+        else:
+            # No candidates at all, this is a more severe failure
+            error_detail = "Gemini API call failed: No candidates returned."
+            print(error_detail)
+            print("--- Full Gemini Response (No candidates) ---")
+            try:
+                print(f"Raw response object: {response}")
             except Exception as print_e:
-                print(f"Error trying to print full response details: {print_e}")
-            # No specific 'response.error' attribute, error details are usually in finish_reason or prompt_feedback for safety issues
+                print(f"Error trying to print raw response: {print_e}")
             return f"Error: {error_detail}", feedback_str
             
     except Exception as e:
         print(f"Error calling Google Gemini API: {e}")
-        return f"Error: Exception during API call - {str(e)}", "" # No feedback string on general exception
+        return f"Error: Exception during API call - {str(e)}", ""
 
 def generate_filename(service_abbreviation):
     """
