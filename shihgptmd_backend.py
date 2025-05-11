@@ -79,9 +79,18 @@ def get_llm_response(dynamic_prompt_from_frontend):
                 print("Gemini API response has no content parts.")
                 return "Error: No content in response from Gemini.", feedback_str
         else:
-            reason = response.candidates[0].finish_reason if response.candidates else 'Unknown'
+            reason = response.candidates[0].finish_reason if (response.candidates and len(response.candidates) > 0) else 'Unknown reason (no candidates)'
             error_detail = f"Gemini API call did not finish successfully. Finish reason: {reason}"
             print(error_detail)
+            print("--- Full Gemini Response (or parts if very large) ---")
+            try:
+                # Attempt to print the response object, which might be large.
+                # Be cautious with very large responses in production logs.
+                print(f"Raw response object: {response}") 
+                if response.candidates:
+                    print(f"Candidate details: {response.candidates[0]}")
+            except Exception as print_e:
+                print(f"Error trying to print full response details: {print_e}")
             # No specific 'response.error' attribute, error details are usually in finish_reason or prompt_feedback for safety issues
             return f"Error: {error_detail}", feedback_str
             
