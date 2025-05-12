@@ -141,8 +141,8 @@ layout: base
 <script>
     // Rosetta App Specific JavaScript
     const ROSETTA_CORRECT_PASSWORD = "password123"; // CHANGE THIS!
-    let rosettaTypedSequence = "";
-    const rosettaTriggerSequence = "E916!";
+    // let rosettaTypedSequence = ""; // Commented out
+    // const rosettaTriggerSequence = "E916!"; // Commented out
 
     function rosettaCheckPassword() {
         const password = document.getElementById('rosettaPasswordInput').value;
@@ -169,6 +169,7 @@ layout: base
         document.getElementById('rosettaAppModal').classList.add('rosetta-hidden');
     }
 
+    /* Commenting out the global keydown listener for E916!
     document.addEventListener('keydown', function(event) {
         rosettaTypedSequence += event.key;
         // If the sequence is longer than the trigger, keep only the last N characters
@@ -180,6 +181,7 @@ layout: base
             rosettaTypedSequence = ""; // Reset sequence
         }
     });
+    */
 
     const rosettaCheckboxOptions = [
         { id: "rosettaGenSHN", label: "Generate SHN (Short-hand Notation)", group: "Output Format" },
