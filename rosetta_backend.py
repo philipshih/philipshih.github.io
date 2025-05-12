@@ -91,12 +91,6 @@ if not os.path.exists(OUTPUT_NOTES_DIRECTORY):
         print(f"Created output directory at startup: {OUTPUT_NOTES_DIRECTORY}")
     except OSError as e:
         print(f"Error creating output directory {OUTPUT_NOTES_DIRECTORY} at startup: {e}")
-if not os.path.exists(INPUT_FILES_DIRECTORY):
-    try:
-        os.makedirs(INPUT_FILES_DIRECTORY)
-        print(f"Created input directory at startup: {INPUT_FILES_DIRECTORY}")
-    except OSError as e:
-        print(f"Error creating input directory {INPUT_FILES_DIRECTORY} at startup: {e}")
 
 # --- Helper Functions (largely same as before) ---
 
