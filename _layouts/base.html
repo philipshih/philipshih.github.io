@@ -294,7 +294,7 @@
         </details>
         
         <details open class="section-container" id="serverSavedNotesSection">
-            <summary class="section-title">Saved Notes (Server)</summary>
+            <summary class="section-title">Saved Notes</summary>
             <div id="serverNotesListArea" style="margin-top: 10px;">
                 <button type="button" id="refreshServerNotesListButton" class="rosetta-secondary-button" style="margin-bottom: 10px;">
                     <i class="fas fa-redo"></i> Refresh List
@@ -489,6 +489,7 @@
                     return;
                 }
                 const data = await response.json();
+                console.log("Rosetta Debug: Data received for server notes list:", data); // Added for debugging
                 if (data.notes && data.notes.length > 0) {
                     listElement.innerHTML = ''; // Clear "Loading..."
                     data.notes.forEach(filename => {
