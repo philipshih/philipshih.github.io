@@ -780,11 +780,16 @@
             if (epicSmartPhrase.trim() !== "") {
                 template_content_for_payload = epicSmartPhrase;
                 selected_template_name_for_payload = "custom_from_input";
-            } else {
+            } else if (selectedTemplate && selectedTemplate !== "none") { // Check if a template is selected and it's not "none"
                 const templateFileName = `${selectedTemplate}.txt`;
                 const selectedTemplateDropdown = document.getElementById('templateSelector');
                 selected_template_name_for_payload = selectedTemplateDropdown.options[selectedTemplateDropdown.selectedIndex].text; // User-friendly name
                 try {
+                    // Assuming smartphrase_templates are served relative to the HTML file or a base URL
+                    // For GitHub Pages, this path might need to be {{ site.baseurl }}/smartphrase_templates/
+                    // However, if the backend serves these, the URL structure might differ.
+                    // For now, let's assume they are co-located or served from a relative path.
+                    // If your backend serves these, adjust the fetch URL accordingly.
                     const response = await fetch(`smartphrase_templates/${templateFileName}`);
                     if (response.ok) {
                         template_content_for_payload = await response.text();
@@ -796,6 +801,9 @@
                     if(outputArea) outputArea.value = `Error: Could not load SmartPhrase template 'smartphrase_templates/${templateFileName}'. Error: ${error}. Will proceed without specific template content.`;
                     template_content_for_payload = `(Error loading template: ${templateFileName}, Error: ${error})`;
                 }
+            } else { // "None" is selected or selectedTemplate is empty
+                 selected_template_name_for_payload = "None (Use General Structure)"; // Or whatever the display text for "none" is
+                 template_content_for_payload = ""; // No content for "none"
             }
 
             // Structured options
@@ -864,7 +872,8 @@
                         modelImpressionArea.value = result.llm_model_thoughts || "(No specific reasoning provided by model)";
                     }
                     outputArea.value = result.llm_note_output || "(No note output provided by model)";
-                    fetchExistingNotesRosetta(); // Refresh notes list
+                    fetchExistingNotesRosetta(); // Refresh notes list for the dropdown
+                    displaySavedNotesList(); // Refresh the "Saved Notes" list display
                 } else {
                     resultDisplay = `Error from backend: ${result.error}\nDetails: ${result.details || 'N/A'}\n`;
                     if (modelImpressionArea) {
