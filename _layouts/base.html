@@ -5,7 +5,10 @@
   <style>
     /* Styles from shihgptmd.html */
     body { font-family: sans-serif; /* Existing body styles might be in main.css */ }
-    .shihgptmd-container { max-width: 900px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+    .shihgptmd-container { max-width: 900px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; text-align: center; /* Center Rosetta and copyright */ }
+    .shihgptmd-container h1 { margin-bottom: 5px; } /* Reduce space after Rosetta */
+    .copyright-rosetta { font-size: 0.8em; color: #777; margin-bottom: 20px; display: block; } /* Style for copyright */
+    .shihgptmd-container > *:not(h1):not(.copyright-rosetta):not(.checkbox-area) { text-align: left; } /* Reset text-align for other elements */
     .hidden { display: none !important; } /* Added !important to ensure override */
     .shihgptmd-container label { display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold; }
     .shihgptmd-container textarea, .shihgptmd-container select { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
@@ -117,15 +120,16 @@
 
     <div id="shihGptMdAppContainer" class="shihgptmd-container hidden">
         <h1>Rosetta</h1>
+        <span class="copyright-rosetta">&copy; Philip Shih 2025</span>
 
-        <div class="checkbox-area">
+        <div class="checkbox-area" style="justify-content: center; text-align: center;"> {/* Centering the Incognito switch area */}
             <label for="hideTextCheckbox" style="font-weight: bold; margin-right: 8px;">Incognito</label> 
             <input type="checkbox" id="hideTextCheckbox" name="hideTextCheckbox" class="apple-switch-checkbox">
-            <label for="hideTextCheckbox" class="apple-switch-label" aria-hidden="true" style="width: 50px; height: 28px;"></label> <!-- Corrected class.bind and removed comment -->
+            <label for="hideTextCheckbox" class="apple-switch-label" aria-hidden="true" style="width: 50px; height: 28px;"></label>
         </div>
 
         <h2 class="section-title">Input</h2>
-        <textarea id="patientInfoInput" placeholder="Enter patient information here..."></textarea>
+        <textarea id="patientInfoInput" placeholder="Enter information here..."></textarea>
 
         <h2 class="section-title">SmartPhrase Template (Optional)</h2>
         <textarea id="epicSmartPhraseInput" placeholder="Paste SmartPhrase template here if desired..."></textarea>
@@ -140,12 +144,12 @@
             <!-- Add more templates as needed -->
         </select>
 
-        <h3>Checkbox Options:</h3>
-        <div id="checkboxOptionsContainer" style="margin-bottom: 20px;">
+        <h3>Options:</h3>
+        <div id="checkboxOptionsContainer" style="margin-bottom: 20px; text-align: left;"> {/* Ensure checkbox options are left-aligned */}
             <!-- Checkboxes will be dynamically added here by JS -->
         </div>
 
-        <button id="generatePromptButton" style="margin-top:20px;">Generate Output</button>
+        <button id="generatePromptButton" style="margin-top:20px; display: block; margin-left: auto; margin-right: auto;">Generate Output</button> {/* Center button */}
 
         <h2 class="section-title">Output</h2>
         <textarea id="mainOutputArea" placeholder="Output will appear here..." readonly></textarea>
