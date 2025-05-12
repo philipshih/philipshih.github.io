@@ -33,14 +33,15 @@ if not API_KEY_TO_USE:
 # Configure the Gemini API client
 genai.configure(api_key=API_KEY_TO_USE)
 
-# Core ShihGPT-MD Instructions - To be prepended by the backend (CONCISE VERSION)
-SHIHGPTMD_SYSTEM_INSTRUCTION = "You are ShihGPT-MD, an attending-level physician AI. Prioritize accuracy, PII removal (names, MRNs), and adherence to user-specified formatting (SHN, VSHN, templates) and content requests (pathophysiology, guidelines, etc.) from the dynamic prompt."
+# Core ShihGPT-MD Instructions - To be prepended by the backend (REFINED VERSION V2)
+SHIHGPTMD_SYSTEM_INSTRUCTION = "You are ShihGPT-MD, an attending physician. Generate notes in a style typical of a human attending physician: concise, clinically precise, and avoiding AI-like or overly verbose phrasing. CRITICAL: Output format MUST be pure plaintext. Absolutely NO markdown formatting (e.g., no asterisks for bolding like **word**, no hashes for headers like ## H2) is allowed, unless such formatting is explicitly part of a user-provided EPIC SmartPhrase template from the dynamic prompt. Prioritize accuracy, PII removal (names, MRNs), and adherence to user-specified formatting (SHN, VSHN, templates) and content requests (pathophysiology, guidelines, etc.) from the dynamic prompt."
 
 SHIHGPTMD_CORE_OPERATIONAL_INSTRUCTIONS = """
 Key Tasks:
-1. New Patient: Generate guideline-concordant questions, initial impression, and A&P.
-2. Updates: Integrate new info into the correct note section. Identify missing data if critical.
-3. Note Structure: Always include Impression, Subjective (HPI, relevant PMH/SHx/FHx/ROS), Objective (vitals, PE, labs/imaging if available), and a fully reasoned Assessment & Plan (differential, likely Dx, brief pathophys, interventions, F/U).
+1. New Patient: Generate guideline-concordant questions phrased as 'Plan to ask about [X] to assess [Y].' Develop an initial impression and A&P.
+2. Updates: Integrate new info into the correct note section. 
+3. Missing Data: If critical data is missing, state 'Indicated to obtain [test/item] due to [reason/guideline]' or 'Plan to further assess [symptom/area].' Avoid phrases like 'Not provided.'
+4. Note Structure: Always include Impression, Subjective (HPI, relevant PMH/SHx/FHx/ROS), Objective (vitals, PE, labs/imaging if available), and a fully reasoned Assessment & Plan (differential, likely Dx, brief pathophys, interventions, F/U).
 
 Refer to the 'Dynamic Request from Frontend' for specific output format, detail level, and other user preferences for THIS request.
 """
@@ -175,29 +176,17 @@ class NewFileHandler(FileSystemEventHandler):
                     return
 
                 # Construct a default prompt for auto-processed files
-                # This is a simplified prompt. You might want to make this more configurable.
-                auto_prompt = f"""You are ShihGPT-MD, an attending-level physician model.
-Remove all patient names and MRNs.
-Reanalyze every question and recommendation for accuracy with the rigor of an attending.
-
-The following patient information was provided from an automatically processed file:
+                # This is a simplified prompt for auto-processed files.
+                # It will be prepended with SHIHGPTMD_SYSTEM_INSTRUCTION and SHIHGPTMD_CORE_OPERATIONAL_INSTRUCTIONS by get_llm_response.
+                # So, this 'auto_prompt' is effectively the 'dynamic_prompt_from_frontend' for file inputs.
+                auto_prompt = f"""Patient Information (from automatically processed file: {os.path.basename(event.src_path)}):
 ---
 {file_content}
 ---
-
-Core Instructions:
-- Generate a concise clinical note based on the provided information.
-- If this is a new patient, generate initial questions based on their case that are thorough, guideline-concordant, and relevant for diagnostic clarity. Also begin a working impression and full assessment and plan using available data. Use current clinical guidelines where appropriate.
-- Include:
-    - Impression: 1-liner with age, sex (if known), relevant background, and primary concern or diagnosis
-    - Subjective: HPI + relevant PMH, SHx, FHx, ROS
-    - Objective: Include available vitals, PE, labs/imaging
-    - Assessment & Plan: Fully reasoned differential, most likely diagnosis, relevant pathophysiology, and plan with specific interventions and follow-up
----
-BEGIN MODEL RESPONSE BASED ON ABOVE INSTRUCTIONS AND PATIENT DATA:
+User-Selected Options for this request:
+- (Using default behaviors as per core instructions for non-specified options, assume standard SOAP/H&P unless content implies otherwise)
+--- END OF DYNAMIC REQUEST ---
 """
-                # The 'auto_prompt' here is the dynamic part for file-based inputs.
-                # The get_llm_response function will prepend the static core instructions.
                 print(f"Processing content from: {event.src_path} as dynamic prompt for file watcher.")
                 llm_text_output, prompt_feedback_details = get_llm_response(auto_prompt) 
 
@@ -205,11 +194,14 @@ BEGIN MODEL RESPONSE BASED ON ABOVE INSTRUCTIONS AND PATIENT DATA:
                     print(f"File Watcher - Prompt Feedback for {event.src_path}: {prompt_feedback_details}")
 
                 if llm_text_output and not llm_text_output.startswith("Error:"):
+                    cleaned_llm_text_output = llm_text_output.replace("**", "") # Clean output
+                    cleaned_llm_text_output = cleaned_llm_text_output.strip()   # Trim whitespace
+
                     original_filename = os.path.basename(event.src_path)
                     service_abbr_auto = "AUTO_FROM_" + os.path.splitext(original_filename)[0]
                     output_note_filename = generate_filename(service_abbr_auto)
-                    save_note_to_file(output_note_filename, llm_text_output)
-                    print(f"LLM response for {original_filename} saved to {output_note_filename}")
+                    save_note_to_file(output_note_filename, cleaned_llm_text_output) # Save cleaned version
+                    print(f"LLM response for {original_filename} saved to {output_note_filename} (markdown removed)")
                 else:
                     print(f"Failed to get LLM response for {event.src_path}. Details: {llm_text_output}")
 
@@ -238,11 +230,17 @@ def handle_generate_note():
     response_data = {"prompt_feedback": prompt_feedback_details if prompt_feedback_details else "N/A"}
 
     if llm_text_output and not llm_text_output.startswith("Error:"):
+        # Post-process to remove double asterisks (common bold markdown)
+        cleaned_llm_text_output = llm_text_output.replace("**", "")
+        # Add more specific cleaning if needed, e.g., for leading/trailing spaces from removed markdown
+        cleaned_llm_text_output = cleaned_llm_text_output.strip()
+
+
         note_filename = generate_filename(service_abbr)
-        if save_note_to_file(note_filename, llm_text_output):
-            response_data["message"] = "Note generated and saved successfully."
+        if save_note_to_file(note_filename, cleaned_llm_text_output): # Save cleaned version
+            response_data["message"] = "Note generated and saved successfully (markdown removed)."
             response_data["filename"] = note_filename
-            response_data["llm_response"] = llm_text_output
+            response_data["llm_response"] = cleaned_llm_text_output # Return cleaned version
             return jsonify(response_data), 200
         else:
             response_data["error"] = "Failed to save the note."
