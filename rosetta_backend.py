@@ -6,7 +6,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 # Import the make_default_options_response function
-from flask import make_response
+from flask import make_response, send_from_directory
+import werkzeug # For filename sanitization
 
 # --- Configuration ---
 # GEMINI_API_KEY is now expected as an environment variable
@@ -386,6 +387,76 @@ def delete_smartphrase_template():
     except Exception as e:
         print(f"Error deleting smartphrase template: {e}")
         return jsonify({"error": "An error occurred while deleting the template.", "details": str(e)}), 500
+
+
+# --- New Flask Routes for Saved Notes ---
+
+@app.route('/list_saved_notes', methods=['GET'])
+def list_saved_notes():
+    """
+    Lists all .txt files in the OUTPUT_NOTES_DIRECTORY.
+    This is similar to /list_notes but specifically for the generated notes.
+    """
+    # Use the globally defined OUTPUT_NOTES_DIRECTORY
+    notes_dir = OUTPUT_NOTES_DIRECTORY
+    if not os.path.exists(notes_dir):
+        print(f"Output directory {notes_dir} not found for listing notes.")
+        # It might be okay if it doesn't exist yet, return empty list
+        return jsonify({"notes": []}), 200
+        # Or return 404 if you expect it to always exist after startup
+        # return jsonify({"error": "Notes directory not found.", "notes": []}), 404
+    try:
+        # List files and filter for .txt, ensuring they are files
+        notes = [f for f in os.listdir(notes_dir) if os.path.isfile(os.path.join(notes_dir, f)) and f.endswith('.txt')]
+        # Sort by name, or potentially by modification time if needed (more complex)
+        return jsonify({"notes": sorted(notes, reverse=True)}), 200 # Sort newest first by name convention
+    except Exception as e:
+        print(f"Error listing notes from {notes_dir}: {e}")
+        return jsonify({"error": f"Failed to list notes: {str(e)}", "notes": []}), 500
+
+@app.route('/get_note/<path:filename>', methods=['GET'])
+def get_note(filename):
+    """
+    Serves a specific note file from the OUTPUT_NOTES_DIRECTORY.
+    Uses send_from_directory for security.
+    """
+    # Use the globally defined OUTPUT_NOTES_DIRECTORY
+    notes_dir = os.path.abspath(OUTPUT_NOTES_DIRECTORY) # Use absolute path for send_from_directory
+
+    # Basic security: sanitize filename provided by the user
+    # werkzeug.utils.secure_filename is good practice but might be too restrictive
+    # Using os.path.basename is a simpler approach here to prevent directory traversal
+    safe_filename = os.path.basename(filename)
+    if safe_filename != filename:
+         print(f"Warning: Filename potentially unsafe. Original: '{filename}', Sanitized: '{safe_filename}'")
+         # Decide whether to proceed with sanitized name or return error
+         # For now, let's return an error for potentially malicious paths
+         return jsonify({"error": "Invalid filename format."}), 400
+
+    # Ensure the file requested is a .txt file for added safety
+    if not safe_filename.endswith('.txt'):
+        return jsonify({"error": "Invalid file type requested."}), 400
+
+    print(f"Attempting to serve file: {safe_filename} from directory: {notes_dir}")
+
+    try:
+        # Check if file exists before attempting to send
+        if not os.path.isfile(os.path.join(notes_dir, safe_filename)):
+             print(f"Requested note file not found: {os.path.join(notes_dir, safe_filename)}")
+             return jsonify({"error": "Note file not found."}), 404
+
+        # Use send_from_directory to safely serve the file
+        # as_attachment=False means the browser will try to display it if possible (good for text)
+        return send_from_directory(notes_dir, safe_filename, as_attachment=False, mimetype='text/plain')
+    except FileNotFoundError:
+         # This might be redundant if the isfile check works, but good as a fallback
+         print(f"Error: FileNotFoundError for {safe_filename} in {notes_dir}")
+         return jsonify({"error": "Note file not found (send_from_directory)."}), 404
+    except Exception as e:
+        print(f"Error serving file {safe_filename} from {notes_dir}: {e}")
+        return jsonify({"error": f"Failed to serve note file: {str(e)}"}), 500
+
+# --- End of New Flask Routes ---
 
 
 @app.route('/generate_note', methods=['POST'])

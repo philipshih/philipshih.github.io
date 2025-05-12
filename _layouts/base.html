@@ -285,8 +285,11 @@
 
         <details open class="section-container"> 
             <summary class="section-title">Note</summary>
-            <div id="noteSectionContent">
+            <div id="noteSectionContent" style="position: relative;"> <!-- Added relative positioning for button -->
                 <textarea id="mainOutputArea" placeholder="Note will appear here..." readonly></textarea>
+                <button type="button" id="copyNoteButton" class="rosetta-secondary-button" style="position: absolute; top: 5px; right: 5px; z-index: 5;" title="Copy Note to Clipboard">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
             </div>
         </details>
         
@@ -353,13 +356,14 @@
             notesDropdown.innerHTML = '<option value="" disabled>Loading notes...</option>'; // Indicate loading, make it disabled
 
             try {
-                console.log(`DEBUG: Fetching from ${ROSETTA_APP_BACKEND_URL}/list_notes`);
-                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_notes`);
-                console.log(`DEBUG: /list_notes response status: ${response.status}`);
+                // Use the new endpoint for consistency
+                console.log(`DEBUG: Fetching from ${ROSETTA_APP_BACKEND_URL}/list_saved_notes`);
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_saved_notes`);
+                console.log(`DEBUG: /list_saved_notes response status: ${response.status}`);
                 notesDropdown.innerHTML = ''; // Clear loading message
 
                 if (!response.ok) {
-                    console.error('Rosetta Error: Failed to fetch notes list. Status:', response.status, response.statusText);
+                    console.error('Rosetta Error: Failed to fetch saved notes list. Status:', response.status, response.statusText);
                     const errorOption = document.createElement('option');
                     errorOption.value = "";
                     errorOption.textContent = "Error loading notes";
@@ -391,7 +395,7 @@
                         notesDropdown.selectedIndex = 0; // Select the first actual note
                     }
                 } else if (data.error) {
-                    console.error('Rosetta Error from backend fetching notes:', data.error);
+                    console.error('Rosetta Error from backend fetching saved notes:', data.error);
                     const errorOpt = document.createElement('option');
                     errorOpt.value = "";
                     errorOpt.textContent = `Error: ${data.error}`;
@@ -414,7 +418,51 @@
                 notesDropdown.appendChild(networkErrorOpt);
             }
         }
-        window.fetchExistingNotesRosetta = fetchExistingNotesRosetta; 
+        window.fetchExistingNotesRosetta = fetchExistingNotesRosetta;
+
+        async function loadSelectedNoteContent(filename) {
+            const outputArea = document.getElementById('mainOutputArea');
+            const modelImpressionArea = document.getElementById('modelImpressionArea');
+            if (!outputArea || !filename) {
+                console.error("Rosetta Error: Output area not found or no filename provided for loading.");
+                if (outputArea) outputArea.value = "Error: Could not load note content (UI element missing or no file selected).";
+                return;
+            }
+
+            outputArea.value = `Loading content for ${filename}...`;
+            if (modelImpressionArea) modelImpressionArea.value = ""; // Clear impression area when loading
+
+            try {
+                console.log(`DEBUG: Fetching note content from ${ROSETTA_APP_BACKEND_URL}/get_note/${filename}`);
+                // Encode the filename component in case it contains special characters, although unlikely with current generation format
+                const encodedFilename = encodeURIComponent(filename);
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/get_note/${encodedFilename}`);
+                console.log(`DEBUG: /get_note/${filename} response status: ${response.status}`);
+
+                if (!response.ok) {
+                    let errorMsg = `Failed to load note content for ${filename}. Status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        console.error('Rosetta Error details from backend:', errorData);
+                        if (errorData.error) {
+                             errorMsg += `\nBackend Error: ${errorData.error}`;
+                        }
+                    } catch (e) { /* Ignore if response is not JSON */ }
+                    console.error(errorMsg);
+                    outputArea.value = `Error: ${errorMsg}`;
+                    return;
+                }
+
+                // Get content as text
+                const noteContent = await response.text();
+                console.log(`DEBUG: Loaded note content for ${filename}`);
+                outputArea.value = noteContent;
+
+            } catch (error) {
+                console.error(`Rosetta Error: Network error fetching note content for ${filename}:`, error);
+                outputArea.value = `Network error loading note ${filename}.\nDetails: ${error.message}`;
+            }
+        }
 
         async function saveCustomTemplate() {
             const templateContent = document.getElementById('epicSmartPhraseInput').value;
@@ -835,12 +883,24 @@
                     notesControls.classList.add('hidden');
                 }
             });
-            if (!enableUpdateCheckbox.checked) { 
+            if (!enableUpdateCheckbox.checked) {
                 notesControls.classList.add('hidden');
+            }
+
+            // Add listener to load note content when dropdown selection changes
+            const notesDropdown = document.getElementById('existingNotesDropdown_rosetta');
+            if (notesDropdown) {
+                notesDropdown.addEventListener('change', function() {
+                    if (this.value) { // Only load if a valid note is selected
+                        loadSelectedNoteContent(this.value);
+                    }
+                });
+            } else {
+                 console.error("Rosetta Error: Could not find existing notes dropdown to attach change listener.");
             }
         }
 
-        if (refreshNotesListButton) { 
+        if (refreshNotesListButton) {
             refreshNotesListButton.addEventListener('click', fetchExistingNotesRosetta);
         }
 
@@ -909,6 +969,35 @@
                 }
             });
         }
+
+        // Add Copy Note Button Logic
+        const copyButton = document.getElementById('copyNoteButton');
+        const noteOutputArea = document.getElementById('mainOutputArea');
+
+        if (copyButton && noteOutputArea) {
+            copyButton.addEventListener('click', function() {
+                const textToCopy = noteOutputArea.value;
+                if (!textToCopy) {
+                    alert("There is no note content to copy.");
+                    return;
+                }
+
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Success feedback
+                    const originalText = copyButton.innerHTML;
+                    copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalText;
+                    }, 2000); // Revert after 2 seconds
+                }).catch(err => {
+                    console.error('Rosetta Error: Failed to copy text: ', err);
+                    alert('Failed to copy note to clipboard. Please try manually.\nError: ' + err);
+                });
+            });
+        } else {
+             console.error("Rosetta Error: Could not find copy button or note output area for event listener setup.");
+        }
+
 
         // Removed the automatic refresh on history section toggle
       }
