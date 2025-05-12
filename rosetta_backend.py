@@ -1,7 +1,6 @@
 import os
 import datetime
 import time # For sleep
-import threading # For running watchdog in a separate thread
 import google.generativeai as genai
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -9,17 +8,14 @@ from flask_cors import CORS
 # Import the make_default_options_response function
 from flask import make_response
 
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-
 # --- Configuration ---
 # GEMINI_API_KEY is now expected as an environment variable
 GEMINI_MODEL = "gemini-2.5-pro-exp-03-25" # Changed to user-specified model
 BASE_NOTES_PATH = r"C:\Users\phili\OneDrive\Desktop\Rosetta" # Updated path
-INPUT_FILES_DIRECTORY = os.path.join(BASE_NOTES_PATH, "inputs")  # Watch this folder for new .txt files
+# INPUT_FILES_DIRECTORY is no longer used for watching in cloud environment
 OUTPUT_NOTES_DIRECTORY = os.path.join(BASE_NOTES_PATH, "outputs") # Save generated notes here
 
-INPUT_FILE_EXTENSION = ".txt" # Watch for .txt files for now
+# INPUT_FILE_EXTENSION is no longer used for watching
 
 # Load API Key from environment variable
 # Try 'GEMINI_API_KEY' first, then 'GOOGLE_API_KEY' as a fallback based on error message
@@ -38,17 +34,51 @@ if not API_KEY_TO_USE:
 genai.configure(api_key=API_KEY_TO_USE)
 
 # Core Rosetta Instructions - To be prepended by the backend
-ROSETTA_SYSTEM_INSTRUCTION = "You are Rosetta, an attending physician AI assistant. Generate notes in a style typical of a human attending physician: concise, clinically precise, and avoiding AI-like or overly verbose phrasing. CRITICAL: Output format MUST be pure plaintext. Absolutely NO markdown formatting (e.g., no asterisks for bolding like **word**, no hashes for headers like ## H2) is allowed, unless such formatting is explicitly part of a user-provided EPIC SmartPhrase template/example from the dynamic request. Prioritize accuracy, PII removal (names, MRNs), and adherence to user-specified formatting (SHN, VSHN, templates) and content requests (pathophysiology, guidelines, etc.) from the dynamic request. VERY IMPORTANT: Do NOT invent or fabricate any clinical information (history, exam findings, lab results, etc.). If information is not provided or is unknown, explicitly state that it is unknown or use the 'Generate History Questions' or 'Missing Data Checklist' features to indicate what needs to be asked or obtained. Do not make assumptions beyond reasonable clinical inference based *only* on provided data."
+ROSETTA_SYSTEM_INSTRUCTION = """You are Rosetta, an attending physician AI assistant. Generate clinically precise, concise medical notes mimicking human attending physicians. Output plaintext only—no markdown, unless explicitly required by a user-provided template (e.g., EPIC SmartPhrases).
 
-ROSETTA_CORE_OPERATIONAL_INSTRUCTIONS = """
-Key Tasks:
-1. New Patient: Generate guideline-concordant questions phrased as 'Plan to ask about [X] to assess [Y].' Develop an initial impression and A&P.
-2. Updates: Integrate new info into the correct note section. 
-3. Missing Data: If critical data is missing, state 'Indicated to obtain [test/item] due to [reason/guideline]' or 'Plan to further assess [symptom/area].' Avoid phrases like 'Not provided.'
-4. Note Structure: Always include Impression, Subjective (HPI, relevant PMH/SHx/FHx/ROS), Objective (vitals, PE, labs/imaging if available), and a fully reasoned Assessment & Plan (differential, likely Dx, brief pathophys, interventions, F/U). Within the 'Plan' section, use hyphenated lists (e.g., "- Recommendation 1") for distinct actions or recommendations, not numbered lists.
+Key Directives:
 
-Refer to the 'Dynamic Request from Frontend' for specific output format, detail level, and other user preferences for THIS request.
-"""
+Ensure accuracy and clinical realism. Do not fabricate or assume data. Explicitly state 'unknown' if data is missing or cannot be reasonably inferred from the provided context. If making a clinical inference, briefly state the basis for that inference.
+
+Prioritize PII redaction (names, MRNs, dates -> relative time).
+
+Follow user-specified formatting (SHN, VSHN, SOAP, H&P, etc.). Prioritize user-provided templates over standard formats if a template is given.
+
+Adhere to relevant clinical guidelines and pathophysiology when requested. Integrate guideline recommendations into the plan where appropriate, citing sources if possible (e.g., PMID, calculator name).
+
+Validate compliance with standard documentation norms (e.g., Joint Commission, CMS) where applicable.
+
+If input is ambiguous or inconsistent, identify the ambiguity/inconsistency and state how you have chosen to interpret it for the note, or if necessary, indicate that clarification is needed."""
+
+ROSETTA_CORE_OPERATIONAL_INSTRUCTIONS = """For each request:
+
+New Patient: Generate questions in the form: Plan to ask about [X] to assess [Y]. Provide Impression & A&P.
+
+Updates: Integrate new data into appropriate note sections. Synthesize new data with existing information, commenting on the significance of key findings (e.g., abnormal labs, relevant physical exam findings) in the context of the patient's condition.
+
+Missing Data: Use phrases like Indicated to obtain [test] due to [reason] or Plan to further assess [symptom]. Explicitly state when information for a standard section (e.g., Allergies, Family History) is not available in the provided data.
+
+Note Structure:
+
+Impression: Provide a concise summary statement.
+
+Subjective: HPI, PMH, SHx, FHx, ROS. Qualify information based on source (e.g., "Patient reports...", "Per family...").
+
+Objective: Vitals, PE, Labs, Imaging. Include relevant positive and negative findings.
+
+Assessment & Plan (A&P):
+- Structure the A&P by problem if requested. Otherwise, group related issues logically.
+- For each problem/assessment:
+    - State the likely diagnosis or differential.
+    - Briefly justify the assessment based on subjective and objective findings.
+    - If requested, include relevant pathophysiology connected to the patient's case.
+- Plan:
+    - Use hyphenated lists (e.g., - Recommendation) for all plan actions.
+    - Ensure plans are specific, actionable, and appropriate (e.g., specify medication dosage/route/frequency if inferable, specify type of imaging/lab).
+    - Include follow-up plans and patient education points where relevant.
+    - Consider including brief contingency plans or warning signs to monitor for.
+
+IMPORTANT PREAMBLE (for the model's internal thoughts): Before generating the medical note, provide your analytical thoughts. This should include identifying key diagnostic anchors, potential red flags, significant positive and negative findings, and any critical missing information that impacts your assessment and plan. Delimit this section clearly with the specified markers."""
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -125,7 +155,21 @@ def get_llm_response(dynamic_prompt_from_frontend):
                 # We have content, this is the primary success path
                 if actual_finish_reason != stop_reason_enum_value:
                      print(f"Warning: Response has content, but finish_reason was not '{stop_reason_enum_value}'. Actual reason: {actual_finish_reason} (type: {type(actual_finish_reason)})")
-                return candidate.content.parts[0].text, feedback_str
+
+                # Condense repeated phrases
+                text_output = candidate.content.parts[0].text
+                phrases = text_output.split(". ")  # Split into phrases
+                phrase_counts = {}
+                for phrase in phrases:
+                    phrase = phrase.strip()
+                    if phrase:
+                        phrase_counts[phrase] = phrase_counts.get(phrase, 0) + 1
+
+                for phrase, count in phrase_counts.items():
+                    if count > 5:
+                        text_output = text_output.replace(phrase, "[REPEATED PHRASE: " + phrase + "]")
+
+                return text_output, feedback_str
             else:
                 # No content, but we have a candidate, so the finish_reason is important
                 error_detail = f"Gemini API call did not finish successfully (no content parts). Finish reason: {actual_finish_reason}"
@@ -195,58 +239,9 @@ def save_note_to_file(filename, content):
         print(f"Error saving note to file {filepath}: {e}")
         return False
 
-# --- Watchdog File Event Handler ---
-class NewFileHandler(FileSystemEventHandler):
-    def on_created(self, event):
-        if not event.is_directory and event.src_path.endswith(INPUT_FILE_EXTENSION):
-            print(f"New input file detected: {event.src_path}")
-            # Wait a bit for the file to be fully written, especially for larger files or network drives
-            time.sleep(2) 
-            
-            try:
-                with open(event.src_path, 'r', encoding='utf-8') as f:
-                    file_content = f.read()
-                
-                if not file_content.strip():
-                    print(f"File {event.src_path} is empty. Skipping.")
-                    return
-
-                # Construct a default prompt for auto-processed files
-                # This is a simplified prompt for auto-processed files.
-                # It will be prepended with ROSETTA_SYSTEM_INSTRUCTION and ROSETTA_CORE_OPERATIONAL_INSTRUCTIONS by get_llm_response.
-                # So, this 'auto_prompt' is effectively the 'dynamic_prompt_from_frontend' for file inputs.
-                auto_prompt = f"""Patient Information (from automatically processed file: {os.path.basename(event.src_path)}):
----
-{file_content}
----
-User-Selected Options for this request:
-- (Using default behaviors as per core instructions for non-specified options, assume standard SOAP/H&P unless content implies otherwise)
---- END OF DYNAMIC REQUEST ---
-"""
-                print(f"Rosetta File Watcher: Processing content from: {event.src_path} as dynamic prompt.")
-                llm_text_output, prompt_feedback_details = get_llm_response(auto_prompt) 
-
-                if prompt_feedback_details:
-                    print(f"File Watcher - Prompt Feedback for {event.src_path}: {prompt_feedback_details}")
-
-                if llm_text_output and not llm_text_output.startswith("Error:"):
-                    cleaned_llm_text_output = llm_text_output.replace("**", "") # Clean output
-                    cleaned_llm_text_output = cleaned_llm_text_output.strip()   # Trim whitespace
-
-                    original_filename = os.path.basename(event.src_path)
-                    service_abbr_auto = "AUTO_FROM_" + os.path.splitext(original_filename)[0]
-                    output_note_filename = generate_filename(service_abbr_auto)
-                    save_note_to_file(output_note_filename, cleaned_llm_text_output) # Save cleaned version
-                    print(f"LLM response for {original_filename} saved to {output_note_filename} (markdown removed)")
-                else:
-                    print(f"Failed to get LLM response for {event.src_path}. Details: {llm_text_output}")
-
-            except Exception as e:
-                print(f"Error processing file {event.src_path}: {e}")
-
 # --- Flask Routes ---
 
-SMARTPHRASE_TEMPLATES_DIR = 'smartphrase_templates' # Define directory for smartphrase templates
+SMARTPHRASE_TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), 'smartphrase_templates') # Define directory for smartphrase templates, relative to script location
 
 @app.route('/list_smartphrase_templates', methods=['GET'])
 def list_smartphrase_templates():
@@ -412,22 +407,28 @@ def handle_generate_note():
         return jsonify({"error": "No data provided (empty after parsing)"}), 400
 
     # Parse new structured payload
+    # Accept 'file_content' as an alternative to 'patient_data'
     patient_data = data.get('patient_data', '')
+    file_content = data.get('file_content', '') # New field for file content
+
+    # Use file_content if provided, otherwise use patient_data
+    input_data = file_content if file_content else patient_data
+
     template_name = data.get('template_name', '') # e.g., "General Soap" or "custom_from_input"
     template_content = data.get('template_content', '') # Actual content of the template
     options = data.get('options', {}) # e.g., {"genSHN": true, "incPathophys": false}
     service_abbr = data.get('service_abbreviation', 'GENERAL').strip().upper()
     existing_note_filename = data.get('existing_note_filename')
 
-    # Basic validation
-    is_reformat_request_signal = "(No new clinical information provided" in patient_data
-    if not patient_data and not existing_note_filename:
-        return jsonify({"error": "No patient data provided for a new note"}), 400
-    if not patient_data and existing_note_filename and not is_reformat_request_signal:
+    # Basic validation - check if either input_data or existing_note_filename is provided
+    is_reformat_request_signal = "(No new clinical information provided" in input_data # Check signal in input_data
+    if not input_data and not existing_note_filename:
+        return jsonify({"error": "No patient data or file content provided for a new note"}), 400
+    if not input_data and existing_note_filename and not is_reformat_request_signal:
         # This case implies an update but with no new info and not explicitly a reformat.
-        # Could be an error or an implicit reformat. For now, let's flag if patient_data is truly empty.
-        print("Warning: Update request for existing note with empty new patient_data, but not explicitly a reformat signal.")
-        # We can let it proceed, the LLM will get empty new patient data.
+        # Could be an error or an implicit reformat. For now, let's flag if input_data is truly empty.
+        print("Warning: Update request for existing note with empty new input_data, but not explicitly a reformat signal.")
+        # We can let it proceed, the LLM will get empty new input data.
 
     if not service_abbr:
         service_abbr = "GENERAL"
@@ -476,7 +477,7 @@ def handle_generate_note():
             "genVSHN": "- Output Format: Generate VSHN (Very Short-hand Notation). Distill into ultra-concise, rapid-style shorthand. Omit non-critical detail. Use standard medical abbreviations where appropriate. Avoid uncommon abbreviations or excessive capitalization. DO NOT use underscores (_) to connect words; instead, use terse phrasing or standard abbreviations.",
             "formatByProblem": "- A&P Structure: Format the Assessment & Plan section 'By Problem'. (Detailed instructions for 'By Problem' A&P will be appended if this is selected).",
             "incPathophys": "- Reasoning Detail: Include full pathophysiologic reasoning in the Assessment & Plan.",
-            "incGuidelines": "- Reasoning Detail: Include guideline citations if relevant. Citations should be provided as PubMed IDs (PMIDs) where applicable. Also, cite relevant medical calculators (e.g., from MDCalc, specific risk scores like ASCVD) if used or pertinent to the assessment.",
+            "incGuidelines": "- Reasoning Detail: Include guideline recommendations if relevant.",
             "formatSOAP": "- Documentation Type: Use SOAP format (if no overriding template is provided).",
             "formatHnP": "- Documentation Type: Use Full H&P format (if no overriding template is provided).",
             "formatDischarge": "- Documentation Type: Use Discharge summary format (if no overriding template is provided).",
@@ -498,8 +499,16 @@ def handle_generate_note():
             "genChartReview": "- Output Feature: Generate a 'Chart Review Checklist'. This checklist MUST be placed at the VERY BEGINNING of the entire note, before any other content (including Impression). The style should be concise, like a hurried checklist, but each item must be accurate, thoughtful, and include a brief explanation for why that piece of information is needed from the chart. This checklist takes precedence in placement over the standard note structure.",
             "confirmDeidentified": "- Redaction: Confirm data is de-identified (this is a primary instruction; ensure PII is removed).",
             "removeDates": "- Redaction: Remove specific dates and convert to relative time where appropriate (e.g., 'yesterday', 'last week').",
-            "stripNonStandardAbbr": "- Redaction: Strip non-standard abbreviations, ensure output clarity using common medical abbreviations."
+            "stripNonStandardAbbr": "- Output Feature: Include all abbreviations from the input, including non-standard ones."
         }
+
+        # Conflict Resolution
+        # (1) User Template > (2) Documentation Type > (3) Notation Format > (4) Specialty Context > (5) Reasoning Detail
+
+        # Input Validation & Feedback
+        # If input is ambiguous or inconsistent, prompt user for clarification before generating the note.
+
+        # Ensure generated content structurally complies with clinical documentation standards.
         for opt_id, is_checked in options.items():
             if is_checked and opt_id in option_to_instruction_map:
                 selected_options_instructions.append(option_to_instruction_map[opt_id])
@@ -678,13 +687,7 @@ def start_file_watcher():
 
 
 if __name__ == "__main__":
-    # Start the file watcher in a separate thread
-    watcher_thread = threading.Thread(target=start_file_watcher, daemon=True)
-    watcher_thread.start()
-
     print(f"Starting Rosetta Flask server on http://127.0.0.1:5000")
-    print(f"Input files will be watched in: {os.path.abspath(INPUT_FILES_DIRECTORY)}")
     print(f"Output notes will be saved in: {os.path.abspath(OUTPUT_NOTES_DIRECTORY)}")
-    app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False) # use_reloader=False is important when running watchdog in a thread
-                                                                    # to prevent it from starting twice in debug mode.
+    app.run(debug=True, host='0.0.0.0', port=5000) # Removed use_reloader=False as watchdog is removed
                                                # host='0.0.0.0' makes it accessible on your local network.

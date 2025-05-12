@@ -218,10 +218,6 @@
         </div>
         
         <h1>Rosetta</h1>
-        <div id="backendUrlControl" style="margin-bottom: 15px; text-align: left;">
-            <label for="backendUrlInput">Rosetta Backend URL:</label>
-            <input type="text" id="backendUrlInput" value="http://127.0.0.1:5000" style="width: calc(100% - 16px);">
-        </div>
         <span class="copyright-rosetta">&copy; Philip Shih 2025</span>
 
         <!-- Original checkbox-area div for Incognito switch removed from here as it's repositioned -->
@@ -314,6 +310,8 @@
     </footer>
 
     <script>
+      const ROSETTA_BACKEND_URL = 'http://127.0.0.1:5000'; // Define backend URL for Rosetta
+
       function checkPassword() {
         const passwordInput = document.getElementById('secret-password');
         const password = passwordInput.value;
@@ -341,9 +339,7 @@
 
       // ShihGPTMD App JavaScript
       function initializeShihGptMdApp() {
-        // Get backend URL from input field
-        const backendUrlInput = document.getElementById('backendUrlInput');
-        const ROSETTA_APP_BACKEND_URL = backendUrlInput ? backendUrlInput.value : 'http://127.0.0.1:5000'; // Use input value or default
+        const ROSETTA_APP_BACKEND_URL = ROSETTA_BACKEND_URL; // Make it available inside this scope if not already global
 
         async function fetchExistingNotesRosetta() {
             console.log("DEBUG: fetchExistingNotesRosetta called.");
@@ -465,9 +461,8 @@
                     alert(`Error saving template: ${result.error || 'Unknown error from backend.'}`);
                 }
             } catch (error) {
-                console.error('Rosetta Error: Error sending prompt to backend:', error);
-                // UPDATE THIS ERROR MESSAGE
-                outputArea.value = `Network error or backend server not running.\\nCould not connect to the Rosetta backend at ${ROSETTA_APP_BACKEND_URL}.\\nPlease ensure the Python Flask server (rosetta_backend.py) is running and accessible on your network (check firewall).\\nDetails: ${error.message}`;
+                console.error('Error saving custom template via fetch:', error);
+                alert(`Network error or backend issue while saving template: ${error.message}`);
             }
         }
 
