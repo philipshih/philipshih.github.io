@@ -11,8 +11,10 @@ from watchdog.events import FileSystemEventHandler
 # --- Configuration ---
 # GEMINI_API_KEY is now expected as an environment variable
 GEMINI_MODEL = "gemini-1.5-pro-latest" # Changed to a more standard large model for testing
-NOTES_DIRECTORY = r"C:\Users\phili\OneDrive\Desktop\ShihGPTMD" # This is where notes are saved AND where we watch for new inputs.
-                                                            # Consider separate input/output folders later if needed.
+BASE_NOTES_PATH = r"C:\Users\phili\OneDrive\Desktop\ShihGPTMD"
+INPUT_FILES_DIRECTORY = os.path.join(BASE_NOTES_PATH, "inputs")  # Watch this folder for new .txt files
+OUTPUT_NOTES_DIRECTORY = os.path.join(BASE_NOTES_PATH, "outputs") # Save generated notes here
+
 INPUT_FILE_EXTENSION = ".txt" # Watch for .txt files for now
 
 # Load API Key from environment variable
@@ -137,16 +139,16 @@ def save_note_to_file(filename, content):
     Saves the content to a file in the specified notes directory.
     Creates the directory if it doesn't exist.
     """
-    # Ensure notes directory exists
-    if not os.path.exists(NOTES_DIRECTORY):
+    # Ensure output notes directory exists
+    if not os.path.exists(OUTPUT_NOTES_DIRECTORY):
         try:
-            os.makedirs(NOTES_DIRECTORY)
-            print(f"Created directory: {NOTES_DIRECTORY}")
+            os.makedirs(OUTPUT_NOTES_DIRECTORY)
+            print(f"Created directory: {OUTPUT_NOTES_DIRECTORY}")
         except OSError as e: # More specific exception
-            print(f"Error creating directory {NOTES_DIRECTORY}: {e}")
+            print(f"Error creating directory {OUTPUT_NOTES_DIRECTORY}: {e}")
             return False # Indicate failure
             
-    filepath = os.path.join(NOTES_DIRECTORY, filename)
+    filepath = os.path.join(OUTPUT_NOTES_DIRECTORY, filename)
     try:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(content)
@@ -253,16 +255,28 @@ def handle_generate_note():
 
 def start_file_watcher():
     # This function is now correctly defined at the top level.
-    if not os.path.exists(NOTES_DIRECTORY):
-        print(f"Watch directory {NOTES_DIRECTORY} does not exist. Please create it or check the path.")
-        print("File watcher not started.")
-        return
+    # Ensure input directory exists for watching
+    if not os.path.exists(INPUT_FILES_DIRECTORY):
+        try:
+            os.makedirs(INPUT_FILES_DIRECTORY)
+            print(f"Created input directory for watcher: {INPUT_FILES_DIRECTORY}")
+        except OSError as e:
+            print(f"Error creating input directory {INPUT_FILES_DIRECTORY}: {e}. File watcher not started.")
+            return
+    # Ensure output directory also exists or can be created by save_note_to_file
+    if not os.path.exists(OUTPUT_NOTES_DIRECTORY):
+        try:
+            os.makedirs(OUTPUT_NOTES_DIRECTORY)
+            print(f"Created output directory: {OUTPUT_NOTES_DIRECTORY}")
+        except OSError as e:
+            print(f"Error creating output directory {OUTPUT_NOTES_DIRECTORY}: {e}. Note saving might fail.")
+            # Continue starting watcher, but saving will attempt to create it again or fail.
 
     event_handler = NewFileHandler()
     observer = Observer()
-    observer.schedule(event_handler, NOTES_DIRECTORY, recursive=False) # Non-recursive: only watch top-level of NOTES_DIRECTORY
+    observer.schedule(event_handler, INPUT_FILES_DIRECTORY, recursive=False) # Watch the INPUT_FILES_DIRECTORY
     observer.start()
-    print(f"File watcher started on directory: {NOTES_DIRECTORY} (watching for new {INPUT_FILE_EXTENSION} files)")
+    print(f"File watcher started on directory: {INPUT_FILES_DIRECTORY} (watching for new {INPUT_FILE_EXTENSION} files)")
     try:
         while True:
             time.sleep(5) # Keep the thread alive
@@ -280,7 +294,8 @@ if __name__ == "__main__":
     watcher_thread.start()
 
     print(f"Starting ShihGPT-MD Flask server on http://127.0.0.1:5000")
-    print(f"Notes will be saved in: {os.path.abspath(NOTES_DIRECTORY)}")
+    print(f"Input files will be watched in: {os.path.abspath(INPUT_FILES_DIRECTORY)}")
+    print(f"Output notes will be saved in: {os.path.abspath(OUTPUT_NOTES_DIRECTORY)}")
     app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False) # use_reloader=False is important when running watchdog in a thread
                                                                     # to prevent it from starting twice in debug mode.
                                                # host='0.0.0.0' makes it accessible on your local network.
