@@ -756,11 +756,11 @@ function generateDdx() {
         if (allSelections.length > 0) {
             resultsList.innerHTML = '<li>No specific diagnoses strongly suggested by these findings based on this simplified model. Consider broader possibilities or consult clinical resources.</li>';
         } else {
-            resultsList.innerHTML = '<li>Please select patient findings to generate differentials.</li>';
+            resultsList.innerHTML = '<li>Select patient findings to generate differentials.</li>';
         }
         // Set default plan message when no DDx
         if (planList) {
-            planList.innerHTML = '<li>Please select findings to generate a plan.</li>';
+            planList.innerHTML = '<li>Select findings to generate a plan.</li>';
         }
     } else {
         // Potential diagnoses found - display DDx and Plan
