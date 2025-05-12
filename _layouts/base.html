@@ -293,15 +293,16 @@
             </div>
         </details>
         
-        <details open class="section-container">
-            <summary class="section-title">
-                History
-            </summary>
-            <div id="historySectionContent">
-                <div id="googleDriveEmbed" style="width: 100%; height: 400px; border: 1px solid #ddd; margin-top: 10px;">
-                    <iframe id="driveFrame" src="https://drive.google.com/embeddedfolderview?id=1-p45MB609-pRU3yn4hEUjIl6Hw6yaVdB#list" style="width:100%; height:100%; border:0;"></iframe>
-                </div>
-                <button type="button" id="refreshHistoryButtonBottom" class="apple-button-like" style="margin-top: 10px;">Reload</button>
+        <details open class="section-container" id="serverSavedNotesSection">
+            <summary class="section-title">Saved Notes (Server)</summary>
+            <div id="serverNotesListArea" style="margin-top: 10px;">
+                <button type="button" id="refreshServerNotesListButton" class="rosetta-secondary-button" style="margin-bottom: 10px;">
+                    <i class="fas fa-redo"></i> Refresh List
+                </button>
+                <ul id="serverNotesDisplayList" style="list-style-type: none; padding-left: 0; max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 4px;">
+                    <!-- Notes will be populated here by JavaScript -->
+                    <li id="serverNotesLoadingMsg">Loading notes...</li>
+                </ul>
             </div>
         </details>
     </div>
@@ -420,27 +421,26 @@
         }
         window.fetchExistingNotesRosetta = fetchExistingNotesRosetta;
 
-        async function loadSelectedNoteContent(filename) {
-            const outputArea = document.getElementById('mainOutputArea');
-            const modelImpressionArea = document.getElementById('modelImpressionArea');
+        async function loadSelectedNoteContent(filename, targetAreaId = 'mainOutputArea') {
+            const outputArea = document.getElementById(targetAreaId);
+            // const modelImpressionArea = document.getElementById('modelImpressionArea'); // Keep this if you want to clear it too
             if (!outputArea || !filename) {
-                console.error("Rosetta Error: Output area not found or no filename provided for loading.");
+                console.error(`Rosetta Error: Output area '${targetAreaId}' not found or no filename provided for loading.`);
                 if (outputArea) outputArea.value = "Error: Could not load note content (UI element missing or no file selected).";
                 return;
             }
 
             outputArea.value = `Loading content for ${filename}...`;
-            if (modelImpressionArea) modelImpressionArea.value = ""; // Clear impression area when loading
+            // if (modelImpressionArea) modelImpressionArea.value = ""; // Clear impression area when loading
 
             try {
-                console.log(`DEBUG: Fetching note content from ${ROSETTA_APP_BACKEND_URL}/get_note/${filename}`);
-                // Encode the filename component in case it contains special characters, although unlikely with current generation format
-                const encodedFilename = encodeURIComponent(filename);
+                console.log(`DEBUG: Fetching note content from ${ROSETTA_APP_BACKEND_URL}/get_note/${filename} for target ${targetAreaId}`);
+                const encodedFilename = encodeURIComponent(filename); // Good practice
                 const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/get_note/${encodedFilename}`);
-                console.log(`DEBUG: /get_note/${filename} response status: ${response.status}`);
+                console.log(`DEBUG: /get_note/${filename} response status: ${response.status} for target ${targetAreaId}`);
 
                 if (!response.ok) {
-                    let errorMsg = `Failed to load note content for ${filename}. Status: ${response.status}`;
+                    let errorMsg = `Failed to load note content for ${filename} into ${targetAreaId}. Status: ${response.status}`;
                     try {
                         const errorData = await response.json();
                         console.error('Rosetta Error details from backend:', errorData);
@@ -453,14 +453,65 @@
                     return;
                 }
 
-                // Get content as text
                 const noteContent = await response.text();
-                console.log(`DEBUG: Loaded note content for ${filename}`);
+                console.log(`DEBUG: Loaded note content for ${filename} into ${targetAreaId}`);
                 outputArea.value = noteContent;
+                // Optionally, scroll to the note section or the output area
+                const noteSection = document.getElementById('noteSectionContent');
+                if (noteSection) {
+                    noteSection.scrollIntoView({ behavior: 'smooth' });
+                }
+
 
             } catch (error) {
-                console.error(`Rosetta Error: Network error fetching note content for ${filename}:`, error);
-                outputArea.value = `Network error loading note ${filename}.\nDetails: ${error.message}`;
+                console.error(`Rosetta Error: Network error fetching note content for ${filename} into ${targetAreaId}:`, error);
+                outputArea.value = `Network error loading note ${filename} into ${targetAreaId}.\nDetails: ${error.message}`;
+            }
+        }
+
+        async function displaySavedNotesList() {
+            const listElement = document.getElementById('serverNotesDisplayList');
+            const loadingMsgElement = document.getElementById('serverNotesLoadingMsg');
+            if (!listElement || !loadingMsgElement) {
+                console.error("Rosetta Error: Server notes list UI elements not found.");
+                return;
+            }
+
+            loadingMsgElement.textContent = "Loading notes...";
+            listElement.innerHTML = ''; // Clear previous entries, keep loading message if it's separate
+            listElement.appendChild(loadingMsgElement); // Re-add loading message
+
+            try {
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_saved_notes`);
+                if (!response.ok) {
+                    loadingMsgElement.textContent = `Error loading notes: ${response.statusText}`;
+                    console.error("Rosetta Error: Failed to fetch server notes list:", response.statusText);
+                    return;
+                }
+                const data = await response.json();
+                if (data.notes && data.notes.length > 0) {
+                    listElement.innerHTML = ''; // Clear "Loading..."
+                    data.notes.forEach(filename => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = filename;
+                        listItem.style.cursor = "pointer";
+                        listItem.style.padding = "5px 0";
+                        listItem.style.borderBottom = "1px solid #f0f0f0";
+                        listItem.addEventListener('mouseover', () => listItem.style.backgroundColor = '#f9f9f9');
+                        listItem.addEventListener('mouseout', () => listItem.style.backgroundColor = 'transparent');
+                        listItem.addEventListener('click', () => {
+                            loadSelectedNoteContent(filename, 'mainOutputArea'); // Load into main output
+                            // Optionally, also populate patientInfoInput if that's desired for "editing"
+                            // loadSelectedNoteContent(filename, 'patientInfoInput'); 
+                        });
+                        listElement.appendChild(listItem);
+                    });
+                } else {
+                    loadingMsgElement.textContent = "No saved notes found on server.";
+                }
+            } catch (error) {
+                console.error("Rosetta Error: Network error fetching server notes list:", error);
+                loadingMsgElement.textContent = "Network error loading notes.";
             }
         }
 
@@ -1000,6 +1051,17 @@
 
 
         // Removed the automatic refresh on history section toggle
+
+        // Initial population of the new server notes list
+        displaySavedNotesList();
+
+        // Add event listener for the new refresh button
+        const refreshServerNotesBtn = document.getElementById('refreshServerNotesListButton');
+        if (refreshServerNotesBtn) {
+            refreshServerNotesBtn.addEventListener('click', displaySavedNotesList);
+        } else {
+            console.error("Rosetta Error: Could not find refreshServerNotesListButton.");
+        }
       }
       // Call initializeShihGptMdApp() only after successful password entry,
       // which is handled in the modified checkPassword function.
@@ -1009,27 +1071,27 @@
     </script>
 
   <script>
-        const refreshDriveButton = document.getElementById('refreshDriveButton');
-        const refreshHistoryButtonBottom = document.getElementById('refreshHistoryButtonBottom');
+        // const refreshDriveButton = document.getElementById('refreshDriveButton'); // Removed
+        // const refreshHistoryButtonBottom = document.getElementById('refreshHistoryButtonBottom'); // Removed
 
-        function refreshDriveFrame() {
-            const driveFrame = document.getElementById('driveFrame');
-            if (driveFrame) {
-                const originalSrc = driveFrame.src;
-                driveFrame.src = '';
-                setTimeout(() => {
-                    driveFrame.src = originalSrc;
-                }, 100);
-            }
-        }
+        // function refreshDriveFrame() { // Removed
+        //     const driveFrame = document.getElementById('driveFrame');
+        //     if (driveFrame) {
+        //         const originalSrc = driveFrame.src;
+        //         driveFrame.src = '';
+        //         setTimeout(() => {
+        //             driveFrame.src = originalSrc;
+        //         }, 100);
+        //     }
+        // }
 
-        if (refreshDriveButton) {
-            refreshDriveButton.addEventListener('click', refreshDriveFrame);
-        }
+        // if (refreshDriveButton) { // Removed
+        //     refreshDriveButton.addEventListener('click', refreshDriveFrame);
+        // }
 
-        if (refreshHistoryButtonBottom) {
-            refreshHistoryButtonBottom.addEventListener('click', refreshDriveFrame);
-        }
+        // if (refreshHistoryButtonBottom) { // Removed
+        //     refreshHistoryButtonBottom.addEventListener('click', refreshDriveFrame);
+        // }
     </script>
   </body>
 </html>

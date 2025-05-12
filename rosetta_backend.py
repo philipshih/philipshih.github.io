@@ -399,19 +399,29 @@ def list_saved_notes():
     """
     # Use the globally defined OUTPUT_NOTES_DIRECTORY
     notes_dir = OUTPUT_NOTES_DIRECTORY
-    if not os.path.exists(notes_dir):
-        print(f"Output directory {notes_dir} not found for listing notes.")
+    abs_notes_dir = os.path.abspath(notes_dir) # Get absolute path for clarity in logs
+    print(f"DEBUG: list_saved_notes called. Checking directory: {abs_notes_dir}") # Log entry point
+
+    if not os.path.exists(abs_notes_dir):
+        print(f"DEBUG: Directory does not exist: {abs_notes_dir}")
         # It might be okay if it doesn't exist yet, return empty list
         return jsonify({"notes": []}), 200
         # Or return 404 if you expect it to always exist after startup
         # return jsonify({"error": "Notes directory not found.", "notes": []}), 404
+
+    print(f"DEBUG: Directory exists: {abs_notes_dir}. Listing contents...")
     try:
+        all_files = os.listdir(abs_notes_dir)
+        print(f"DEBUG: Raw directory listing: {all_files}")
         # List files and filter for .txt, ensuring they are files
-        notes = [f for f in os.listdir(notes_dir) if os.path.isfile(os.path.join(notes_dir, f)) and f.endswith('.txt')]
+        notes = [f for f in all_files if os.path.isfile(os.path.join(abs_notes_dir, f)) and f.endswith('.txt')]
+        print(f"DEBUG: Filtered .txt files: {notes}")
         # Sort by name, or potentially by modification time if needed (more complex)
-        return jsonify({"notes": sorted(notes, reverse=True)}), 200 # Sort newest first by name convention
+        sorted_notes = sorted(notes, reverse=True)
+        print(f"DEBUG: Returning sorted notes: {sorted_notes}")
+        return jsonify({"notes": sorted_notes}), 200 # Sort newest first by name convention
     except Exception as e:
-        print(f"Error listing notes from {notes_dir}: {e}")
+        print(f"ERROR: Exception during listing notes from {abs_notes_dir}: {e}")
         return jsonify({"error": f"Failed to list notes: {str(e)}", "notes": []}), 500
 
 @app.route('/get_note/<path:filename>', methods=['GET'])
