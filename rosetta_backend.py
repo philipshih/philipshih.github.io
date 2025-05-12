@@ -10,7 +10,7 @@ from flask import make_response
 
 # --- Configuration ---
 # GEMINI_API_KEY is now expected as an environment variable
-GEMINI_MODEL = "gemini-2.5-pro-exp-03-25" # Changed to user-specified model
+GEMINI_MODEL = "gemini-2.5-pro-preview-05-06" # Changed to user-specified model
 BASE_NOTES_PATH = os.environ.get("BASE_NOTES_PATH", ".")  # Use environment variable or default to relative path
 # INPUT_FILES_DIRECTORY is no longer used for watching in cloud environment
 OUTPUT_NOTES_DIRECTORY = os.path.join(BASE_NOTES_PATH, "rosetta_outputs") # Save generated notes here
