@@ -471,27 +471,61 @@
 
         async function displaySavedNotesList() {
             const listElement = document.getElementById('serverNotesDisplayList');
-            const loadingMsgElement = document.getElementById('serverNotesLoadingMsg');
-            if (!listElement || !loadingMsgElement) {
-                console.error("Rosetta Error: Server notes list UI elements not found.");
+            // Get the static <li> element meant for loading/status messages
+            const statusMessageElement = document.getElementById('serverNotesLoadingMsg'); 
+
+            if (!listElement) {
+                console.error("Rosetta Error: Server notes list UI element (serverNotesDisplayList) not found.");
                 return;
             }
 
-            loadingMsgElement.textContent = "Loading notes...";
-            listElement.innerHTML = ''; // Clear previous entries, keep loading message if it's separate
-            listElement.appendChild(loadingMsgElement); // Re-add loading message
+            // Prepare the status message element
+            if (statusMessageElement) {
+                statusMessageElement.textContent = "Loading notes...";
+                statusMessageElement.style.display = ""; // Ensure it's visible
+                // Clear any previous notes *except* the status message element itself
+                // This is safer than listElement.innerHTML = '' if statusMessageElement is complex
+                while (listElement.firstChild && listElement.firstChild !== statusMessageElement) {
+                    listElement.removeChild(listElement.firstChild);
+                }
+                while (listElement.lastChild && listElement.lastChild !== statusMessageElement) {
+                    listElement.removeChild(listElement.lastChild);
+                }
+                // If statusMessageElement was not already in listElement or listElement was empty, add it.
+                if (!statusMessageElement.parentNode || statusMessageElement.parentNode !== listElement) {
+                    listElement.innerHTML = ''; // Clear completely if structure is unexpected
+                    listElement.appendChild(statusMessageElement);
+                }
+                 // Ensure it's the only child at this stage if it exists
+                if (listElement.children.length > 1 && statusMessageElement) {
+                    listElement.innerHTML = '';
+                    listElement.appendChild(statusMessageElement);
+                }
+
+            } else {
+                // Fallback if the static status <li> wasn't found in HTML
+                listElement.innerHTML = '<li>Loading notes...</li>';
+            }
+            
+            // The actual <li> element that will display messages (could be statusMessageElement or a new one)
+            const currentStatusLi = listElement.firstChild;
+
 
             try {
                 const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_saved_notes`);
+
                 if (!response.ok) {
-                    loadingMsgElement.textContent = `Error loading notes: ${response.statusText}`;
+                    const errorText = `Error loading notes: ${response.statusText}`;
+                    if (currentStatusLi) currentStatusLi.textContent = errorText;
+                    // else listElement.innerHTML = `<li>${errorText}</li>`; // Should be covered by currentStatusLi
                     console.error("Rosetta Error: Failed to fetch server notes list:", response.statusText);
                     return;
                 }
                 const data = await response.json();
-                console.log("Rosetta Debug: Data received for server notes list:", data); // Added for debugging
+                console.log("Rosetta Debug: Data received for server notes list:", data);
+
                 if (data.notes && data.notes.length > 0) {
-                    listElement.innerHTML = ''; // Clear "Loading..."
+                    listElement.innerHTML = ''; // Clear the loading/status message
                     data.notes.forEach(filename => {
                         const listItem = document.createElement('li');
                         listItem.textContent = filename;
@@ -501,18 +535,27 @@
                         listItem.addEventListener('mouseover', () => listItem.style.backgroundColor = '#f9f9f9');
                         listItem.addEventListener('mouseout', () => listItem.style.backgroundColor = 'transparent');
                         listItem.addEventListener('click', () => {
-                            loadSelectedNoteContent(filename, 'mainOutputArea'); // Load into main output
-                            // Optionally, also populate patientInfoInput if that's desired for "editing"
-                            // loadSelectedNoteContent(filename, 'patientInfoInput'); 
+                            loadSelectedNoteContent(filename, 'mainOutputArea');
                         });
                         listElement.appendChild(listItem);
                     });
-                } else {
-                    loadingMsgElement.textContent = "No saved notes found on server.";
+                } else { // No notes or an error message in the data payload
+                    let messageText = "No saved notes found on server.";
+                    if (data.error) {
+                        messageText = `Error: ${data.error}`;
+                        console.error("Rosetta Error from backend:", data.error);
+                    }
+                    if (currentStatusLi) currentStatusLi.textContent = messageText;
+                    // else listElement.innerHTML = `<li>${messageText}</li>`;
                 }
             } catch (error) {
                 console.error("Rosetta Error: Network error fetching server notes list:", error);
-                loadingMsgElement.textContent = "Network error loading notes.";
+                const errorText = "Network error loading notes.";
+                if (currentStatusLi) { // If currentStatusLi is still the one showing "Loading..."
+                     currentStatusLi.textContent = errorText;
+                } else { // If list was cleared before error (e.g. during response.json())
+                     listElement.innerHTML = `<li>${errorText}</li>`;
+                }
             }
         }
 
