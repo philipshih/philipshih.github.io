@@ -85,12 +85,14 @@ app = Flask(__name__)
 CORS(app) # Enable CORS for all routes, allowing requests from your GitHub Pages site
 
 # Ensure essential directories exist at startup (good practice)
-if not os.path.exists(OUTPUT_NOTES_DIRECTORY):
+base_notes_path = os.environ.get("BASE_NOTES_PATH", ".")
+output_notes_directory = os.path.join(base_notes_path, "rosetta_outputs")
+if not os.path.exists(output_notes_directory):
     try:
-        os.makedirs(OUTPUT_NOTES_DIRECTORY)
-        print(f"Created output directory at startup: {OUTPUT_NOTES_DIRECTORY}")
+        os.makedirs(output_notes_directory)
+        print(f"Created output directory at startup: {output_notes_directory}")
     except OSError as e:
-        print(f"Error creating output directory {OUTPUT_NOTES_DIRECTORY} at startup: {e}")
+        print(f"Error creating output directory {output_notes_directory} at startup: {e}")
 
 # --- Helper Functions (largely same as before) ---
 
@@ -122,6 +124,7 @@ def get_llm_response(dynamic_prompt_from_frontend):
         
         model = genai.GenerativeModel(GEMINI_MODEL)
         print(f"Sending combined prompt to Gemini model {GEMINI_MODEL}...")
+        print(f"Full prompt being sent to Gemini: {full_prompt_to_gemini}")
 
         generation_config = genai.types.GenerationConfig(
             max_output_tokens=8192 # Increased max_output_tokens
@@ -214,16 +217,18 @@ def save_note_to_file(filename, content):
     Saves the content to a file in the specified notes directory.
     Creates the directory if it doesn't exist.
     """
+    base_notes_path = os.environ.get("BASE_NOTES_PATH", ".")
+    output_notes_directory = os.path.join(base_notes_path, "rosetta_outputs")
     # Ensure output notes directory exists
-    if not os.path.exists(OUTPUT_NOTES_DIRECTORY):
+    if not os.path.exists(output_notes_directory):
         try:
-            os.makedirs(OUTPUT_NOTES_DIRECTORY)
-            print(f"Created directory: {OUTPUT_NOTES_DIRECTORY}")
+            os.makedirs(output_notes_directory)
+            print(f"Created directory: {output_notes_directory}")
         except OSError as e: # More specific exception
-            print(f"Error creating directory {OUTPUT_NOTES_DIRECTORY}: {e}")
+            print(f"Error creating directory {output_notes_directory}: {e}")
             return False # Indicate failure
             
-    filepath = os.path.join(OUTPUT_NOTES_DIRECTORY, filename)
+    filepath = os.path.join(output_notes_directory, filename)
     try:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(content)
@@ -545,7 +550,9 @@ def handle_generate_note():
     if existing_note_filename:
         # Update existing note
         print(f"Received UPDATE request for note: {existing_note_filename} (service: {service_abbr})")
-        existing_note_path = os.path.join(OUTPUT_NOTES_DIRECTORY, existing_note_filename)
+        base_notes_path = os.environ.get("BASE_NOTES_PATH", ".")
+        output_notes_directory = os.path.join(base_notes_path, "rosetta_outputs")
+        existing_note_path = os.path.join(output_notes_directory, existing_note_filename)
         if not os.path.isfile(existing_note_path):
             return jsonify({"error": f"Existing note '{existing_note_filename}' not found or is not a file."}), 404
         try:
