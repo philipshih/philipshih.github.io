@@ -12,27 +12,49 @@
     .hidden { display: none !important; } /* Added !important to ensure override */
     .shihgptmd-container label { display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold; }
     .shihgptmd-container textarea, .shihgptmd-container select { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-    .shihgptmd-container button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .shihgptmd-container button { padding: 10px 15px; background-color: #ddd; color: black; border: none; border-radius: 4px; cursor: pointer; }
     .shihgptmd-container button:hover { background-color: #0056b3; }
     .text-hidden-on-white { color: white !important; background-color: white !important; border-color: white !important; }
     #mainOutputArea, #patientInfoInput, #epicSmartPhraseInput { min-height: 150px; }
     .checkbox-area label { font-weight: normal; display: inline-block; margin-right: 15px;}
     .section-title { margin-top: 20px; margin-bottom:10px; font-size: 1.2em; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+    /* .collapsible-title .toggle-indicator CSS is no longer needed */
+    /* .collapsible-content.hidden CSS is no longer needed, handled by <details> */
+    summary.section-title { display: list-item; cursor: pointer; } /* Ensure summary behaves like a block and gets list-item marker */
+
 
     /* Styles for condensed checkboxes and Apple-style switches */
     #checkboxOptionsContainer div.checkbox-option-item { /* Target divs wrapping each checkbox and label */
         display: inline-flex; /* Allow multiple items per line, align items within */
         align-items: center; /* Vertically align items in the center */
-        margin-right: 15px; /* Space between options on the same line */
-        margin-bottom: 5px; /* Space between lines of options */
+        margin-right: 10px; /* Reduced space between options on the same line */
+        margin-bottom: 2px; /* Reduced space between lines of options */
     }
     #checkboxOptionsContainer input[type="checkbox"] {
-        margin-right: 5px; /* Space between checkbox and its label */
+        margin-right: 2px; /* Reduced from 5px */
+        transform: scale(0.9); /* Slightly smaller checkboxes */
+        vertical-align: middle; /* Align checkbox with the middle of the text */
+        /* margin-top: 1px; /* Removed to prefer vertical-align with inline-flex parent */
     }
     #checkboxOptionsContainer h4 {
-      margin-top: 10px; /* Less space above group titles */
-      margin-bottom: 3px;
+      margin-top: 8px;  /* Reduced */
+      margin-bottom: 2px; /* Reduced */
+      font-size: 1.05em; /* Slightly smaller title */
     }
+    /* CSS to override inline styles set by JS for checkbox labels */
+    #checkboxOptionsContainer div.checkbox-option-item label {
+        font-weight: normal !important;
+        margin-left: 2px !important;  /* Reduced, override JS */
+        margin-right: 6px !important; /* Reduced, override JS */
+        line-height: 1.3; /* Adjust line height */
+        font-size: 0.95em; /* Slightly smaller label text */
+    }
+    #checkboxOptionsContainer div.checkbox-option-item {
+        margin-right: 6px;  /* Reduced space between items on same line */
+        margin-bottom: 0px; /* Reduced space between lines */
+        padding: 1px 0; 
+    }
+
 
     /* Basic Apple-style switch CSS */
     .apple-switch-label {
@@ -93,7 +115,57 @@
      /* If the "Incognito" text is part of the visual switch label, this might need adjustment */
      /* The current HTML has <input> then <label class="apple-switch-label">Incognito</label> */
      /* This means the "Incognito" text is *part* of the switch. Let's adjust that. */
-     /* We'll make the visual switch label empty and put "Incognito" text before it. */
+    /* We'll make the visual switch label empty and put "Incognito" text before it. */
+
+    #incognitoControl { /* New container for the switch */
+        position: absolute;
+        top: 25px; /* Adjust as needed, considering padding of parent */
+        right: 25px; /* Adjust as needed */
+        display: flex;
+        align-items: center;
+        z-index: 10; /* Ensure it's above other elements if needed */
+    }
+    #incognitoControl > label[for="hideTextCheckbox"] { /* Text label "Incognito" */
+        font-weight: bold;
+        margin-right: 8px;
+        font-size: 0.9em; /* Slightly smaller if needed */
+    }
+    /* Apple switch styles are already defined */
+
+    /* Style for #generatePromptButton to mimic .nav .password-entry-container button */
+    #generatePromptButton {
+        padding: 10px 15px; /* Keep padding for clickable area */
+        border-radius: 4px;
+        border: none; /* Remove border */
+        background-color: transparent; /* Remove background */
+        color: #007bff; /* Icon color - Changed to blue */
+        cursor: pointer;
+        font-size: 1.5em; /* Make icon a bit larger as it's a primary action */
+        line-height: 1; 
+        text-align: center;
+        margin-top: 20px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #generatePromptButton:hover {
+        color: #0056b3; /* Change icon color on hover, remove background change */
+    }
+
+    #refreshNotesButton_rosetta {
+        padding: 6px 10px; /* Adjusted padding for icon feel */
+        border-radius: 3px;
+        border: 1px solid #ccc;
+        background-color: #ddd;
+        color: #333;
+        cursor: pointer;
+        font-size: 1.2em; /* Larger for icon */
+        line-height: 1; /* For better icon centering */
+        min-width: auto; /* Allow button to be as small as content */
+    }
+    #refreshNotesButton_rosetta:hover {
+        background-color: #ddd;
+    }
 
   </style>
 
@@ -118,46 +190,97 @@
       {{ content }}
     </main>
 
-    <div id="shihGptMdAppContainer" class="shihgptmd-container hidden">
-        <h1>Rosetta</h1>
-        <span class="copyright-rosetta">&copy; Philip Shih 2025</span>
-
-        <div class="checkbox-area" style="justify-content: center; text-align: center;"> 
-            <label for="hideTextCheckbox" style="font-weight: bold; margin-right: 8px;">Incognito</label> 
+    <div id="shihGptMdAppContainer" class="shihgptmd-container hidden" style="position: relative;"> <!-- Added position: relative -->
+        <div id="incognitoControl"> <!-- Moved Incognito switch here -->
+            <!-- Text label "Incognito" removed -->
             <input type="checkbox" id="hideTextCheckbox" name="hideTextCheckbox" class="apple-switch-checkbox">
             <label for="hideTextCheckbox" class="apple-switch-label" aria-hidden="true" style="width: 50px; height: 28px;"></label>
         </div>
-
-        <h2 class="section-title">Input</h2>
-        <textarea id="patientInfoInput" placeholder="Enter information here..."></textarea>
-
-        <h2 class="section-title">SmartPhrase Template (Optional)</h2>
-        <textarea id="epicSmartPhraseInput" placeholder="Paste SmartPhrase template here if desired..."></textarea>
-
-        <h2 class="section-title">Options</h2>
-        <label for="templateSelector">Select Predefined Template:</label>
-        <select id="templateSelector">
-            <option value="general_soap">General SOAP Note</option>
-            <option value="ob_l_d">OB L&D</option>
-            <option value="derm_lesion">Derm Lesion</option>
-            <option value="peds_well_visit">Peds Well Visit</option>
-            <!-- Add more templates as needed -->
-        </select>
-
-        <!-- Removed <h3>Options:</h3> -->
-        <div id="checkboxOptionsContainer" style="margin-bottom: 20px; text-align: left;"> 
-            <!-- Checkboxes will be dynamically added here by JS -->
-        </div>
-
-        <button id="generatePromptButton" style="margin-top:20px; display: block; margin-left: auto; margin-right: auto;">Generate Output</button> 
-
-        <h2 class="section-title">Output</h2>
-        <textarea id="mainOutputArea" placeholder="Output will appear here..." readonly></textarea>
         
-        <h2 class="section-title">History <button id="refreshDriveButton" style="font-size: 0.8em; padding: 2px 5px; margin-left: 10px;">Refresh</button></h2>
-        <div id="googleDriveEmbed" style="width: 100%; height: 400px; border: 1px solid #ddd; margin-top: 10px;">
-            <iframe id="driveFrame" src="https://drive.google.com/embeddedfolderview?id=1-LufS-8PJEmyf79vvG6kxFw9uEKq_u3S#list" style="width:100%; height:100%; border:0;"></iframe>
-        </div>
+        <h1>Rosetta</h1>
+        <span class="copyright-rosetta">&copy; Philip Shih 2025</span>
+
+        <!-- Original checkbox-area div for Incognito switch removed from here as it's repositioned -->
+        <!-- <div class="checkbox-area" style="justify-content: center; text-align: center;"> ... </div> -->
+
+        <details open class="section-container">
+            <summary class="section-title">Input</summary>
+            <div id="inputSectionContent"> 
+                <textarea id="patientInfoInput" placeholder="Add input here..."></textarea>
+                <div id="updateNoteUIContainer_rosetta" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; border: 1px solid #eee; border-radius: 4px; text-align: left;">
+                    <input type="checkbox" id="enableUpdateModeCheckbox_rosetta" name="enableUpdateModeCheckbox_rosetta" style="margin-right: 5px;">
+                    <label for="enableUpdateModeCheckbox_rosetta" style="font-weight: normal; display: inline;">Update existing file?</label>
+                    
+                    <div id="existingNotesControls_rosetta" class="hidden" style="margin-top: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <select id="existingNotesDropdown_rosetta" style="flex-grow: 1; margin-bottom: 0; min-width: 150px;">
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                            <button type="button" id="refreshNotesButton_rosetta" title="Refresh Notes List">
+                              <i class="fas fa-redo" style="font-size: 0.8em;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        </details>
+
+        <details class="section-container" id="templateSection">
+            <summary class="section-title">Template (Optional)</summary>
+            <div id="smartPhraseSectionContent">
+                <label for="templateSelector" style="font-weight: bold; margin-bottom: 5px; display: block;">Manual:</label>
+                <select id="templateSelector" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px;">
+                    <!-- Options will be dynamically populated by JS, including "None" -->
+                </select>
+                <hr style="margin: 15px 0;"> <!-- Optional separator -->
+                <label for="epicSmartPhraseInput" style="font-weight: bold; margin-bottom: 5px; display: block;">Custom Template:</label>
+                <textarea id="epicSmartPhraseInput" placeholder="Insert template (SmartPhrase, previous note, etc.)..."></textarea>
+                <div style="margin-top: 5px;">
+                    <button type="button" id="saveCustomTemplateButton" style="font-size: 0.9em; padding: 5px 10px; margin-right: 5px;">Save as Manual</button>
+                    <button type="button" id="clearCustomTemplateButton" style="font-size: 0.9em; padding: 5px 10px; background-color: #6c757d;">Clear</button>
+                </div>
+            </div>
+        </details>
+
+        <details class="section-container"> 
+            <summary class="section-title">Options</summary> 
+            <div id="optionsSectionContent">
+                <!-- templateSelector elements moved to "Template (Optional)" section -->
+                <div id="checkboxOptionsContainer" style="margin-bottom: 20px; text-align: left;"> 
+                    <!-- Checkboxes will be dynamically added here by JS -->
+                </div>
+            </div>
+        </details>
+
+        <button id="generatePromptButton" title="Generate Output"><i class="fas fa-angle-right"></i></button>
+
+        <details class="section-container"> 
+            <summary class="section-title">Output</summary>
+            <div id="impressionSectionContent">
+                <textarea id="modelImpressionArea" placeholder="Output will appear here..." readonly style="min-height: 100px; background-color: #f8f9fa;"></textarea>
+            </div>
+        </details>
+
+        <details open class="section-container"> 
+            <summary class="section-title">Note</summary>
+            <div id="noteSectionContent">
+                <textarea id="mainOutputArea" placeholder="Note will appear here..." readonly></textarea>
+            </div>
+        </details>
+        
+        <details open class="section-container"> 
+            <summary class="section-title">
+                <a href="https://drive.google.com/drive/folders/1-LufS-8PJEmyf79vvG6kxFw9uEKq_u3S" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">History</a>
+            </summary>
+            <div id="historySectionContent">
+                <div id="googleDriveEmbed" style="width: 100%; height: 400px; border: 1px solid #ddd; margin-top: 10px;">
+                    <iframe id="driveFrame" src="https://drive.google.com/embeddedfolderview?id=1-p45MB609-pRU3yn4hEUjIl6Hw6yaVdB#list" style="width:100%; height:100%; border:0;"></iframe>
+                </div>
+                <button type="button" id="refreshHistoryButtonBottom" style="font-size: 0.9em; padding: 5px 10px; background-color: #f0f0f0; color: #333; margin-top: 10px;">Refresh History</button>
+            </div>
+        </details>
     </div>
 
     <footer>
@@ -167,6 +290,8 @@
     </footer>
 
     <script>
+      const ROSETTA_BACKEND_URL = 'http://127.0.0.1:5000'; // Define backend URL for Rosetta
+
       function checkPassword() {
         const passwordInput = document.getElementById('secret-password');
         const password = passwordInput.value;
@@ -182,7 +307,7 @@
         } else {
           alert('Incorrect password.');
         }
-        passwordInput.value = ''; 
+        passwordInput.value = '';
       }
 
       document.getElementById('secret-password').addEventListener('keypress', function(event) {
@@ -194,30 +319,249 @@
 
       // ShihGPTMD App JavaScript
       function initializeShihGptMdApp() {
+        const ROSETTA_APP_BACKEND_URL = ROSETTA_BACKEND_URL; // Make it available inside this scope if not already global
+
+        async function fetchExistingNotesRosetta() {
+            console.log("DEBUG: fetchExistingNotesRosetta called.");
+            const notesDropdown = document.getElementById('existingNotesDropdown_rosetta');
+            if (!notesDropdown) {
+                console.error("Rosetta Error: existingNotesDropdown_rosetta DOM element not found.");
+                return;
+            }
+            
+            const previouslySelected = notesDropdown.value;
+            notesDropdown.innerHTML = '<option value="" disabled>Loading notes...</option>'; // Indicate loading, make it disabled
+
+            try {
+                console.log(`DEBUG: Fetching from ${ROSETTA_APP_BACKEND_URL}/list_notes`);
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_notes`);
+                console.log(`DEBUG: /list_notes response status: ${response.status}`);
+                notesDropdown.innerHTML = ''; // Clear loading message
+
+                if (!response.ok) {
+                    console.error('Rosetta Error: Failed to fetch notes list. Status:', response.status, response.statusText);
+                    const errorOption = document.createElement('option');
+                    errorOption.value = "";
+                    errorOption.textContent = "Error loading notes";
+                    errorOption.disabled = true;
+                    notesDropdown.appendChild(errorOption);
+                    try {
+                        const errorData = await response.json();
+                        console.error('Rosetta Error details from backend:', errorData);
+                        if (errorData.error) {
+                             errorOption.textContent = `Error: ${errorData.error}`;
+                        }
+                    } catch (e) { /* ignore */ }
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("DEBUG: /list_notes response data:", data);
+
+                if (data.notes && data.notes.length > 0) {
+                    data.notes.forEach(noteFile => {
+                        const option = document.createElement('option');
+                        option.value = noteFile;
+                        option.textContent = noteFile;
+                        notesDropdown.appendChild(option);
+                    });
+                    if (previouslySelected && notesDropdown.querySelector(`option[value="${previouslySelected}"]`)) {
+                        notesDropdown.value = previouslySelected;
+                    } else {
+                        notesDropdown.selectedIndex = 0; // Select the first actual note
+                    }
+                } else if (data.error) {
+                    console.error('Rosetta Error from backend fetching notes:', data.error);
+                    const errorOpt = document.createElement('option');
+                    errorOpt.value = "";
+                    errorOpt.textContent = `Error: ${data.error}`;
+                    errorOpt.disabled = true;
+                    notesDropdown.appendChild(errorOpt);
+                } else {
+                     const noNotesOpt = document.createElement('option');
+                     noNotesOpt.value = "";
+                     noNotesOpt.textContent = "No notes found";
+                     noNotesOpt.disabled = true;
+                     notesDropdown.appendChild(noNotesOpt);
+                }
+            } catch (error) {
+                console.error('Rosetta Error: Network error fetching notes list:', error);
+                notesDropdown.innerHTML = ''; // Clear loading message
+                const networkErrorOpt = document.createElement('option');
+                networkErrorOpt.value = "";
+                networkErrorOpt.textContent = "Network error loading notes";
+                networkErrorOpt.disabled = true;
+                notesDropdown.appendChild(networkErrorOpt);
+            }
+        }
+        window.fetchExistingNotesRosetta = fetchExistingNotesRosetta; 
+
+        async function saveCustomTemplate() {
+            const templateContent = document.getElementById('epicSmartPhraseInput').value;
+            if (!templateContent.trim()) {
+                alert("The template content is empty. Please paste your template before saving.");
+                return;
+            }
+
+            let userFilename = prompt("Enter a name for this template (e.g., 'my_progress_note').\nAllowed characters: letters, numbers, underscores, hyphens.\n'.txt' will be added automatically.", "my_custom_template");
+
+            if (!userFilename || !userFilename.trim()) {
+                // User cancelled or entered empty name
+                return;
+            }
+
+            // Basic sanitization for filename (more robust sanitization on backend is still recommended)
+            userFilename = userFilename.trim().replace(/[^a-zA-Z0-9_-]/g, '_'); 
+            if (!userFilename) { 
+                alert("Invalid filename after sanitization. Please use letters, numbers, underscores, or hyphens.");
+                return;
+            }
+            const fullFilename = `${userFilename}.txt`;
+
+            const payload = {
+                filename: fullFilename,
+                content: templateContent
+            };
+            console.log("DEBUG: Saving custom template with payload:", payload);
+
+            try {
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/save_smartphrase_template`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert(`Template '${result.filename || fullFilename}' saved successfully! The dropdown will refresh.`);
+                    populatePredefinedTemplatesDropdown(); // Refresh the dropdown
+                } else {
+                    alert(`Error saving template: ${result.error || 'Unknown error from backend.'}`);
+                }
+            } catch (error) {
+                console.error('Error saving custom template via fetch:', error);
+                alert(`Network error or backend issue while saving template: ${error.message}`);
+            }
+        }
+
+        async function populatePredefinedTemplatesDropdown() {
+            const templateSelector = document.getElementById('templateSelector');
+            if (!templateSelector) {
+                console.error("Rosetta Error: templateSelector dropdown not found");
+                return;
+            }
+            templateSelector.innerHTML = ''; // Clear existing options first
+
+            // Add "None" option
+            const noneOption = document.createElement('option');
+            noneOption.value = "none";
+            noneOption.textContent = "None (Use General Structure)";
+            templateSelector.appendChild(noneOption);
+            
+            // Add a loading/placeholder option that will be removed or replaced
+            const loadingOption = document.createElement('option');
+            loadingOption.value = "";
+            loadingOption.textContent = "Loading templates...";
+            loadingOption.disabled = true; // Make it not selectable
+            templateSelector.appendChild(loadingOption);
+
+            try {
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_smartphrase_templates`);
+                templateSelector.removeChild(loadingOption); // Remove loading option once fetch starts/completes
+
+                if (!response.ok) {
+                    console.error('Rosetta Error: Failed to fetch smartphrase templates list:', response.statusText);
+                    const errorOption = document.createElement('option');
+                    errorOption.value = "";
+                    errorOption.textContent = "Error loading templates";
+                    errorOption.disabled = true;
+                    templateSelector.appendChild(errorOption);
+                    templateSelector.value = "none"; // Default to "None" on error
+                    return;
+                }
+                const templateFiles = await response.json(); 
+                
+                if (templateFiles.templates && templateFiles.templates.length > 0) {
+                    templateFiles.templates.forEach(filename => {
+                        if (filename.endsWith('.txt')) {
+                            const value = filename.slice(0, -4); 
+                            let displayText = value.replace(/[_-]/g, ' ');
+                            displayText = displayText.replace(/\b\w/g, char => char.toUpperCase()); 
+                            
+                            const option = document.createElement('option');
+                            option.value = value;
+                            option.textContent = displayText;
+                            templateSelector.appendChild(option);
+                        }
+                    });
+                    // Set a default selection
+                    const defaultTemplateValue = 'general_soap'; // Try to default to general_soap
+                    let defaultSelected = false;
+                    if (templateSelector.querySelector(`option[value="${defaultTemplateValue}"]`)) {
+                        templateSelector.value = defaultTemplateValue;
+                        defaultSelected = true;
+                    }
+                    if (!defaultSelected && templateSelector.options.length > 1) { // If general_soap not found, and more than "None" exists
+                         // templateSelector.selectedIndex = 1; // Select first actual template after "None"
+                         // Or better, default to "none" if general_soap isn't there
+                         templateSelector.value = "none";
+                    } else if (!defaultSelected) { // Only "None" option is there
+                        templateSelector.value = "none";
+                    }
+
+                } else { // No templates found from backend, but "None" option is still there
+                    // const noTemplatesOption = document.createElement('option');
+                    // noTemplatesOption.value = "";
+                    // noTemplatesOption.textContent = "No predefined templates found";
+                    // noTemplatesOption.disabled = true;
+                    // templateSelector.appendChild(noTemplatesOption);
+                    templateSelector.value = "none"; // Default to "None"
+                }
+            } catch (error) {
+                console.error('Rosetta Error: Network error fetching smartphrase templates list:', error);
+                if (templateSelector.contains(loadingOption)) templateSelector.removeChild(loadingOption);
+                const errorOption = document.createElement('option');
+                errorOption.value = "";
+                errorOption.textContent = "Error loading templates (network)";
+                errorOption.disabled = true;
+                templateSelector.appendChild(errorOption);
+                templateSelector.value = "none"; // Default to "None" on error
+            }
+        }
+
         const checkboxOptions = [
-            // Concise Labels
-            { id: "genSHN", label: "SHN", group: "Output Format" },
-            { id: "genVSHN", label: "VSHN", group: "Output Format" },
-            { id: "incPathophys", label: "Pathophysiology", group: "Reasoning Detail" },
-            { id: "incGuidelines", label: "Guideline Citations", group: "Reasoning Detail" },
-            { id: "expectImage", label: "Image Input", group: "Data Type Emphasis" },
-            { id: "expectAudio", label: "Audio Input", group: "Data Type Emphasis" },
-            { id: "expectStructured", label: "Structured Vitals/Labs", group: "Data Type Emphasis" },
-            { id: "formatSOAP", label: "SOAP", group: "Documentation Type", checked: true },
-            { id: "formatHnP", label: "H&P", group: "Documentation Type" },
-            { id: "formatDischarge", label: "Discharge Summary", group: "Documentation Type" },
-            { id: "formatPreOp", label: "Pre-op Note", group: "Documentation Type" },
-            { id: "specOBGYN", label: "OB/GYN", group: "Specialty Context" },
-            { id: "specDerm", label: "Derm", group: "Specialty Context" },
-            { id: "specPeds", label: "Peds", group: "Specialty Context" },
-            { id: "specOrtho", label: "Ortho", group: "Specialty Context" },
-            { id: "specIM", label: "Internal Med", group: "Specialty Context" },
-            { id: "incMissingData", label: "Missing Data Checklist", group: "Output Features" },
-            { id: "genPatientQuestions", label: "Initial Patient Questions", group: "Output Features" },
-            { id: "incTTS", label: "TTS Audio Output", group: "Output Features" },
-            { id: "confirmDeidentified", label: "De-identified Data", group: "Redaction", checked: true },
-            { id: "removeDates", label: "Relative Time", group: "Redaction" },
-            { id: "stripNonStandardAbbr", label: "Standard Abbrev. Only", group: "Redaction" }
+            // Concise Labels & Updated Group Names
+            { id: "genSHN", label: "SHN", group: "Output" },
+            { id: "genVSHN", label: "VSHN", group: "Output" },
+            { id: "formatByProblem", label: "A&P", group: "Output", checked: true },
+            { id: "incPathophys", label: "Pathophysiology", group: "Reasoning" },
+            { id: "incGuidelines", label: "Guideline Citations (PMID/Calculators)", group: "Reasoning" },
+            { id: "formatSOAP", label: "SOAP", group: "Documentation", checked: true },
+            { id: "formatHnP", label: "H&P", group: "Documentation" },
+            { id: "formatDischarge", label: "Discharge Summary", group: "Documentation" },
+            { id: "formatPreOp", label: "Pre-op Note", group: "Documentation" },
+            // Context Options
+            { id: "specAnesthesia", label: "Anesthesia", group: "Context" },
+            { id: "specDerm", label: "Dermatology", group: "Context" },
+            { id: "specFM", label: "Family Medicine", group: "Context" },
+            { id: "specIM", label: "Internal Medicine", group: "Context" },
+            { id: "specNeuro", label: "Neuro", group: "Context" },
+            { id: "specOBGYN", label: "OBGYN", group: "Context" },
+            { id: "specPeds", label: "Pediatrics", group: "Context" },
+            { id: "specPsych", label: "Psychiatry", group: "Context" },
+            { id: "specSurgeryGen", label: "Surgery (General)", group: "Context" },
+            // Features - Reordered
+            { id: "genHistoryQuestions", label: "History", group: "Features" },
+            { id: "genPEManeuvers", label: "Physical Exam", group: "Features" },
+            { id: "genROSTemplate", label: "ROS", group: "Features" },
+            { id: "genChartReview", label: "Chart Review", group: "Features" },
+            { id: "incMissingData", label: "Missing Data", group: "Features" },
+            // Security - Updated group name, labels and defaults
+            { id: "confirmDeidentified", label: "Identification", group: "Security", checked: true }, 
+            { id: "removeDates", label: "Relative Time", group: "Security", checked: true }, 
+            { id: "stripNonStandardAbbr", label: "Standard Abbrev. Only", group: "Security", checked: true } 
         ];
 
         function populateCheckboxOptions() {
@@ -247,8 +591,8 @@
                 labelEl.htmlFor = opt.id;
                 labelEl.appendChild(document.createTextNode(opt.label));
                 labelEl.style.fontWeight = 'normal';
-                labelEl.style.marginLeft = '5px';
-                labelEl.style.marginRight = '15px';
+                // labelEl.style.marginLeft = '5px'; // Controlled by CSS now
+                // labelEl.style.marginRight = '15px'; // Controlled by CSS now
 
                 const div = document.createElement('div');
                 div.className = 'checkbox-option-item'; // Add class for styling
@@ -259,16 +603,20 @@
         }
 
         function getSelectedServiceAbbreviation() {
-            // Attempt to infer from specialty checkboxes. This is a simple inference.
-            // You might want a more explicit way to set this (e.g., a dedicated input or dropdown for filename service).
-            const specialtyCheckboxes = [
-                { id: "specOBGYN", abbr: "OBGYN" },
+            // Attempt to infer from specialty checkboxes.
+            const contextCheckboxes = [
+                { id: "specAnesthesia", abbr: "ANES" },
                 { id: "specDerm", abbr: "DERM" },
+                { id: "specFM", abbr: "FM" },
+                { id: "specIM", abbr: "IM" },
+                { id: "specNeuro", abbr: "NEURO" },
+                { id: "specOBGYN", abbr: "OBGYN" },
                 { id: "specPeds", abbr: "PEDS" },
-                { id: "specOrtho", abbr: "ORTHO" },
-                { id: "specIM", abbr: "IM" }
+                { id: "specPsych", abbr: "PSYCH" },
+                { id: "specSurgeryGen", abbr: "SURG" }
+                // Add more mappings if other context options imply a service for filename
             ];
-            for (const spec of specialtyCheckboxes) {
+            for (const spec of contextCheckboxes) {
                 const checkbox = document.getElementById(spec.id);
                 if (checkbox && checkbox.checked) {
                     return spec.abbr;
@@ -278,74 +626,146 @@
         }
 
         async function submitPromptToBackend() {
+            console.log("DEBUG: submitPromptToBackend function called."); // New log
+
             const patientInfo = document.getElementById('patientInfoInput').value;
             const epicSmartPhrase = document.getElementById('epicSmartPhraseInput').value;
             const selectedTemplate = document.getElementById('templateSelector').value;
             const outputArea = document.getElementById('mainOutputArea');
+            const modelImpressionDisplayArea = document.getElementById('modelImpressionArea');
             
-            if (!outputArea) {
-                console.error("Output area not found!");
-                alert("Error: Output area not found on the page.");
+            if (!outputArea || !modelImpressionDisplayArea) {
+                console.error("Rosetta Error: Output or Impression area DOM elements not found!");
+                alert("Rosetta Error: Critical UI elements (output/impression areas) are missing. Please check the HTML structure or report this issue.");
                 return;
             }
+            
+            console.log("DEBUG: Setting loading indicators.");
+            outputArea.value = "Processing... Please wait.";
+            modelImpressionDisplayArea.value = "Processing... Please wait.";
 
-            outputArea.value = "Constructing dynamic prompt for backend...";
+            // Construct the payload for the backend
+            let patient_info_content = "";
+            const isUpdateOperation = document.getElementById('enableUpdateModeCheckbox_rosetta')?.checked && document.getElementById('existingNotesDropdown_rosetta')?.value;
 
-            // Construct a much shorter "dynamic prompt" for the backend
-            let dynamic_prompt = `Patient Information:\n---\n${patientInfo}\n---\n`;
+            if (isUpdateOperation && patientInfo.trim() === "") {
+                patient_info_content = "(No new clinical information provided - this is a reformat or option-change request for an existing note)";
+            } else {
+                patient_info_content = patientInfo;
+            }
+            
+            let template_content_for_payload = "";
+            let selected_template_name_for_payload = "";
 
             if (epicSmartPhrase.trim() !== "") {
-                dynamic_prompt += `\nUse EPIC SmartPhrase Template for output format:\n---\n${epicSmartPhrase}\n---\n`;
+                template_content_for_payload = epicSmartPhrase;
+                selected_template_name_for_payload = "custom_from_input";
             } else {
-                dynamic_prompt += `\nUse Predefined Template: ${selectedTemplate}\n`;
+                const templateFileName = `${selectedTemplate}.txt`;
+                const selectedTemplateDropdown = document.getElementById('templateSelector');
+                selected_template_name_for_payload = selectedTemplateDropdown.options[selectedTemplateDropdown.selectedIndex].text; // User-friendly name
+                try {
+                    const response = await fetch(`smartphrase_templates/${templateFileName}`);
+                    if (response.ok) {
+                        template_content_for_payload = await response.text();
+                    } else {
+                        if(outputArea) outputArea.value = `Error: Could not load SmartPhrase template 'smartphrase_templates/${templateFileName}'. Status: ${response.status}. Will proceed without specific template content.`;
+                        template_content_for_payload = `(Error loading template: ${templateFileName}, Status: ${response.status})`;
+                    }
+                } catch (error) {
+                    if(outputArea) outputArea.value = `Error: Could not load SmartPhrase template 'smartphrase_templates/${templateFileName}'. Error: ${error}. Will proceed without specific template content.`;
+                    template_content_for_payload = `(Error loading template: ${templateFileName}, Error: ${error})`;
+                }
             }
 
-            dynamic_prompt += "\nUser-Selected Options for this request:\n";
-            let hasSelectedOption = false;
-            checkboxOptions.forEach(opt => { // checkboxOptions should be accessible here
+            // Structured options
+            const structuredOptions = {};
+            checkboxOptions.forEach(opt => {
                 const checkbox = document.getElementById(opt.id);
-                if (checkbox && checkbox.checked) {
-                    dynamic_prompt += `- ${opt.label}\n`;
-                    hasSelectedOption = true;
+                if (checkbox) { // Ensure checkbox exists
+                    // For each group, collect checked items. If a group can have multiple selections, use an array.
+                    // If a group is single-select (like documentation type, though UI is checkboxes), backend needs to handle.
+                    // For simplicity here, we'll just mark true/false for each option ID.
+                    // Backend can interpret these IDs.
+                    structuredOptions[opt.id] = checkbox.checked;
                 }
             });
-            if (!hasSelectedOption) {
-                dynamic_prompt += "- (Using default behaviors as per core instructions for non-specified options)\n";
-            }
-            dynamic_prompt += "\n--- END OF DYNAMIC REQUEST ---";
             
             const serviceAbbreviation = getSelectedServiceAbbreviation();
-            outputArea.value = `Sending dynamic prompt to backend for service: ${serviceAbbreviation}... Please wait.`;
+            // Update loading message to be more specific
+            if(outputArea) outputArea.value = `Gathering data for service: ${serviceAbbreviation}... Constructing request...`;
+            
+            const payload = {
+                patient_data: patient_info_content,
+                template_name: selected_template_name_for_payload, // This will be "None (Use General Structure)" if "none" is selected
+                template_value: selectedTemplate, // This will be "none" if "none" is selected
+                template_content: template_content_for_payload,
+                options: structuredOptions,
+                service_abbreviation: serviceAbbreviation
+            };
+            console.log("DEBUG: Payload constructed:", payload); // New log
+
+            const enableUpdateModeCheckbox = document.getElementById('enableUpdateModeCheckbox_rosetta');
+            const existingNotesDropdown = document.getElementById('existingNotesDropdown_rosetta');
+            
+            if (enableUpdateModeCheckbox && enableUpdateModeCheckbox.checked && existingNotesDropdown && existingNotesDropdown.value) {
+                payload.existing_note_filename = existingNotesDropdown.value;
+            }
 
             try {
-                const backend_response = await fetch('http://10.0.0.208:5000/generate_note', { // Updated to local IP
+                console.log(`DEBUG: Sending fetch request to ${ROSETTA_APP_BACKEND_URL}/generate_note`); // New log
+                if(outputArea) outputArea.value = `Sending request to backend for service: ${serviceAbbreviation}... Please wait.`;
+
+                const backend_response = await fetch(`${ROSETTA_APP_BACKEND_URL}/generate_note`, { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        prompt: dynamic_prompt, // Send the shorter, dynamic prompt
-                        service_abbreviation: serviceAbbreviation
-                    }),
+                    body: JSON.stringify(payload),
                 });
+                console.log("DEBUG: Fetch request sent, awaiting response."); // New log
+
+                if(outputArea) outputArea.value = `Received response from backend. Processing...`;
+                console.log(`DEBUG: Backend response status: ${backend_response.status}`); // New log
 
                 const result = await backend_response.json();
+                console.log("DEBUG: Backend response JSON parsed:", result); // New log
                 let resultDisplay = "";
 
                 if (result.prompt_feedback && result.prompt_feedback !== "N/A") {
                     resultDisplay += `Prompt Feedback from API:\n${result.prompt_feedback}\n\n---\n`;
                 }
 
+                const modelImpressionArea = document.getElementById('modelImpressionArea');
+
                 if (backend_response.ok) {
-                    resultDisplay += `Success from backend:\nFilename: ${result.filename}\nMessage: ${result.message}\n\nLLM Response:\n---\n${result.llm_response}`;
+                    resultDisplay = `Success: Note ${result.filename} ${result.message.includes("updated") ? "updated" : "created"}.\n`;
+                    if (modelImpressionArea) {
+                        modelImpressionArea.value = result.llm_model_thoughts || "(No specific reasoning provided by model)";
+                    }
+                    outputArea.value = result.llm_note_output || "(No note output provided by model)";
+                    fetchExistingNotesRosetta(); // Refresh notes list
                 } else {
-                    resultDisplay += `Error from backend: ${result.error}\nDetails: ${result.details || 'N/A'}`;
+                    resultDisplay = `Error from backend: ${result.error}\nDetails: ${result.details || 'N/A'}\n`;
+                    if (modelImpressionArea) {
+                        modelImpressionArea.value = result.llm_model_thoughts || "(No reasoning provided due to error)";
+                    }
+                    outputArea.value = result.llm_note_output || "(No note output due to error)";
                 }
-                outputArea.value = resultDisplay;
+                // Prepend feedback to the main output area or a dedicated status line if desired
+                // For now, let's keep the main output area for the note itself, and modelImpressionArea for thoughts.
+                // The success/error message can be part of the thoughts or a small status line.
+                // Let's put the primary status in the modelImpressionArea if it's short, or alert.
+                if (modelImpressionArea && result.message) { // If there's a success/error message from backend
+                    modelImpressionArea.value = `Status: ${result.message}\nPrompt Feedback: ${result.prompt_feedback || 'N/A'}\n\n--- Model Thoughts ---\n` + (result.llm_model_thoughts || "(No specific reasoning provided by model)");
+                } else if (modelImpressionArea && result.error) {
+                     modelImpressionArea.value = `Status Error: ${result.error}\nDetails: ${result.details || 'N/A'}\nPrompt Feedback: ${result.prompt_feedback || 'N/A'}\n\n--- Model Thoughts ---\n` + (result.llm_model_thoughts || "(No reasoning provided due to error)");
+                }
+
 
             } catch (error) {
-                console.error('Error sending prompt to backend:', error);
-                outputArea.value = `Network error or backend server not running.\nCould not connect to the ShihGPT-MD backend at http://10.0.0.208:5000.\nPlease ensure the Python Flask server (shihgptmd_backend.py) is running and accessible on your network (check firewall).\nDetails: ${error.message}`;
+                console.error('Rosetta Error: Error sending prompt to backend:', error);
+                outputArea.value = `Network error or backend server not running.\nCould not connect to the Rosetta backend at ${ROSETTA_APP_BACKEND_URL}.\nPlease ensure the Python Flask server (shihgptmd_backend.py) is running and accessible on your network (check firewall).\nDetails: ${error.message}`;
             }
         }
         
@@ -353,6 +773,7 @@
         const textAreasToHide = [
             document.getElementById('patientInfoInput'),
             document.getElementById('epicSmartPhraseInput'),
+            document.getElementById('modelImpressionArea'), // Added new area
             document.getElementById('mainOutputArea')
         ];
 
@@ -370,38 +791,136 @@
             });
         }
 
-        populateCheckboxOptions(); // This function should be defined within initializeShihGptMdApp or globally accessible
+        // Call initialization functions once
+        populatePredefinedTemplatesDropdown(); 
+        populateCheckboxOptions(); 
 
         const generateButton = document.getElementById('generatePromptButton');
         if (generateButton) {
             generateButton.addEventListener('click', submitPromptToBackend); 
         }
 
-        const refreshDriveButton = document.getElementById('refreshDriveButton');
-        if (refreshDriveButton) {
-            refreshDriveButton.addEventListener('click', function() {
-                const driveFrame = document.getElementById('driveFrame');
-                if (driveFrame) {
-                    outputArea.value = "Refreshing History view..."; // Show some feedback
-                    const originalSrc = driveFrame.src;
-                    driveFrame.src = ''; // Clear src
-                    setTimeout(() => { // Delay to ensure change is registered
-                        driveFrame.src = originalSrc; // Re-assign src to force reload
-                         if(outputArea.value === "Refreshing History view...") {
-                            outputArea.value = "History view refreshed (or refresh attempted).";
-                         }
-                    }, 100);
+        
+        // Event listeners for "Update Note" UI elements
+        const enableUpdateCheckbox = document.getElementById('enableUpdateModeCheckbox_rosetta');
+        const notesControls = document.getElementById('existingNotesControls_rosetta');
+        const refreshNotesListButton = document.getElementById('refreshNotesButton_rosetta'); 
+
+        if (enableUpdateCheckbox && notesControls) {
+            enableUpdateCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    notesControls.classList.remove('hidden');
+                    fetchExistingNotesRosetta(); 
+                } else {
+                    notesControls.classList.add('hidden');
+                }
+            });
+            if (!enableUpdateCheckbox.checked) { 
+                notesControls.classList.add('hidden');
+            }
+        }
+
+        if (refreshNotesListButton) { 
+            refreshNotesListButton.addEventListener('click', fetchExistingNotesRosetta);
+        }
+
+        const saveTemplateBtn = document.getElementById('saveCustomTemplateButton');
+        if (saveTemplateBtn) {
+            saveTemplateBtn.addEventListener('click', saveCustomTemplate);
+        }
+
+        const clearTemplateBtn = document.getElementById('clearCustomTemplateButton');
+        if (clearTemplateBtn) {
+            clearTemplateBtn.addEventListener('click', function() {
+                const epicSmartPhraseInput = document.getElementById('epicSmartPhraseInput');
+                if (epicSmartPhraseInput) {
+                    epicSmartPhraseInput.value = '';
                 }
             });
         }
 
-        console.log("ShihGPTMD app features ready to be initialized upon password success.");
+        async function deleteCustomTemplate() {
+            const templateSelector = document.getElementById('templateSelector');
+            const selectedTemplate = templateSelector.value;
+
+            if (selectedTemplate === "none") {
+                alert("Please select a manual template to delete.");
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete the manual template '${selectedTemplate}'?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/delete_smartphrase_template`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filename: `${selectedTemplate}.txt` }),
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert(`Template '${selectedTemplate}' deleted successfully! The dropdown will refresh.`);
+                    populatePredefinedTemplatesDropdown(); // Refresh the dropdown
+                } else {
+                    alert(`Error deleting template: ${result.error || 'Unknown error from backend.'}`);
+                }
+            } catch (error) {
+                console.error('Error deleting custom template via fetch:', error);
+                alert(`Network error or backend issue while deleting template: ${error.message}`);
+            }
+        }
+
+        const deleteTemplateBtn = document.getElementById('deleteCustomTemplateButton');
+        if (deleteTemplateBtn) {
+            deleteTemplateBtn.addEventListener('click', deleteCustomTemplate);
+        }
+
+        console.log("Rosetta app features initialized.");
+
+        const templateSection = document.getElementById('templateSection');
+        if (templateSection) {
+            templateSection.addEventListener('toggle', function() {
+                if (!this.open) {
+                    populatePredefinedTemplatesDropdown();
+                }
+            });
+        }
+
+        // Removed the automatic refresh on history section toggle
       }
       // Call initializeShihGptMdApp() only after successful password entry,
       // which is handled in the modified checkPassword function.
       // Ensure checkboxOptions is defined in a scope accessible by submitPromptToBackend if it's called from initializeShihGptMdApp
       // For simplicity, ensure checkboxOptions is defined before initializeShihGptMdApp or within it if not already.
       // It seems checkboxOptions is defined globally in the previous version of this script, which is fine.
+    </script>
+
+  <script>
+        const refreshDriveButton = document.getElementById('refreshDriveButton');
+        const refreshHistoryButtonBottom = document.getElementById('refreshHistoryButtonBottom');
+
+        function refreshDriveFrame() {
+            const driveFrame = document.getElementById('driveFrame');
+            if (driveFrame) {
+                const originalSrc = driveFrame.src;
+                driveFrame.src = '';
+                setTimeout(() => {
+                    driveFrame.src = originalSrc;
+                }, 100);
+            }
+        }
+
+        if (refreshDriveButton) {
+            refreshDriveButton.addEventListener('click', refreshDriveFrame);
+        }
+
+        if (refreshHistoryButtonBottom) {
+            refreshHistoryButtonBottom.addEventListener('click', refreshDriveFrame);
+        }
     </script>
   </body>
 </html>

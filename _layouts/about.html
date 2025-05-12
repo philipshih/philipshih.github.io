@@ -8,8 +8,392 @@ layout: base
     <div class="info">
       <div class="title">{{ site.author.name }}</div>
       <div class="description">{{ site.author.desc }}</div>
-    </div>
   </div>
+</div>
+
+<style>
+    /* Styles for Rosetta App */
+    .rosetta-body { /* To avoid conflicts with existing body styles if any */
+        font-family: sans-serif;
+        /* margin: 20px; Removed, as it's part of a larger page */
+    }
+    .rosetta-container {
+        max-width: 900px;
+        margin: 20px auto; /* Keep margin for the container itself */
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9; /* Added for better visibility on a page */
+        z-index: 1000; /* Ensure it's on top */
+        position: relative; /* For z-index to work */
+    }
+    .rosetta-hidden { display: none !important; } /* More specific hidden class */
+    .rosetta-label { display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold; }
+    .rosetta-textarea, .rosetta-select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .rosetta-button {
+        padding: 10px 15px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .rosetta-button:hover { background-color: #0056b3; }
+    .rosetta-text-hidden-on-white { color: white !important; background-color: white !important; border-color: white !important; }
+    #rosettaMainOutputArea, #rosettaPatientInfoInput, #rosettaEpicSmartPhraseInput { min-height: 150px; } /* Prefixed IDs */
+    .rosetta-checkbox-area .rosetta-label { font-weight: normal; display: inline-block; margin-right: 15px;} /* Prefixed class and label */
+    .rosetta-section-title {
+        margin-top: 20px;
+        margin-bottom:10px;
+        font-size: 1.2em;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+
+    /* Added border to password prompt box */
+    #rosettaPasswordPrompt {
+        border-top: 1px solid #ddd;
+    }
+
+    /* Added border to password prompt box */
+    #rosettaPasswordPrompt {
+        border-top: 1px solid #ddd;
+    }
+
+    /* Styled Generate Prompt button to look like Apple button */
+    #rosettaGeneratePromptButton {
+        background-color: transparent;
+        color: #007bff; /* Use the existing blue color */
+        border: 1px solid #ddd; /* Light grey border */
+        padding: 10px 15px; /* Keep existing padding */
+        border-radius: 4px; /* Keep existing border radius */
+        cursor: pointer;
+    }
+    #rosettaGeneratePromptButton:hover {
+        border-color: #007bff; /* Change border color to blue on hover */
+        color: #007bff; /* Keep text color blue on hover */
+        background-color: rgba(0, 123, 255, 0.1); /* Subtle blue background on hover */
+    }
+</style>
+
+<div id="rosettaAppModal" class="rosetta-hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div class="rosetta-body"> <!-- Apply Rosetta specific body styles here -->
+        <div id="rosettaPasswordPromptContainer">
+            <div id="rosettaPasswordPrompt" class="rosetta-container"> <!-- Apply container style -->
+                <h2>Enter Password for Rosetta</h2>
+                <input type="password" id="rosettaPasswordInput" placeholder="Password" class="rosetta-textarea">
+                <button onclick="rosettaCheckPassword()" class="rosetta-button">Submit</button>
+                <p id="rosettaPasswordError" style="color: red;"></p>
+                <button onclick="closeRosettaApp()" class="rosetta-button" style="background-color: #6c757d; margin-top: 10px;">Close</button>
+            </div>
+        </div>
+
+        <div id="rosettaAppContent" class="rosetta-container rosetta-hidden"> <!-- Apply container style, initially hidden -->
+            <h1>Rosetta Interface</h1>
+
+            <div class="rosetta-checkbox-area">
+                <input type="checkbox" id="rosettaHideTextCheckbox" name="rosettaHideTextCheckbox">
+                <label for="rosettaHideTextCheckbox" class="rosetta-label">Hide screen text (white on white)</label>
+            </div>
+
+            <h2 class="rosetta-section-title">Patient Information</h2>
+            <textarea id="rosettaPatientInfoInput" placeholder="Enter patient information here..." class="rosetta-textarea"></textarea>
+
+            <h2 class="rosetta-section-title">EPIC SmartPhrase Template (Optional)</h2>
+            <textarea id="rosettaEpicSmartPhraseInput" placeholder="Paste EPIC SmartPhrase template here if desired..." class="rosetta-textarea"></textarea>
+
+            <h2 class="rosetta-section-title">Note Options</h2>
+            <label for="rosettaTemplateSelector" class="rosetta-label">Select Predefined Template:</label>
+            <select id="rosettaTemplateSelector" class="rosetta-select">
+                <option value="general_soap">General SOAP Note</option>
+                <option value="ob_l_d">OB L&D</option>
+                <option value="derm_lesion">Derm Lesion</option>
+                <option value="peds_well_visit">Peds Well Visit</option>
+                <!-- Add more templates as needed -->
+            </select>
+
+            <h3>Checkbox Options:</h3>
+            <div id="rosettaCheckboxOptionsContainer" style="margin-bottom: 20px;">
+                <!-- Checkboxes will be dynamically added here by JS -->
+            </div>
+
+            <button id="rosettaGeneratePromptButton" style="margin-top:20px;" class="rosetta-button">Generate Full Prompt for LLM</button>
+
+            <h2 class="rosetta-section-title">Generated Prompt / Output Note</h2>
+            <textarea id="rosettaMainOutputArea" placeholder="Generated prompt or LLM output will appear here..." readonly class="rosetta-textarea"></textarea>
+
+            <h2 class="rosetta-section-title">Synced Notes (from Google Drive)</h2>
+            <div id="rosettaGoogleDriveEmbed">
+                <p><em>(Google Drive folder will be embedded here)</em></p>
+            </div>
+             <button onclick="closeRosettaApp()" class="rosetta-button" style="background-color: #6c757d; margin-top: 20px;">Close Rosetta</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Rosetta App Specific JavaScript
+    const ROSETTA_CORRECT_PASSWORD = "password123"; // CHANGE THIS!
+    let rosettaTypedSequence = "";
+    const rosettaTriggerSequence = "E916!";
+
+    function rosettaCheckPassword() {
+        const password = document.getElementById('rosettaPasswordInput').value;
+        if (password === ROSETTA_CORRECT_PASSWORD) {
+            document.getElementById('rosettaPasswordPrompt').classList.add('rosetta-hidden');
+            document.getElementById('rosettaAppContent').classList.remove('rosetta-hidden');
+            document.getElementById('rosettaPasswordError').textContent = '';
+        } else {
+            document.getElementById('rosettaPasswordError').textContent = 'Incorrect password.';
+        }
+    }
+    
+    function openRosettaApp() {
+        document.getElementById('rosettaAppModal').classList.remove('rosetta-hidden');
+        document.getElementById('rosettaPasswordInput').value = ''; // Clear password field
+        document.getElementById('rosettaPasswordError').textContent = ''; // Clear error message
+        // Ensure password prompt is shown and app content is hidden initially
+        document.getElementById('rosettaPasswordPrompt').classList.remove('rosetta-hidden');
+        document.getElementById('rosettaAppContent').classList.add('rosetta-hidden');
+        document.getElementById('rosettaPasswordInput').focus();
+    }
+
+    function closeRosettaApp() {
+        document.getElementById('rosettaAppModal').classList.add('rosetta-hidden');
+    }
+
+    document.addEventListener('keydown', function(event) {
+        rosettaTypedSequence += event.key;
+        // If the sequence is longer than the trigger, keep only the last N characters
+        if (rosettaTypedSequence.length > rosettaTriggerSequence.length) {
+            rosettaTypedSequence = rosettaTypedSequence.substr(rosettaTypedSequence.length - rosettaTriggerSequence.length);
+        }
+        if (rosettaTypedSequence === rosettaTriggerSequence) {
+            openRosettaApp();
+            rosettaTypedSequence = ""; // Reset sequence
+        }
+    });
+
+    const rosettaCheckboxOptions = [
+        { id: "rosettaGenSHN", label: "Generate SHN (Short-hand Notation)", group: "Output Format" },
+        { id: "rosettaGenVSHN", label: "Generate VSHN (Very Short-hand Notation)", group: "Output Format" },
+        { id: "rosettaIncPathophys", label: "Include full pathophysiologic reasoning", group: "Reasoning Detail" },
+        { id: "rosettaIncGuidelines", label: "Include guideline citations if relevant", group: "Reasoning Detail" },
+        { id: "rosettaExpectImage", label: "Expect image input", group: "Data Type Emphasis" },
+        { id: "rosettaExpectAudio", label: "Expect audio input", group: "Data Type Emphasis" },
+        { id: "rosettaExpectStructured", label: "Expect structured vitals/labs", group: "Data Type Emphasis" },
+        { id: "rosettaFormatSOAP", label: "SOAP format", group: "Documentation Type", checked: true },
+        { id: "rosettaFormatHnP", label: "Full H&P", group: "Documentation Type" },
+        { id: "rosettaFormatDischarge", label: "Discharge summary", group: "Documentation Type" },
+        { id: "rosettaFormatPreOp", label: "Pre-op note", group: "Documentation Type" },
+        { id: "rosettaSpecOBGYN", label: "OB/GYN", group: "Specialty Context" },
+        { id: "rosettaSpecDerm", label: "Derm", group: "Specialty Context" },
+        { id: "rosettaSpecPeds", label: "Peds", group: "Specialty Context" },
+        { id: "rosettaSpecOrtho", label: "Ortho", group: "Specialty Context" },
+        { id: "rosettaSpecIM", label: "Internal Medicine", group: "Specialty Context" },
+        { id: "rosettaIncMissingData", label: "Include checklist of missing objective data", group: "Output Features" },
+        { id: "rosettaGenPatientQuestions", label: "Generate initial patient questions", group: "Output Features" },
+        { id: "rosettaIncTTS", label: "Insert TTS audio (if supported by backend)", group: "Output Features" },
+        { id: "rosettaConfirmDeidentified", label: "Confirm data is de-identified", group: "Redaction", checked: true },
+        { id: "rosettaRemoveDates", label: "Remove dates (convert to relative time)", group: "Redaction" },
+        { id: "rosettaStripNonStandardAbbr", label: "Strip nonstandard abbreviations", group: "Redaction" }
+    ];
+
+    function rosettaPopulateCheckboxOptions() {
+        const container = document.getElementById('rosettaCheckboxOptionsContainer');
+        if (!container) return; // Exit if container not found (e.g. not on this page)
+        container.innerHTML = ''; // Clear existing
+        let currentGroup = "";
+        rosettaCheckboxOptions.forEach(opt => {
+            if (opt.group !== currentGroup) {
+                currentGroup = opt.group;
+                const groupTitle = document.createElement('h4');
+                groupTitle.textContent = currentGroup;
+                groupTitle.style.marginTop = '15px';
+                groupTitle.style.marginBottom = '5px';
+                container.appendChild(groupTitle);
+            }
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = opt.id;
+            checkbox.name = opt.id;
+            checkbox.value = opt.id;
+            if (opt.checked) {
+                checkbox.checked = true;
+            }
+
+            const label = document.createElement('label');
+            label.htmlFor = opt.id;
+            label.appendChild(document.createTextNode(opt.label));
+            label.style.fontWeight = 'normal';
+            label.style.marginLeft = '5px';
+            label.style.marginRight = '15px';
+            label.classList.add('rosetta-label');
+
+
+            const div = document.createElement('div');
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            container.appendChild(div);
+        });
+    }
+
+    async function rosettaGenerateFullPrompt() {
+        const patientInfo = document.getElementById('rosettaPatientInfoInput').value;
+        const epicSmartPhrase = document.getElementById('rosettaEpicSmartPhraseInput').value;
+        const selectedTemplateValue = document.getElementById('rosettaTemplateSelector').value;
+        const outputArea = document.getElementById('rosettaMainOutputArea');
+        const selectedTemplateDropdown = document.getElementById('rosettaTemplateSelector');
+        const selectedTemplateText = selectedTemplateDropdown.options[selectedTemplateDropdown.selectedIndex].text;
+
+
+        let prompt = `You are Rosetta, an attending-level physician model.
+Remove all patient names and MRNs.
+Reanalyze every question and recommendation for accuracy with the rigor of an attending.
+
+Patient Information:
+---
+${patientInfo}
+---
+`;
+
+        if (epicSmartPhrase.trim() !== "") {
+            prompt += `\nCustom SmartPhrase Template to use for output format (from direct input):
+---
+${epicSmartPhrase}
+---
+Instruct the model to fill this template. If information for a field is not available, leave the field placeholder as is or indicate 'not available'.
+`;
+        } else {
+            const templateFileName = `${selectedTemplateValue}.txt`;
+            try {
+                // Assuming smartphrase_templates is at the root relative to where index.md (using this layout) is served.
+                // If your site is served from a subdirectory, you might need to adjust this path.
+                // For GitHub Pages, if site is username.github.io/reponame, then paths should be relative to /reponame/
+                // However, for username.github.io, root relative paths like '/smartphrase_templates/' or relative paths like 'smartphrase_templates/' work.
+                // Let's use a relative path which is generally safer for Jekyll.
+                const response = await fetch(`smartphrase_templates/${templateFileName}`);
+                if (response.ok) {
+                    const smartPhraseFileContent = await response.text();
+                    prompt += `\nSelected Predefined Template (${selectedTemplateText}) using associated SmartPhrase:
+---
+${smartPhraseFileContent}
+---
+Instruct the model to fill this template. If information for a field is not available, leave the field placeholder as is or indicate 'not available'.
+`;
+                } else {
+                    outputArea.value = `Error: Could not load SmartPhrase template 'smartphrase_templates/${templateFileName}'. Status: ${response.status}. Please ensure the file exists and the path is correct.`;
+                    prompt += `\nSelected Predefined Template: ${selectedTemplateValue} (Error: Associated SmartPhrase template 'smartphrase_templates/${templateFileName}' not found or failed to load. Status: ${response.status})\nProceeding without a specific SmartPhrase template structure for this predefined selection.\n`;
+                }
+            } catch (error) {
+                outputArea.value = `Error: Could not load SmartPhrase template 'smartphrase_templates/${templateFileName}'. Error: ${error}. Please ensure the file exists and the path is correct. Check browser console for more details.`;
+                prompt += `\nSelected Predefined Template: ${selectedTemplateValue} (Error loading associated SmartPhrase template 'smartphrase_templates/${templateFileName}': ${error})\nProceeding without a specific SmartPhrase template structure for this predefined selection.\n`;
+            }
+        }
+
+        prompt += "\nSelected Options:\n";
+        let hasSelectedOption = false;
+        rosettaCheckboxOptions.forEach(opt => {
+            const checkbox = document.getElementById(opt.id);
+            if (checkbox && checkbox.checked) {
+                prompt += `- ${opt.label}\n`;
+                hasSelectedOption = true;
+            }
+        });
+        if (!hasSelectedOption) {
+            prompt += "- (No specific checkbox options selected)\n";
+        }
+        
+        prompt += `
+Core Instructions:
+- If this is a new patient, generate initial questions based on their case that are thorough, guideline-concordant, and relevant for diagnostic clarity. Also begin a working impression and full assessment and plan using available data. Use current clinical guidelines where appropriate.
+- Update the note each time new information (text, image, audio) is received, placing the new content in the appropriate section. If data is missing (e.g. vital signs, labs, imaging), state which ones are needed, why, and under what criteria.
+- Include:
+    - Impression: 1-liner with age, sex (if known), relevant background, and primary concern or diagnosis
+    - Subjective: HPI + relevant PMH, SHx, FHx, ROS
+    - Objective: Include available vitals, PE, labs/imaging
+    - Assessment & Plan: Fully reasoned differential, most likely diagnosis, relevant pathophysiology, and plan with specific interventions and follow-up
+
+Output Formatting based on selections:
+- If "Generate SHN" is selected: Rephrase full note using standard clinical abbreviations while maintaining clarity.
+- If "Generate VSHN" is selected: Distill into ultra-concise, rapid-style shorthand, omitting non-critical detail and avoiding uncommon abbreviations or unnecessary caps.
+(If both SHN and VSHN are selected, prioritize VSHN or clarify desired combined behavior).
+
+Reasoning Detail:
+- If "Include full pathophysiologic reasoning" is selected, ensure this is present in the Assessment & Plan.
+- If "Include guideline citations if relevant" is selected, add these where appropriate.
+
+Data Type Emphasis:
+- Adapt interaction if "Expect image input", "Expect audio input", or "Expect structured vitals/labs" is indicated.
+
+Documentation Type:
+- Prioritize the selected format (SOAP, Full H&P, Discharge, Pre-op) if no EPIC SmartPhrase is provided.
+
+Specialty Context:
+- Tailor questions, assessment, and plan to the selected specialty (OB/GYN, Derm, Peds, Ortho, Internal Medicine).
+
+Output Features:
+- If "Include checklist of missing objective data" is selected, provide this.
+- If "Generate initial patient questions" is selected, ensure these are present for new patients.
+- If "Insert TTS audio" is selected, note that the output text should be suitable for TTS (backend would handle actual audio).
+
+Redaction:
+- Default: "Confirm data is de-identified".
+- If "Remove dates (convert to relative time)" is selected, apply this.
+- If "Strip nonstandard abbreviations" is selected, ensure output clarity.
+
+---
+BEGIN MODEL RESPONSE BASED ON ABOVE INSTRUCTIONS AND PATIENT DATA:
+`;
+        if(outputArea) outputArea.value = prompt;
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const rosettaHideCheckbox = document.getElementById('rosettaHideTextCheckbox');
+        const rosettaTextAreasToHide = [
+            document.getElementById('rosettaPatientInfoInput'),
+            document.getElementById('rosettaEpicSmartPhraseInput'),
+            document.getElementById('rosettaMainOutputArea')
+        ];
+
+        if (rosettaHideCheckbox) {
+            rosettaHideCheckbox.addEventListener('change', function() {
+                rosettaTextAreasToHide.forEach(textArea => {
+                    if (textArea) {
+                        if (this.checked) {
+                            textArea.classList.add('rosetta-text-hidden-on-white');
+                        } else {
+                            textArea.classList.remove('rosetta-text-hidden-on-white');
+                        }
+                    }
+                });
+            });
+        }
+
+        rosettaPopulateCheckboxOptions(); 
+
+        const rosettaGenerateButton = document.getElementById('rosettaGeneratePromptButton');
+        if (rosettaGenerateButton) {
+            rosettaGenerateButton.addEventListener('click', rosettaGenerateFullPrompt);
+        }
+
+        // Close modal if escape key is pressed
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && !document.getElementById('rosettaAppModal').classList.contains('rosetta-hidden')) {
+                closeRosettaApp();
+            }
+        });
+
+        console.log("Rosetta App integrated into about.html loaded.");
+    });
+</script>
 
   <div class="content">
     {{ content }}

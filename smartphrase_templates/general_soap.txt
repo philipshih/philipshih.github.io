@@ -1,0 +1,15 @@
+SUBJECTIVE:
+Chief Complaint: @COMPLAINT@
+HPI: @HPI@
+ROS: @ROS@
+
+OBJECTIVE:
+Vitals: @VITALS@
+Physical Exam: @EXAM@
+Labs/Imaging: @RESULTS@
+
+ASSESSMENT:
+@ASSESSMENT@
+
+PLAN:
+@PLAN@
