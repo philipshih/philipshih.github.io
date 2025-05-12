@@ -17,10 +17,11 @@
     .section-title { margin-top: 20px; margin-bottom:10px; font-size: 1.2em; border-bottom: 1px solid #eee; padding-bottom: 5px;}
 
     /* Styles for condensed checkboxes and Apple-style switches */
-    #checkboxOptionsContainer div { /* Target divs wrapping each checkbox and label */
-        display: flex; /* Align checkbox and label on the same line */
+    #checkboxOptionsContainer div.checkbox-option-item { /* Target divs wrapping each checkbox and label */
+        display: inline-flex; /* Allow multiple items per line, align items within */
         align-items: center; /* Vertically align items in the center */
-        margin-bottom: 2px; /* Reduce space between options */
+        margin-right: 15px; /* Space between options on the same line */
+        margin-bottom: 5px; /* Space between lines of options */
     }
     #checkboxOptionsContainer input[type="checkbox"] {
         margin-right: 5px; /* Space between checkbox and its label */
@@ -69,7 +70,7 @@
     .apple-switch-checkbox:checked + .apple-switch-label::before {
         background-color: #2196F3; /* Blue when checked */
     }
-    .apple-switch-checkbox:checked + .apple_switch-label::after {
+    .apple-switch-checkbox:checked + .apple-switch-label::after { /* Corrected typo: apple_switch-label to apple-switch-label */
         transform: translateX(22px); /* Move slider to the right */
     }
     /* For the Incognito switch, we need to associate the label correctly */
@@ -120,7 +121,7 @@
         <div class="checkbox-area">
             <label for="hideTextCheckbox" style="font-weight: bold; margin-right: 8px;">Incognito</label> 
             <input type="checkbox" id="hideTextCheckbox" name="hideTextCheckbox" class="apple-switch-checkbox">
-            <label for="hideTextCheckbox" class.bind="apple-switch-label" aria-hidden="true" style="width: 50px; height: 28px;"></label> {/* Visual part of switch, label text removed */}
+            <label for="hideTextCheckbox" class="apple-switch-label" aria-hidden="true" style="width: 50px; height: 28px;"></label> <!-- Corrected class.bind and removed comment -->
         </div>
 
         <h2 class="section-title">Input</h2>
@@ -246,6 +247,7 @@
                 labelEl.style.marginRight = '15px';
 
                 const div = document.createElement('div');
+                div.className = 'checkbox-option-item'; // Add class for styling
                 div.appendChild(checkbox);
                 div.appendChild(labelEl);
                 container.appendChild(div);
