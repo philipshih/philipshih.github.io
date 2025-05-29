@@ -144,7 +144,8 @@
                 <label for="epicSmartPhraseInput" style="font-weight: bold; margin-bottom: 5px; display: block;">Custom Template:</label>
                 <textarea id="epicSmartPhraseInput" placeholder="Insert template (SmartPhrase, previous note, etc.)..."></textarea>
                 <div style="margin-top: 5px;">
-                    <button type="button" id="saveCustomTemplateButton" class="rosetta-secondary-button apple-button-like" style="margin-right: 5px;">Save as Manual</button>
+                    <button type="button" id="saveChangesToManualButton" class="rosetta-secondary-button apple-button-like hidden" style="margin-right: 5px;">Save Changes</button>
+                    <button type="button" id="saveAsNewManualButton" class="rosetta-secondary-button apple-button-like" style="margin-right: 5px;">Save as New Manual</button>
                     <button type="button" id="clearCustomTemplateButton" class="rosetta-secondary-button apple-button-like">Clear</button>
                 </div>
             </div>
@@ -264,6 +265,7 @@
 
       function initializeShihGptMdApp() {
         const ROSETTA_APP_BACKEND_URL = ROSETTA_BACKEND_URL; 
+        let currentlyEditingManualFilename = null; // Variable to store the name of the manual being edited
 
         const deidentifyBtnBase = document.getElementById('deidentifyPatientInfoBtn');
         if (deidentifyBtnBase) {
@@ -356,23 +358,45 @@
             }
         }
 
-        async function saveCustomTemplate() {
+        async function saveCustomTemplate(isNewFile) {
             const templateContent = document.getElementById('epicSmartPhraseInput').value;
             if (!templateContent.trim()) { alert("Template content is empty."); return; }
-            let userFilename = prompt("Enter template name (e.g., 'my_progress_note').\n.txt added automatically.", "my_custom_template");
-            if (!userFilename || !userFilename.trim()) return;
-            userFilename = userFilename.trim().replace(/[^a-zA-Z0-9_-]/g, '_'); 
-            if (!userFilename) { alert("Invalid filename."); return; }
-            const fullFilename = `${userFilename}.txt`;
+
+            let fullFilename;
+            if (isNewFile) {
+                let userFilename = prompt("Enter new template name (e.g., 'my_progress_note').\n.txt will be added automatically.", "my_new_template");
+                if (!userFilename || !userFilename.trim()) return; // User cancelled or entered empty
+                userFilename = userFilename.trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+                if (!userFilename) { alert("Invalid filename."); return; }
+                fullFilename = `${userFilename}.txt`;
+            } else { // Saving changes to an existing, loaded manual
+                if (!currentlyEditingManualFilename) {
+                    alert("No manual loaded for saving. Use 'Edit Selected Manual' first or 'Save as New Manual'.");
+                    return;
+                }
+                fullFilename = currentlyEditingManualFilename;
+            }
+
             try {
                 const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/save_smartphrase_template`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json', },
                     body: JSON.stringify({ filename: fullFilename, content: templateContent }),
                 });
                 const result = await response.json();
-                alert(response.ok ? `Template '${result.filename || fullFilename}' saved.` : `Error: ${result.error}`);
-                if (response.ok) populatePredefinedTemplatesDropdown();
-            } catch (error) { alert(`Network error: ${error.message}`); }
+                alert(response.ok ? `Template '${result.filename || fullFilename}' saved successfully.` : `Error saving template: ${result.error}`);
+                if (response.ok) {
+                    populatePredefinedTemplatesDropdown(); // Refresh dropdown
+                    if (isNewFile) {
+                        // If saved as new, reset editing state
+                        currentlyEditingManualFilename = null;
+                        document.getElementById('saveChangesToManualButton').classList.add('hidden');
+                        document.getElementById('saveChangesToManualButton').disabled = true;
+                    } else {
+                        // If saved changes to existing, it's still "loaded"
+                        // No need to change currentlyEditingManualFilename here
+                    }
+                }
+            } catch (error) { alert(`Network error while saving template: ${error.message}`); }
         }
 
         async function populatePredefinedTemplatesDropdown() {
@@ -520,10 +544,31 @@
         }
         if (refreshNotesListButton) refreshNotesListButton.addEventListener('click', fetchExistingNotesRosetta);
 
-        const saveTemplateBtn = document.getElementById('saveCustomTemplateButton');
-        if (saveTemplateBtn) saveTemplateBtn.addEventListener('click', saveCustomTemplate);
+        const saveChangesButton = document.getElementById('saveChangesToManualButton');
+        const saveAsNewButton = document.getElementById('saveAsNewManualButton');
+
+        if (saveChangesButton) {
+            saveChangesButton.addEventListener('click', () => saveCustomTemplate(false)); // false means not a new file
+        }
+        if (saveAsNewButton) {
+            saveAsNewButton.addEventListener('click', () => saveCustomTemplate(true)); // true means it's a new file
+        }
+
         const clearTemplateBtn = document.getElementById('clearCustomTemplateButton');
-        if (clearTemplateBtn) clearTemplateBtn.addEventListener('click', () => { const ta = document.getElementById('epicSmartPhraseInput'); if(ta) ta.value = ''; });
+        if (clearTemplateBtn) {
+            clearTemplateBtn.addEventListener('click', () => { 
+                const ta = document.getElementById('epicSmartPhraseInput'); 
+                if(ta) ta.value = ''; 
+                // Also reset editing state if custom area is cleared
+                currentlyEditingManualFilename = null;
+                if(saveChangesButton) {
+                    saveChangesButton.classList.add('hidden');
+                    saveChangesButton.disabled = true;
+                }
+                if(templateSelectorForEdit) templateSelectorForEdit.value = "none"; // Reset dropdown
+                if(editManualButton) editManualButton.classList.add('hidden'); // Hide edit button
+            });
+        }
 
         async function deleteCustomTemplate() {
             const templateSelector = document.getElementById('templateSelector');
@@ -616,9 +661,14 @@
         const templateSelectorForEdit = document.getElementById('templateSelector');
         const editManualButton = document.getElementById('editSelectedManualButton');
         const customTemplateTextarea = document.getElementById('epicSmartPhraseInput');
+        const saveChangesBtn = document.getElementById('saveChangesToManualButton');
 
-        if (templateSelectorForEdit && editManualButton && customTemplateTextarea) {
+
+        if (templateSelectorForEdit && editManualButton && customTemplateTextarea && saveChangesBtn) {
             templateSelectorForEdit.addEventListener('change', function() {
+                currentlyEditingManualFilename = null; // Reset on dropdown change
+                saveChangesBtn.classList.add('hidden');
+                saveChangesBtn.disabled = true;
                 if (this.value && this.value !== "none") {
                     editManualButton.classList.remove('hidden');
                 } else {
@@ -636,26 +686,29 @@
                 editManualButton.textContent = 'Loading...';
                 editManualButton.disabled = true;
                 try {
-                    // Assuming templates are served from a 'smartphrase_templates' directory relative to the site root
-                    // For local Jekyll, this path should work if the smartphrase_templates folder is at the root.
-                    // For GitHub Pages, ensure this path is correct relative to how assets are served.
                     const response = await fetch(`smartphrase_templates/${templateFileName}`);
                     if (response.ok) {
                         const templateContent = await response.text();
                         customTemplateTextarea.value = templateContent;
-                        // Optionally, scroll to the custom template textarea
+                        currentlyEditingManualFilename = templateFileName; // Set the file being edited
+                        saveChangesBtn.textContent = `Save Changes to ${selectedTemplateValue}`;
+                        saveChangesBtn.classList.remove('hidden');
+                        saveChangesBtn.disabled = false;
                         customTemplateTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        // Optionally, set the dropdown to "None" to indicate custom editing mode
-                        // templateSelectorForEdit.value = "none"; 
-                        // editManualButton.classList.add('hidden'); // Hide button again after loading
                     } else {
                         alert(`Error loading template '${templateFileName}': Status ${response.status}`);
                         customTemplateTextarea.value = `// Failed to load ${templateFileName}`;
+                        currentlyEditingManualFilename = null;
+                        saveChangesBtn.classList.add('hidden');
+                        saveChangesBtn.disabled = true;
                     }
                 } catch (error) {
                     console.error('Error fetching manual template for editing:', error);
                     alert(`Error fetching template: ${error.message}`);
                     customTemplateTextarea.value = `// Error fetching ${templateFileName}: ${error.message}`;
+                    currentlyEditingManualFilename = null;
+                    saveChangesBtn.classList.add('hidden');
+                    saveChangesBtn.disabled = true;
                 } finally {
                     editManualButton.textContent = 'Edit Selected Manual';
                     editManualButton.disabled = false;
