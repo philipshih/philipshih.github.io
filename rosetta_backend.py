@@ -807,7 +807,7 @@ def deidentify_text_gcp_dlp():
         dlp = dlp_v2.DlpServiceClient()
 
         # Specify the GCloud project ID, and parent
-        parent = f"projects/{gcp_project_id}"
+        parent = f"projects/{gcp_project_id}/locations/global" # Corrected to include /locations/global
 
         # Specify what content you want the service to de-identify.
         item = {"value": text_to_deidentify}
@@ -827,7 +827,7 @@ def deidentify_text_gcp_dlp():
             {"name": "LOCATION"}, # Covers cities, states, countries, etc.
             {"name": "MEDICAL_RECORD_NUMBER"},
             {"name": "PASSPORT"},
-            {"name": "SOCIAL_SECURITY_NUMBER"}, # US_SOCIAL_SECURITY_NUMBER
+            {"name": "US_SOCIAL_SECURITY_NUMBER"}, # Corrected infoType
             {"name": "IBAN_CODE"}, # Example financial
             {"name": "CREDIT_CARD_NUMBER"},
             {"name": "IP_ADDRESS"},
