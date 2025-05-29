@@ -872,14 +872,17 @@ def deidentify_text_gcp_dlp():
 
         # Call the API
         try:
-            response = dlp.deidentify_content(
-                request={
-                    "parent": parent,
-                    "deidentify_config": deidentify_config,
-                    "inspect_config": inspect_config,
-                    "item": item,
-                }
-            )
+            # Prepare the request dictionary
+            request_dict = {
+                "parent": parent,
+                "deidentify_config": deidentify_config,
+                "inspect_config": inspect_config,
+                "item": item,
+                # Explicitly set location_id, though parent also contains it.
+                # This can sometimes help with regional routing or detector availability.
+                "location_id": "global" 
+            }
+            response = dlp.deidentify_content(request=request_dict)
             deidentified_text = response.item.value
             print("DEBUG: DLP API call successful.")
             return jsonify({"deidentified_text": deidentified_text, "status": "De-identification successful."}), 200
