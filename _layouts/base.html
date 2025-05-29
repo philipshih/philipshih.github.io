@@ -140,8 +140,8 @@
                 <select id="templateSelector" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; margin-bottom: 5px;">
                 </select>
                 <div style="margin-top: 5px; margin-bottom: 15px;">
-                    <button type="button" id="editSelectedManualButton" class="rosetta-secondary-button hidden" style="margin-right: 5px;">Edit Selected Manual</button>
-                    <button type="button" id="deleteSelectedManualButton" class="rosetta-secondary-button hidden" style="background-color: #dc3545; color: white;">Delete Selected Manual</button>
+                    <button type="button" id="editSelectedManualButton" class="rosetta-secondary-button hidden" style="margin-right: 5px;">Edit</button>
+                    <button type="button" id="deleteSelectedManualButton" class="rosetta-secondary-button hidden" style="background-color: #dc3545; color: white;">Delete</button>
                 </div>
                 <hr style="margin: 15px 0;">
                 <label for="epicSmartPhraseInput" style="font-weight: bold; margin-bottom: 5px; display: block;">Custom Template:</label>
@@ -184,8 +184,8 @@
         <details open class="section-container" id="serverSavedNotesSection">
             <summary class="section-title">Saved Notes</summary>
             <div id="serverNotesListArea" style="margin-top: 10px;">
-                <button type="button" id="refreshServerNotesListButton" class="rosetta-secondary-button" style="margin-bottom: 10px; margin-right: 5px;">
-                    <i class="fas fa-redo"></i> Refresh List
+                <button type="button" id="refreshServerNotesListButton" class="rosetta-secondary-button" style="margin-bottom: 10px; margin-right: 5px;" title="Refresh Saved Notes List">
+                    <i class="fas fa-redo" style="font-size: 0.8em;"></i>
                 </button>
                 <button type="button" id="deleteAllNotesButton" class="rosetta-secondary-button" style="margin-bottom: 10px; background-color: #dc3545; color: white;" title="Delete All Saved Notes">
                     <i class="fas fa-trash-alt"></i> Delete All Notes
@@ -281,7 +281,7 @@
             const previouslySelected = notesDropdown.value;
             notesDropdown.innerHTML = '<option value="" disabled>Loading notes...</option>';
             try {
-                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_saved_notes`);
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_saved_notes`, { cache: 'no-store' });
                 notesDropdown.innerHTML = ''; 
                 if (!response.ok) {
                     const errorOption = document.createElement('option');
@@ -332,18 +332,43 @@
 
         async function displaySavedNotesList() {
             const listElement = document.getElementById('serverNotesDisplayList');
-            const statusMessageElement = document.getElementById('serverNotesLoadingMsg'); 
-            if (!listElement || !statusMessageElement) return;
+            if (!listElement) {
+                console.error("Error: Could not find serverNotesDisplayList element.");
+                return; 
+            }
+
+            // Get or create the status message element
+            let statusMessageElement = listElement.querySelector('#serverNotesLoadingMsg');
+            if (!statusMessageElement) {
+                statusMessageElement = document.createElement('li');
+                statusMessageElement.id = 'serverNotesLoadingMsg';
+                // This element will be added to listElement after clearing.
+            }
+
             statusMessageElement.textContent = "Loading notes...";
-            listElement.innerHTML = ''; listElement.appendChild(statusMessageElement);
+            listElement.innerHTML = ''; // Clear whatever was there (old notes or old status)
+            listElement.appendChild(statusMessageElement); // Add/re-add the "Loading notes..." message
+
             try {
-                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_saved_notes`);
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_saved_notes`, { cache: 'no-store' });
+
                 if (!response.ok) {
-                    statusMessageElement.textContent = `Error loading notes: ${response.statusText}`; return;
+                    let errorMsg = `Error loading notes: ${response.statusText}`; // Default error
+                    try {
+                        // Try to parse error details from backend if available
+                        const errorData = await response.json();
+                        errorMsg = `Error: ${errorData.error || response.statusText}`;
+                    } catch (e) {
+                        // Ignore if parsing error body fails, stick to default
+                    }
+                    statusMessageElement.textContent = errorMsg;
+                    return;
                 }
-                const data = await response.json();
+
+                const data = await response.json(); // Parse JSON only if response.ok
+
                 if (data.notes && data.notes.length > 0) {
-                    listElement.innerHTML = ''; 
+                    listElement.innerHTML = ''; // Clear the "Loading notes..." message
                     data.notes.forEach(filename => {
                         const listItem = document.createElement('li');
                         listItem.textContent = filename;
@@ -353,11 +378,14 @@
                         listItem.addEventListener('click', () => loadSelectedNoteContent(filename, 'mainOutputArea'));
                         listElement.appendChild(listItem);
                     });
-                } else { 
+                } else {
                     statusMessageElement.textContent = data.error || "No saved notes found on server.";
+                    // statusMessageElement is already in listElement and will display this.
                 }
             } catch (error) {
-                statusMessageElement.textContent = "Network error loading notes.";
+                console.error("Network error in displaySavedNotesList:", error);
+                statusMessageElement.textContent = `Network error loading notes. ${error.message}`;
+                // statusMessageElement is already in listElement.
             }
         }
 
@@ -744,7 +772,7 @@
                     saveChangesBtn.classList.add('hidden'); // Hide button
                     saveChangesBtn.disabled = true; // Disable button
                 } finally {
-                    editManualButton.textContent = 'Edit Selected Manual';
+                    editManualButton.textContent = 'Edit';
                     editManualButton.disabled = false;
                 }
             });
@@ -787,7 +815,7 @@
                     console.error('Error deleting manual template:', error);
                     alert(`Network error while deleting template: ${error.message}`);
                 } finally {
-                    deleteSelectedManualBtn.textContent = 'Delete Selected Manual';
+                    deleteSelectedManualBtn.textContent = 'Delete';
                     deleteSelectedManualBtn.disabled = false;
                 }
             });
