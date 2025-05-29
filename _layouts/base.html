@@ -159,7 +159,6 @@
             <div id="optionsSectionContent">
                 <div id="checkboxOptionsContainer" style="margin-bottom: 20px; text-align: left;"> 
                 </div>
-                {/* Custom filename input moved here */}
                 <div style="margin-top: 15px; margin-bottom: 10px;"> 
                     <label for="customNoteFilenameInput" style="font-size: 0.9em; margin-bottom: 3px; display: block; text-align: left; font-weight: bold;">Custom Filename (optional):</label>
                     <input type="text" id="customNoteFilenameInput" placeholder="e.g., consult_note_smith_20240529" style="width: 100%; padding: 6px; font-size: 0.9em; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
@@ -178,9 +177,8 @@
 
         <details open class="section-container"> 
             <summary class="section-title">Note</summary>
-            <div id="noteSectionContent" style="position: relative;"> {/* Ensure this parent has position: relative for the absolute positioned button */}
-                <textarea id="mainOutputArea" placeholder="Note will appear here..." readonly style="margin-bottom: 10px;"></textarea> {/* Added more margin-bottom */}
-                {/* Copy button moved back to its original positioning context */}
+            <div id="noteSectionContent" style="position: relative;">
+                <textarea id="mainOutputArea" placeholder="Note will appear here..." readonly style="margin-bottom: 10px;"></textarea>
                 <button type="button" id="copyNoteButton" class="rosetta-secondary-button" style="position: absolute; top: 5px; right: 5px; z-index: 5;" title="Copy Note to Clipboard">
                     <i class="fas fa-copy"></i> Copy
                 </button>
