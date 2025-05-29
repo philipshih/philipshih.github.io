@@ -386,15 +386,18 @@
                 alert(response.ok ? `Template '${result.filename || fullFilename}' saved successfully.` : `Error saving template: ${result.error}`);
                 if (response.ok) {
                     populatePredefinedTemplatesDropdown(); // Refresh dropdown
-                    if (isNewFile) {
-                        // If saved as new, reset editing state
-                        currentlyEditingManualFilename = null;
-                        document.getElementById('saveChangesToManualButton').classList.add('hidden');
-                        document.getElementById('saveChangesToManualButton').disabled = true;
-                    } else {
-                        // If saved changes to existing, it's still "loaded"
-                        // No need to change currentlyEditingManualFilename here
+                    // After any successful save (new or overwrite), reset the editing state
+                    currentlyEditingManualFilename = null;
+                    const saveChangesButton = document.getElementById('saveChangesToManualButton');
+                    if (saveChangesButton) {
+                        saveChangesButton.textContent = 'Save Changes';
+                        saveChangesButton.classList.add('hidden');
+                        saveChangesButton.disabled = true;
                     }
+                    // Optionally, reset the main dropdown to "None" to avoid confusion
+                    // const templateSelector = document.getElementById('templateSelector');
+                    // if (templateSelector) templateSelector.value = "none";
+                    // if (editManualButton) editManualButton.classList.add('hidden');
                 }
             } catch (error) { alert(`Network error while saving template: ${error.message}`); }
         }
@@ -691,24 +694,26 @@
                         const templateContent = await response.text();
                         customTemplateTextarea.value = templateContent;
                         currentlyEditingManualFilename = templateFileName; // Set the file being edited
-                        saveChangesBtn.textContent = `Save Changes to ${selectedTemplateValue}`;
-                        saveChangesBtn.classList.remove('hidden');
-                        saveChangesBtn.disabled = false;
+                        saveChangesBtn.textContent = `Save Changes to ${selectedTemplateValue}`; // Update text
+                        saveChangesBtn.classList.remove('hidden'); // Show button
+                        saveChangesBtn.disabled = false; // Enable button
                         customTemplateTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     } else {
                         alert(`Error loading template '${templateFileName}': Status ${response.status}`);
                         customTemplateTextarea.value = `// Failed to load ${templateFileName}`;
                         currentlyEditingManualFilename = null;
-                        saveChangesBtn.classList.add('hidden');
-                        saveChangesBtn.disabled = true;
+                        saveChangesBtn.textContent = 'Save Changes'; // Reset text
+                        saveChangesBtn.classList.add('hidden'); // Hide button
+                        saveChangesBtn.disabled = true; // Disable button
                     }
                 } catch (error) {
                     console.error('Error fetching manual template for editing:', error);
                     alert(`Error fetching template: ${error.message}`);
                     customTemplateTextarea.value = `// Error fetching ${templateFileName}: ${error.message}`;
                     currentlyEditingManualFilename = null;
-                    saveChangesBtn.classList.add('hidden');
-                    saveChangesBtn.disabled = true;
+                    saveChangesBtn.textContent = 'Save Changes'; // Reset text
+                    saveChangesBtn.classList.add('hidden'); // Hide button
+                    saveChangesBtn.disabled = true; // Disable button
                 } finally {
                     editManualButton.textContent = 'Edit Selected Manual';
                     editManualButton.disabled = false;
