@@ -159,6 +159,11 @@
             <div id="optionsSectionContent">
                 <div id="checkboxOptionsContainer" style="margin-bottom: 20px; text-align: left;"> 
                 </div>
+                {/* Custom filename input moved here */}
+                <div style="margin-top: 15px; margin-bottom: 10px;"> 
+                    <label for="customNoteFilenameInput" style="font-size: 0.9em; margin-bottom: 3px; display: block; text-align: left; font-weight: bold;">Custom Filename (optional):</label>
+                    <input type="text" id="customNoteFilenameInput" placeholder="e.g., consult_note_smith_20240529" style="width: 100%; padding: 6px; font-size: 0.9em; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                </div>
             </div>
         </details>
 
@@ -179,11 +184,6 @@
                 <button type="button" id="copyNoteButton" class="rosetta-secondary-button" style="position: absolute; top: 5px; right: 5px; z-index: 5;" title="Copy Note to Clipboard">
                     <i class="fas fa-copy"></i> Copy
                 </button>
-                {/* Custom filename input below the textarea */}
-                <div style="margin-bottom: 10px;"> {/* Container for the input field */}
-                    <label for="customNoteFilenameInput" style="font-size: 0.9em; margin-bottom: 3px; display: block; text-align: left;">Custom Filename (optional):</label>
-                    <input type="text" id="customNoteFilenameInput" placeholder="e.g., consult_note_smith_20240529" style="width: 100%; padding: 6px; font-size: 0.9em; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-                </div>
             </div>
         </details>
         
@@ -504,7 +504,7 @@
             { id: "incMissingData", label: "Missing Data", group: "Features" },
             { id: "confirmDeidentified", label: "Identification", group: "Security", checked: true }, 
             { id: "removeDates", label: "Relative Time", group: "Security", checked: true }, 
-            { id: "stripNonStandardAbbr", label: "Standard Abbrev. Only", group: "Security", checked: true } 
+            { id: "stripNonStandardAbbr", label: "Use Input Abbreviations", group: "Security", checked: true } 
         ];
 
         function populateCheckboxOptions() {
