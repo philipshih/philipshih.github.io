@@ -34,6 +34,75 @@ if not API_KEY_TO_USE:
 # Configure the Gemini API client
 genai.configure(api_key=API_KEY_TO_USE)
 
+# --- Preferred Shorthand Glossary ---
+PREFERRED_SHORTHAND_GLOSSARY = {
+    "patient": "pt",
+    "history": "hx",
+    "chief complaint": "CC",
+    "medication": "med",
+    "prescription": "Rx",
+    "diagnosis": "Dx",
+    "treatment": "Tx",
+    "symptoms": "s/s",
+    "signs and symptoms": "s/s",
+    "no known allergies": "NKA",
+    "as needed": "prn",
+    "by mouth": "PO",
+    "twice a day": "BID",
+    "three times a day": "TID",
+    "four times a day": "QID",
+    "every day": "daily", # Changed from QD for clarity, QD can be ambiguous
+    "every other day": "QOD",
+    "hour": "hr",
+    "hours": "hrs",
+    "immediately": "stat",
+    "complains of": "c/o",
+    "year old": "y/o",
+    "male": "M",
+    "female": "F",
+    "blood pressure": "BP",
+    "heart rate": "HR",
+    "temperature": "T",
+    "respiratory rate": "RR",
+    "oxygen saturation": "O2 sat",
+    "physical exam": "PE",
+    "review of systems": "ROS",
+    "past medical history": "PMH",
+    "family history": "FHx",
+    "social history": "SHx",
+    "assessment and plan": "A/P",
+    "differential diagnosis": "DDx",
+    "follow up": "f/u",
+    "range of motion": "ROM",
+    "activities of daily living": "ADLs",
+    "shortness of breath": "SOB",
+    "loss of consciousness": "LOC",
+    "motor vehicle accident": "MVA",
+    "gunshot wound": "GSW",
+    "intravenous": "IV",
+    "intramuscular": "IM",
+    "subcutaneous": "SQ",
+    "nothing by mouth": "NPO",
+    "with": "w/",
+    "without": "w/o",
+    "approximately": "approx",
+    "continue": "cont",
+    "discontinue": "d/c",
+    "evaluate": "eval",
+    "management": "mgmt",
+    "monitor": "mon",
+    "negative": "neg",
+    "positive": "pos",
+    "previous": "prev",
+    "significant": "sig",
+    "status post": "s/p",
+    "versus": "vs",
+    "within normal limits": "WNL",
+    "additionally": "addnl.",
+    "because": "b/c",
+    "necessary": "nec."
+}
+
 # Core Rosetta Instructions - To be prepended by the backend
 ROSETTA_SYSTEM_INSTRUCTION = """You are Rosetta, an attending physician AI assistant. Generate clinically precise, concise medical notes mimicking human attending physicians. Output plaintext only—no markdown, unless explicitly required by a user-provided template (e.g., EPIC SmartPhrases).
 
@@ -555,8 +624,8 @@ def handle_generate_note():
     if options: # Check if options object is not empty
         # Map option IDs from frontend to specific instructions for LLM
         option_to_instruction_map = {
-            "genSHN": "- Output Format: Generate SHN (Short-hand Notation). Rephrase full note using standard clinical abbreviations while maintaining clarity.",
-            "genVSHN": "- Output Format: Generate VSHN (Very Short-hand Notation). Distill into ultra-concise, rapid-style shorthand. Omit non-critical detail. Use standard medical abbreviations where appropriate. Avoid uncommon abbreviations or excessive capitalization. DO NOT use underscores (_) to connect words; instead, use terse phrasing or standard abbreviations.",
+            "genSHN": "- Output Format: Generate SHN (Short-hand Notation). Rephrase full note using standard clinical abbreviations while maintaining clarity. Prioritize abbreviations from the 'Preferred Shorthand Glossary' if provided.",
+            "genVSHN": "- Output Format: Generate VSHN (Very Short-hand Notation). Distill into ultra-concise, rapid-style shorthand. Omit non-critical detail. Use standard medical abbreviations where appropriate, prioritizing those from the 'Preferred Shorthand Glossary' if provided. Avoid uncommon abbreviations or excessive capitalization. DO NOT use underscores (_) to connect words; instead, use terse phrasing or standard abbreviations.",
             "formatByProblem": "- A&P Structure: Format the Assessment & Plan section 'By Problem'. (Detailed instructions for 'By Problem' A&P will be appended if this is selected).",
             "incPathophys": "- Reasoning Detail: Include full pathophysiologic reasoning in the Assessment & Plan.",
             "incGuidelines": "- Reasoning Detail: Include guideline recommendations if relevant.",
@@ -612,9 +681,23 @@ def handle_generate_note():
             selected_options_instructions.append("- The 'Plan:' part for each problem MUST use hyphenated lists for actionable items.")
             selected_options_instructions.append("- Ensure clinical reasoning is evident in the grouping and content of plan items.")
             if options.get("genVSHN"):
-                selected_options_instructions.append("\nIMPORTANT FOR VSHN + By Problem: After structuring the A&P 'By Problem', apply VSHN principles (ultra-concise, rapid-style shorthand) to the ENTIRE note, including the content within each problem's Assessment and Plan. Strive for maximum brevity while retaining the problem-oriented structure.")
+                selected_options_instructions.append("\nIMPORTANT FOR VSHN + By Problem: After structuring the A&P 'By Problem', apply VSHN principles (ultra-concise, rapid-style shorthand) to the ENTIRE note, including the content within each problem's Assessment and Plan. Prioritize abbreviations from the 'Preferred Shorthand Glossary'. Strive for maximum brevity while retaining the problem-oriented structure.")
             elif options.get("genSHN"):
-                selected_options_instructions.append("\nIMPORTANT FOR SHN + By Problem: After structuring the A&P 'By Problem', apply SHN principles (standard clinical abbreviations) to the ENTIRE note, including the content within each problem's Assessment and Plan, while maintaining clarity.")
+                selected_options_instructions.append("\nIMPORTANT FOR SHN + By Problem: After structuring the A&P 'By Problem', apply SHN principles (standard clinical abbreviations) to the ENTIRE note, including the content within each problem's Assessment and Plan, prioritizing abbreviations from the 'Preferred Shorthand Glossary', while maintaining clarity.")
+
+        # Add the shorthand glossary if SHN or VSHN is selected
+        if options.get("genSHN") or options.get("genVSHN"):
+            if PREFERRED_SHORTHAND_GLOSSARY: # Check if glossary is not empty
+                glossary_items_string = "\n".join([f"- '{full}': use '{abbr}'" for full, abbr in PREFERRED_SHORTHAND_GLOSSARY.items()])
+                glossary_instruction = (
+                    "\n\nPreferred Shorthand Glossary (use these abbreviations when generating SHN/VSHN):\n"
+                    "---------------------------------------------------------------------------------\n"
+                    f"{glossary_items_string}\n"
+                    "---------------------------------------------------------------------------------\n"
+                    "If a term is not in this glossary, use standard clinical judgment for abbreviation, "
+                    "but refer to this list first for consistency. Avoid inventing new or highly unusual abbreviations."
+                )
+                selected_options_instructions.append(glossary_instruction)
 
 
     if not has_any_option_selected:
