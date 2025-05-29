@@ -85,6 +85,9 @@ IMPORTANT PREAMBLE (for the model's internal thoughts): Before generating the me
 app = Flask(__name__)
 CORS(app) # Enable CORS for all routes, allowing requests from your GitHub Pages site
 
+# Imports for DLP
+from google.cloud import dlp_v2
+
 # Ensure essential directories exist at startup (good practice)
 base_notes_path = os.environ.get("BASE_NOTES_PATH", ".")
 output_notes_directory = os.path.join(base_notes_path, "rosetta_outputs")
@@ -773,3 +776,119 @@ if __name__ == "__main__":
     print(f"Output notes will be saved in: {os.path.abspath(OUTPUT_NOTES_DIRECTORY)}")
     app.run(debug=True, host='0.0.0.0', port=5000) # Removed use_reloader=False as watchdog is removed
                                                # host='0.0.0.0' makes it accessible on your local network.
+
+
+# --- Google Cloud DLP De-identification Route ---
+@app.route('/api/deidentify_text', methods=['POST'])
+def deidentify_text_gcp_dlp():
+    """
+    De-identifies text using Google Cloud DLP API.
+    Expects JSON: {"text_content": "...", "gcp_project_id": "your-gcp-project-id"}
+    Make sure GOOGLE_APPLICATION_CREDENTIALS environment variable is set.
+    """
+    print("DEBUG: /api/deidentify_text endpoint hit")
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid JSON or no data provided"}), 400
+
+        text_to_deidentify = data.get('text_content')
+        gcp_project_id = data.get('gcp_project_id') # Or get from environment variable
+
+        if not text_to_deidentify:
+            # Return empty if input is empty, or handle as an error
+            return jsonify({"deidentified_text": "", "status": "Input text was empty or missing."}), 200
+        if not gcp_project_id:
+            gcp_project_id = os.environ.get("GCP_PROJECT_ID") # Fallback to env var
+            if not gcp_project_id:
+                return jsonify({"error": "gcp_project_id is missing in request and GCP_PROJECT_ID env var not set."}), 400
+
+        print(f"DEBUG: Attempting de-identification for project: {gcp_project_id}")
+
+        dlp = dlp_v2.DlpServiceClient()
+
+        # Specify the GCloud project ID, and parent
+        parent = f"projects/{gcp_project_id}"
+
+        # Specify what content you want the service to de-identify.
+        item = {"value": text_to_deidentify}
+
+        # Specify the types of info to redact.
+        # These are common PHI types. For a full list, see:
+        # https://cloud.google.com/dlp/docs/infotypes-reference
+        info_types = [
+            {"name": "PERSON_NAME"},
+            {"name": "DATE"}, # General dates
+            {"name": "DATE_OF_BIRTH"},
+            {"name": "AGE"},
+            {"name": "GENDER"},
+            {"name": "PHONE_NUMBER"},
+            {"name": "EMAIL_ADDRESS"},
+            {"name": "STREET_ADDRESS"},
+            {"name": "LOCATION"}, # Covers cities, states, countries, etc.
+            {"name": "MEDICAL_RECORD_NUMBER"},
+            {"name": "PASSPORT"},
+            {"name": "SOCIAL_SECURITY_NUMBER"}, # US_SOCIAL_SECURITY_NUMBER
+            {"name": "IBAN_CODE"}, # Example financial
+            {"name": "CREDIT_CARD_NUMBER"},
+            {"name": "IP_ADDRESS"},
+            # Add more specific medical info types if needed and available
+            # For example, some specific conditions or identifiers might be custom or require careful selection
+            # For HIPAA, it's crucial to be comprehensive.
+            # Consider also GENERIC_ID if other IDs are present.
+        ]
+
+        # Specify the de-identification configuration.
+        # Replace with INFO_TYPE_DESCRIPTION or a fixed placeholder.
+        deidentify_config = {
+            "info_type_transformations": {
+                "transformations": [
+                    {
+                        "primitive_transformation": {
+                            "replace_with_info_type_config": {} # Replaces with the infoType name e.g. [PERSON_NAME]
+                        }
+                    }
+                ]
+            }
+        }
+        
+        # More advanced: Character masking
+        # deidentify_config = {
+        #     "info_type_transformations": {
+        #         "transformations": [
+        #             {
+        #                 "primitive_transformation": {
+        #                     "character_mask_config": {
+        #                         "masking_character": "#"
+        #                     }
+        #                 }
+        #             }
+        #         ]
+        #     }
+        # }
+
+
+        # Construct the InspectConfig
+        inspect_config = {"info_types": info_types}
+
+        # Call the API
+        try:
+            response = dlp.deidentify_content(
+                request={
+                    "parent": parent,
+                    "deidentify_config": deidentify_config,
+                    "inspect_config": inspect_config,
+                    "item": item,
+                }
+            )
+            deidentified_text = response.item.value
+            print("DEBUG: DLP API call successful.")
+            return jsonify({"deidentified_text": deidentified_text, "status": "De-identification successful."}), 200
+        except Exception as e:
+            print(f"ERROR: Google Cloud DLP API call failed: {e}")
+            # Consider logging more details from the exception if it's a Google API error
+            return jsonify({"error": "DLP API call failed.", "details": str(e)}), 500
+
+    except Exception as e:
+        print(f"ERROR: Exception in /api/deidentify_text: {e}")
+        return jsonify({"error": "An unexpected error occurred during de-identification.", "details": str(e)}), 500
