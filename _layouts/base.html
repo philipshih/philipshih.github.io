@@ -173,16 +173,16 @@
 
         <details open class="section-container"> 
             <summary class="section-title">Note</summary>
-            <div id="noteSectionContent" style="position: relative;">
-                <textarea id="mainOutputArea" placeholder="Note will appear here..." readonly style="margin-bottom: 5px;"></textarea>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <div style="flex-grow: 1; margin-right: 10px;">
-                        <label for="customNoteFilenameInput" style="font-size: 0.9em; margin-bottom: 2px; display: block; text-align: left;">Custom Filename (optional, .txt added automatically):</label>
-                        <input type="text" id="customNoteFilenameInput" placeholder="e.g., consult_note_smith_20240529" style="width: 100%; padding: 6px; font-size: 0.9em; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; margin-bottom:0;">
-                    </div>
-                    <button type="button" id="copyNoteButton" class="rosetta-secondary-button" style="z-index: 5; flex-shrink: 0;" title="Copy Note to Clipboard">
-                        <i class="fas fa-copy"></i> Copy
-                    </button>
+            <div id="noteSectionContent" style="position: relative;"> {/* Ensure this parent has position: relative for the absolute positioned button */}
+                <textarea id="mainOutputArea" placeholder="Note will appear here..." readonly style="margin-bottom: 10px;"></textarea> {/* Added more margin-bottom */}
+                {/* Copy button moved back to its original positioning context */}
+                <button type="button" id="copyNoteButton" class="rosetta-secondary-button" style="position: absolute; top: 5px; right: 5px; z-index: 5;" title="Copy Note to Clipboard">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+                {/* Custom filename input below the textarea */}
+                <div style="margin-bottom: 10px;"> {/* Container for the input field */}
+                    <label for="customNoteFilenameInput" style="font-size: 0.9em; margin-bottom: 3px; display: block; text-align: left;">Custom Filename (optional):</label>
+                    <input type="text" id="customNoteFilenameInput" placeholder="e.g., consult_note_smith_20240529" style="width: 100%; padding: 6px; font-size: 0.9em; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                 </div>
             </div>
         </details>
