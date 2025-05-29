@@ -137,8 +137,9 @@
             <summary class="section-title">Template (Optional)</summary>
             <div id="smartPhraseSectionContent">
                 <label for="templateSelector" style="font-weight: bold; margin-bottom: 5px; display: block;">Manual:</label>
-                <select id="templateSelector" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px;">
+                <select id="templateSelector" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; margin-bottom: 5px;">
                 </select>
+                <button type="button" id="editSelectedManualButton" class="rosetta-secondary-button hidden" style="margin-bottom: 15px; margin-top: 5px;">Edit Selected Manual</button>
                 <hr style="margin: 15px 0;">
                 <label for="epicSmartPhraseInput" style="font-weight: bold; margin-bottom: 5px; display: block;">Custom Template:</label>
                 <textarea id="epicSmartPhraseInput" placeholder="Insert template (SmartPhrase, previous note, etc.)..."></textarea>
@@ -610,6 +611,57 @@
                 docModal.classList.add('hidden');
             }
         });
+
+        // Logic for "Edit Selected Manual" button
+        const templateSelectorForEdit = document.getElementById('templateSelector');
+        const editManualButton = document.getElementById('editSelectedManualButton');
+        const customTemplateTextarea = document.getElementById('epicSmartPhraseInput');
+
+        if (templateSelectorForEdit && editManualButton && customTemplateTextarea) {
+            templateSelectorForEdit.addEventListener('change', function() {
+                if (this.value && this.value !== "none") {
+                    editManualButton.classList.remove('hidden');
+                } else {
+                    editManualButton.classList.add('hidden');
+                }
+            });
+
+            editManualButton.addEventListener('click', async function() {
+                const selectedTemplateValue = templateSelectorForEdit.value;
+                if (!selectedTemplateValue || selectedTemplateValue === "none") {
+                    alert("Please select a manual template to edit.");
+                    return;
+                }
+                const templateFileName = `${selectedTemplateValue}.txt`;
+                editManualButton.textContent = 'Loading...';
+                editManualButton.disabled = true;
+                try {
+                    // Assuming templates are served from a 'smartphrase_templates' directory relative to the site root
+                    // For local Jekyll, this path should work if the smartphrase_templates folder is at the root.
+                    // For GitHub Pages, ensure this path is correct relative to how assets are served.
+                    const response = await fetch(`smartphrase_templates/${templateFileName}`);
+                    if (response.ok) {
+                        const templateContent = await response.text();
+                        customTemplateTextarea.value = templateContent;
+                        // Optionally, scroll to the custom template textarea
+                        customTemplateTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Optionally, set the dropdown to "None" to indicate custom editing mode
+                        // templateSelectorForEdit.value = "none"; 
+                        // editManualButton.classList.add('hidden'); // Hide button again after loading
+                    } else {
+                        alert(`Error loading template '${templateFileName}': Status ${response.status}`);
+                        customTemplateTextarea.value = `// Failed to load ${templateFileName}`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching manual template for editing:', error);
+                    alert(`Error fetching template: ${error.message}`);
+                    customTemplateTextarea.value = `// Error fetching ${templateFileName}: ${error.message}`;
+                } finally {
+                    editManualButton.textContent = 'Edit Selected Manual';
+                    editManualButton.disabled = false;
+                }
+            });
+        }
       }
     </script>
 
@@ -618,22 +670,4 @@
   </body>
 </html>
 <environment_details>
-# VSCode Visible Files
-_layouts/base.html
-
-# VSCode Open Tabs
-requirements.txt
-_layouts/about.html
-rosetta_backend.py
-ROSETTA_DOCUMENTATION.md
-_layouts/base.html
-
-# Current Time
-5/29/2025, 1:57:17 PM (America/Los_Angeles, UTC-7:00)
-
-# Context Window Usage
-886,929 / 1,048.576K tokens used (85%)
-
-# Current Mode
-ACT MODE
 </environment_details>
