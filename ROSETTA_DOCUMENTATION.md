@@ -38,7 +38,7 @@ Input all pertinent clinical details here – HPI, exam findings, lab results, i
     *   If you were editing a loaded manual, this also resets the editing state (the "Save Changes" button will disappear).
 
 #### Options
-*   Select any combination of options for your output.
+Select any combination of options for your output.
     *   **Output**: Select for SHN (Short-hand Notation), VSHN (Very Short-hand), or structure your Assessment & Plan by problem.
     *   **Reasoning**: Include full pathophysiologic reasoning or cite relevant clinical guidelines.
     *   **Documentation**: Specify SOAP, H&P, Discharge Summary, or Pre-op note.
@@ -47,20 +47,19 @@ Input all pertinent clinical details here – HPI, exam findings, lab results, i
     *   **Security**: Confirm de-identification, convert dates to relative time, and use standard abbreviations.
    
 #### Generate
-*   The right-arrow button (<i class="fas fa-angle-right"></i>). Click it after providing your input and selecting options.
-*   Rosetta compiles everything and sends it to an LLM hosted by Render via the secure backend.
+The right-arrow button (<i class="fas fa-angle-right"></i>). Click it after providing your input and selecting options.
+*   Rosetta compiles all inputs and options, and sends it to an LLM hosted by Render via a secure backend.
 
 #### Output
 *   **Model Impression**: Displays LLM's preliminary reasoning before the final note and backend status messages.
 
 #### Note
-*   Completed notes appear here.
+Completed notes appear here.
 *   **Copy Button**: Click the <i class="fas fa-copy"></i> icon (top-right of the note area) to instantly copy the note to your clipboard.
 
 #### Saved Notes
 *   **Refresh List**: Retrieve the latest list of your saved notes.
 *   **Delete All Notes**:
     *   Removes all saved notes.
-*  
 ---
 *Rosetta was developed by Philip Shih as proof-of-concept. Exercise your clinical judgment by reviewing and verifying AI-generated content.*
