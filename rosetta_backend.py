@@ -63,6 +63,7 @@ PREFERRED_SHORTHAND_GLOSSARY = {
     "blood pressure": "BP",
     "heart rate": "HR",
     "temperature": "T",
+    "in the setting of": "iso",
     "respiratory rate": "RR",
     "oxygen saturation": "O2 sat",
     "physical exam": "PE",
@@ -90,7 +91,6 @@ PREFERRED_SHORTHAND_GLOSSARY = {
     "discontinue": "d/c",
     "evaluate": "eval",
     "management": "mgmt",
-    "monitor": "mon",
     "negative": "neg",
     "positive": "pos",
     "previous": "prev",
@@ -98,9 +98,6 @@ PREFERRED_SHORTHAND_GLOSSARY = {
     "status post": "s/p",
     "versus": "vs",
     "within normal limits": "WNL",
-    "additionally": "addnl.",
-    "because": "b/c",
-    "necessary": "nec."
 }
 
 # Core Rosetta Instructions - To be prepended by the backend
@@ -570,6 +567,7 @@ def handle_generate_note():
     options = data.get('options', {}) # e.g., {"genSHN": true, "incPathophys": false}
     service_abbr = data.get('service_abbreviation', 'GENERAL').strip().upper()
     existing_note_filename = data.get('existing_note_filename')
+    custom_filename_from_payload = data.get('custom_filename', '').strip()
 
     # Basic validation - check if either input_data or existing_note_filename is provided
     is_reformat_request_signal = "(No new clinical information provided" in input_data # Check signal in input_data
@@ -714,8 +712,11 @@ def handle_generate_note():
     operation_type_message = "generated and saved"
 
     if existing_note_filename:
-        # Update existing note
+        # Update existing note - custom filename from payload is ignored if updating an existing note.
+        # The existing_note_filename takes precedence.
         print(f"Received UPDATE request for note: {existing_note_filename} (service: {service_abbr})")
+        if custom_filename_from_payload:
+            print(f"Note: Custom filename '{custom_filename_from_payload}' provided but will be ignored because this is an update to an existing note '{existing_note_filename}'.")
         base_notes_path = os.environ.get("BASE_NOTES_PATH", ".")
         output_notes_directory = os.path.join(base_notes_path, "rosetta_outputs")
         existing_note_path = os.path.join(output_notes_directory, existing_note_filename)
@@ -756,11 +757,23 @@ def handle_generate_note():
         # Create new note
         print(f"Received NEW note request for service: {service_abbr}")
         final_llm_prompt_parts.append(dynamic_request_for_llm)
-        output_filename = generate_filename(service_abbr)
+        
+        if custom_filename_from_payload:
+            # Sanitize the custom filename
+            safe_custom_filename = "".join(c if c.isalnum() or c in ['_', '-'] else '_' for c in custom_filename_from_payload)
+            if not safe_custom_filename: # If sanitization results in empty or only problematic chars
+                print(f"Warning: Custom filename '{custom_filename_from_payload}' sanitized to empty. Falling back to auto-generated name.")
+                output_filename = generate_filename(service_abbr)
+            else:
+                output_filename = f"{safe_custom_filename}.txt"
+                print(f"Using custom filename (sanitized): {output_filename}")
+        else:
+            output_filename = generate_filename(service_abbr)
+            print(f"Using auto-generated filename: {output_filename}")
 
     final_llm_prompt = "\n\n".join(final_llm_prompt_parts)
     
-    # The get_llm_response function will prepend SHIHGPTMD_SYSTEM_INSTRUCTION and SHIHGPTMD_CORE_OPERATIONAL_INSTRUCTIONS
+    # The get_llm_response function will prepend ROSETTA_SYSTEM_INSTRUCTION and ROSETTA_CORE_OPERATIONAL_INSTRUCTIONS
     # So, final_llm_prompt here is effectively the 'dynamic_prompt_from_frontend' argument for get_llm_response
     llm_raw_output, prompt_feedback_details = get_llm_response(final_llm_prompt) 
     

@@ -174,10 +174,16 @@
         <details open class="section-container"> 
             <summary class="section-title">Note</summary>
             <div id="noteSectionContent" style="position: relative;">
-                <textarea id="mainOutputArea" placeholder="Note will appear here..." readonly></textarea>
-                <button type="button" id="copyNoteButton" class="rosetta-secondary-button" style="position: absolute; top: 5px; right: 5px; z-index: 5;" title="Copy Note to Clipboard">
-                    <i class="fas fa-copy"></i> Copy
-                </button>
+                <textarea id="mainOutputArea" placeholder="Note will appear here..." readonly style="margin-bottom: 5px;"></textarea>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="flex-grow: 1; margin-right: 10px;">
+                        <label for="customNoteFilenameInput" style="font-size: 0.9em; margin-bottom: 2px; display: block; text-align: left;">Custom Filename (optional, .txt added automatically):</label>
+                        <input type="text" id="customNoteFilenameInput" placeholder="e.g., consult_note_smith_20240529" style="width: 100%; padding: 6px; font-size: 0.9em; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; margin-bottom:0;">
+                    </div>
+                    <button type="button" id="copyNoteButton" class="rosetta-secondary-button" style="z-index: 5; flex-shrink: 0;" title="Copy Note to Clipboard">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
             </div>
         </details>
         
@@ -538,7 +544,9 @@
             const selectedTemplate = document.getElementById('templateSelector').value;
             const outputArea = document.getElementById('mainOutputArea');
             const modelImpressionDisplayArea = document.getElementById('modelImpressionArea');
-            if (!outputArea || !modelImpressionDisplayArea) { alert("UI elements missing."); return; }
+            const customFilenameInput = document.getElementById('customNoteFilenameInput');
+
+            if (!outputArea || !modelImpressionDisplayArea || !customFilenameInput) { alert("UI elements missing for note generation or saving."); return; }
             outputArea.value = "Processing..."; modelImpressionDisplayArea.value = "Processing...";
             let patient_info_content = (document.getElementById('enableUpdateModeCheckbox_rosetta')?.checked && document.getElementById('existingNotesDropdown_rosetta')?.value && patientInfo.trim() === "") ? "(No new clinical information provided - this is a reformat or option-change request for an existing note)" : patientInfo;
             let template_content_for_payload = ""; let selected_template_name_for_payload = "";
@@ -554,10 +562,20 @@
             } else { selected_template_name_for_payload = "None (Use General Structure)"; }
             const structuredOptions = {}; checkboxOptions.forEach(opt => { const cb = document.getElementById(opt.id); if(cb) structuredOptions[opt.id] = cb.checked; });
             const serviceAbbreviation = getSelectedServiceAbbreviation();
-            const payload = { patient_data: patient_info_content, template_name: selected_template_name_for_payload, template_value: selectedTemplate, template_content: template_content_for_payload, options: structuredOptions, service_abbreviation: serviceAbbreviation };
+            const customFilename = customFilenameInput.value.trim();
+            const payload = { 
+                patient_data: patient_info_content, 
+                template_name: selected_template_name_for_payload, 
+                template_value: selectedTemplate, 
+                template_content: template_content_for_payload, 
+                options: structuredOptions, 
+                service_abbreviation: serviceAbbreviation,
+                custom_filename: customFilename // Add custom filename to payload
+            };
             const enableUpdateCheckbox = document.getElementById('enableUpdateModeCheckbox_rosetta');
             const existingNotesDropdown = document.getElementById('existingNotesDropdown_rosetta');
             if (enableUpdateCheckbox?.checked && existingNotesDropdown?.value) payload.existing_note_filename = existingNotesDropdown.value;
+            
             try {
                 const backend_response = await fetch(`${ROSETTA_APP_BACKEND_URL}/generate_note`, { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify(payload) });
                 const result = await backend_response.json();
