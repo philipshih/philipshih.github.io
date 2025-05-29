@@ -8,7 +8,7 @@
     .shihgptmd-container { max-width: 900px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; text-align: center; /* Center Rosetta and copyright */ }
     .shihgptmd-container h1 { margin-bottom: 5px; } /* Reduce space after Rosetta */
     .copyright-rosetta { font-size: 0.8em; color: #777; margin-bottom: 20px; display: block; } /* Style for copyright */
-    .shihgptmd-container > *:not(h1):not(.copyright-rosetta):not(.checkbox-area) { text-align: left; } /* Reset text-align for other elements */
+    .shihgptmd-container > *:not(h1):not(.copyright-rosetta):not(.checkbox-area):not(div[style*="text-align: center"]) { text-align: left; } /* Reset text-align for other elements, keep title div centered */
     .hidden { display: none !important; } /* Added !important to ensure override */
     .shihgptmd-container label { display: block; margin-top: 10px; margin-bottom: 5px; font-weight: bold; }
     .shihgptmd-container textarea, .shihgptmd-container select { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
@@ -18,177 +18,51 @@
     #mainOutputArea, #patientInfoInput, #epicSmartPhraseInput { min-height: 150px; }
     .checkbox-area label { font-weight: normal; display: inline-block; margin-right: 15px;}
     .section-title { margin-top: 20px; margin-bottom:10px; font-size: 1.2em; border-bottom: 1px solid #eee; padding-bottom: 5px;}
-    /* .collapsible-title .toggle-indicator CSS is no longer needed */
-    /* .collapsible-content.hidden CSS is no longer needed, handled by <details> */
-    summary.section-title { display: list-item; cursor: pointer; } /* Ensure summary behaves like a block and gets list-item marker */
+    summary.section-title { display: list-item; cursor: pointer; }
 
+    #checkboxOptionsContainer div.checkbox-option-item { display: inline-flex; align-items: center; margin-right: 10px; margin-bottom: 2px; }
+    #checkboxOptionsContainer input[type="checkbox"] { margin-right: 2px; transform: scale(0.9); vertical-align: middle; }
+    #checkboxOptionsContainer h4 { margin-top: 8px; margin-bottom: 2px; font-size: 1.05em; }
+    #checkboxOptionsContainer div.checkbox-option-item label { font-weight: normal !important; margin-left: 2px !important; margin-right: 6px !important; line-height: 1.3; font-size: 0.95em; }
+    #checkboxOptionsContainer div.checkbox-option-item { margin-right: 6px; margin-bottom: 0px; padding: 1px 0; }
 
-    /* Styles for condensed checkboxes and Apple-style switches */
-    #checkboxOptionsContainer div.checkbox-option-item { /* Target divs wrapping each checkbox and label */
-        display: inline-flex; /* Allow multiple items per line, align items within */
-        align-items: center; /* Vertically align items in the center */
-        margin-right: 10px; /* Reduced space between options on the same line */
-        margin-bottom: 2px; /* Reduced space between lines of options */
-    }
-    #checkboxOptionsContainer input[type="checkbox"] {
-        margin-right: 2px; /* Reduced from 5px */
-        transform: scale(0.9); /* Slightly smaller checkboxes */
-        vertical-align: middle; /* Align checkbox with the middle of the text */
-        /* margin-top: 1px; /* Removed to prefer vertical-align with inline-flex parent */
-    }
-    #checkboxOptionsContainer h4 {
-      margin-top: 8px;  /* Reduced */
-      margin-bottom: 2px; /* Reduced */
-      font-size: 1.05em; /* Slightly smaller title */
-    }
-    /* CSS to override inline styles set by JS for checkbox labels */
-    #checkboxOptionsContainer div.checkbox-option-item label {
-        font-weight: normal !important;
-        margin-left: 2px !important;  /* Reduced, override JS */
-        margin-right: 6px !important; /* Reduced, override JS */
-        line-height: 1.3; /* Adjust line height */
-        font-size: 0.95em; /* Slightly smaller label text */
-    }
-    #checkboxOptionsContainer div.checkbox-option-item {
-        margin-right: 6px;  /* Reduced space between items on same line */
-        margin-bottom: 0px; /* Reduced space between lines */
-        padding: 1px 0; 
-    }
-
-
-    /* Basic Apple-style switch CSS */
-    .apple-switch-label {
-        position: relative;
-        display: inline-block;
-        width: 50px; /* Width of the switch */
-        height: 28px; /* Height of the switch */
-        margin-left: 10px;
-    }
-    .apple-switch-checkbox {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-    .apple-switch-label::before { /* The track */
-        content: "";
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-        border-radius: 28px;
-    }
-    .apple-switch-label::after { /* The slider */
-        content: "";
-        position: absolute;
-        height: 20px;
-        width: 20px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: .4s;
-        border-radius: 50%;
-    }
-    .apple-switch-checkbox:checked + .apple-switch-label::before {
-        background-color: #2196F3; /* Blue when checked */
-    }
-    .apple-switch-checkbox:checked + .apple-switch-label::after { /* Corrected typo: apple_switch-label to apple-switch-label */
-        transform: translateX(22px); /* Move slider to the right */
-    }
-    /* For the Incognito switch, we need to associate the label correctly */
-    /* The Incognito checkbox itself is now .apple-switch-checkbox */
-    /* The label for it needs to be styled as the switch visual */
-    label[for="hideTextCheckbox"].apple-switch-label { /* More specific selector for the Incognito label */
-        /* Uses the general .apple-switch-label styles above */
-        /* We might need to adjust the "Incognito" text positioning if it's separate */
-    }
-     /* Adjusting the Incognito label text to be next to the switch */
+    .apple-switch-label { position: relative; display: inline-block; width: 50px; height: 28px; margin-left: 10px; }
+    .apple-switch-checkbox { opacity: 0; width: 0; height: 0; }
+    .apple-switch-label::before { content: ""; position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
+    .apple-switch-label::after { content: ""; position: absolute; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+    .apple-switch-checkbox:checked + .apple-switch-label::before { background-color: #2196F3; }
+    .apple-switch-checkbox:checked + .apple-switch-label::after { transform: translateX(22px); }
     .checkbox-area { display: flex; align-items: center; margin-bottom: 15px;}
-    .checkbox-area > label[for="hideTextCheckbox"] { /* This is the "Incognito" text */
-        font-weight: bold; /* Make it like other labels */
-        margin-right: 8px; /* Space before the switch */
-        order: -1; /* Place text before the visual switch if checkbox is after */
-    }
-     /* If the "Incognito" text is part of the visual switch label, this might need adjustment */
-     /* The current HTML has <input> then <label class="apple-switch-label">Incognito</label> */
-     /* This means the "Incognito" text is *part* of the switch. Let's adjust that. */
-    /* We'll make the visual switch label empty and put "Incognito" text before it. */
+    .checkbox-area > label[for="hideTextCheckbox"] { font-weight: bold; margin-right: 8px; order: -1; }
 
-    #incognitoControl { /* New container for the switch */
-        position: absolute;
-        top: 25px; /* Adjust as needed, considering padding of parent */
-        right: 25px; /* Adjust as needed */
-        display: flex;
-        align-items: center;
-        z-index: 10; /* Ensure it's above other elements if needed */
-    }
-    #incognitoControl > label[for="hideTextCheckbox"] { /* Text label "Incognito" */
-        font-weight: bold;
-        margin-right: 8px;
-        font-size: 0.9em; /* Slightly smaller if needed */
-    }
-    /* Apple switch styles are already defined */
+    #incognitoControl { position: absolute; top: 25px; right: 25px; display: flex; align-items: center; z-index: 10; }
+    #incognitoControl > label[for="hideTextCheckbox"] { font-weight: bold; margin-right: 8px; font-size: 0.9em; }
 
-    /* Style for #generatePromptButton to mimic .nav .password-entry-container button */
-    #generatePromptButton {
-        padding: 10px 15px; /* Keep padding for clickable area */
-        border-radius: 4px;
-        border: none; /* Remove border */
-        background-color: transparent; /* Remove background */
-        color: #333; /* Icon color - Changed to black */
-        cursor: pointer;
-        font-size: 1.5em; /* Make icon a bit larger as it's a primary action */
-        line-height: 1; 
-        text-align: center;
-        margin-top: 20px;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    #generatePromptButton:hover {
-        color: #0056b3; /* Change icon color on hover, remove background change */
-    }
-    #generatePromptButton:hover {
-        color: #333; /* Change icon color on hover, remove background change */
-    }
+    #generatePromptButton { padding: 10px 15px; border-radius: 4px; border: none; background-color: transparent; color: #333; cursor: pointer; font-size: 1.5em; line-height: 1; text-align: center; margin-top: 20px; display: block; margin-left: auto; margin-right: auto; }
+    #generatePromptButton:hover { color: #0056b3; }
 
-    #refreshNotesButton_rosetta {
-        /* Inherit general button styles */
-        padding: 5px 10px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-        background-color: #f0f0f0;
-        color: #333;
-        cursor: pointer;
-        font-size: 0.9em;
-        line-height: 1; /* For better icon centering */
-        min-width: auto; /* Allow button to be as small as content */
-    }
-    #refreshNotesButton_rosetta:hover {
-        background-color: #ddd;
-    }
+    #refreshNotesButton_rosetta { padding: 5px 10px; border-radius: 4px; border: 1px solid #ccc; background-color: #f0f0f0; color: #333; cursor: pointer; font-size: 0.9em; line-height: 1; min-width: auto; }
+    #refreshNotesButton_rosetta:hover { background-color: #ddd; }
 
-    /* Styling for secondary buttons */
-    .rosetta-secondary-button {
-        /* Inherit general button styles */
-        padding: 5px 10px;
-        font-size: 0.9em;
-        cursor: pointer;
-  background-color: #f0f0f0;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-    }
-    .rosetta-secondary-button:hover {
-        background-color: #ddd !important; /* Slightly darker grey background on hover */
-        border-color: #bbb;
-    }
+    .rosetta-secondary-button { padding: 5px 10px; font-size: 0.9em; cursor: pointer; background-color: #f0f0f0; color: #333; border: 1px solid #ccc; border-radius: 4px; }
+    .rosetta-secondary-button:hover { background-color: #ddd !important; border-color: #bbb; }
+
+    /* Styles for Documentation Modal Content */
+    #rosettaDocumentationContent { text-align: left; background: #f9f9f9; border: 1px solid #eee; padding: 15px; border-radius: 4px; line-height: 1.6; }
+    #rosettaDocumentationContent h1, #rosettaDocumentationContent h2, #rosettaDocumentationContent h3, #rosettaDocumentationContent h4 { margin-top: 1em; margin-bottom: 0.5em; }
+    #rosettaDocumentationContent p { margin-bottom: 0.8em; }
+    #rosettaDocumentationContent ul, #rosettaDocumentationContent ol { margin-left: 20px; margin-bottom: 0.8em; }
+    #rosettaDocumentationContent li { margin-bottom: 0.3em; }
+    #rosettaDocumentationContent code { background-color: #e8e8e8; padding: 2px 4px; border-radius: 3px; font-family: monospace; }
+    #rosettaDocumentationContent pre { background-color: #e8e8e8; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    #rosettaDocumentationContent pre code { background-color: transparent; padding: 0; }
+    #rosettaDocumentationContent blockquote { border-left: 3px solid #ccc; margin-left: 0; padding-left: 10px; color: #555; }
+    #rosettaDocumentationContent table { border-collapse: collapse; width: auto; margin-bottom: 1em; }
+    #rosettaDocumentationContent th, #rosettaDocumentationContent td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    #rosettaDocumentationContent th { background-color: #f0f0f0; }
 
   </style>
-
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <body>
     <nav class="nav">
       <div class="nav-container">
@@ -210,23 +84,38 @@
       {{ content }}
     </main>
 
-    <div id="shihGptMdAppContainer" class="shihgptmd-container hidden" style="position: relative;"> <!-- Added position: relative -->
-        <div id="incognitoControl"> <!-- Moved Incognito switch here -->
-            <!-- Text label "Incognito" removed -->
+    <!-- Documentation Modal Structure -->
+    <div id="rosettaDocumentationModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px;">
+        <div style="background-color: white; padding: 25px; border-radius: 8px; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative;">
+            <button id="closeDocModalButton" style="position: absolute; top: 10px; right: 10px; background: #eee; border: 1px solid #ccc; border-radius: 50%; width: 30px; height: 30px; font-size: 16px; line-height: 1; cursor: pointer;">&times;</button>
+            <h2>Rosetta Documentation</h2>
+            <div id="rosettaDocumentationContent"> {/* Removed inline styles for raw text */}
+                Loading documentation...
+            </div>
+        </div>
+    </div>
+
+    <div id="shihGptMdAppContainer" class="shihgptmd-container hidden" style="position: relative;">
+        <div id="incognitoControl">
             <input type="checkbox" id="hideTextCheckbox" name="hideTextCheckbox" class="apple-switch-checkbox">
             <label for="hideTextCheckbox" class="apple-switch-label" aria-hidden="true" style="width: 50px; height: 28px;"></label>
         </div>
         
-        <h1>Rosetta</h1>
-        <span class="copyright-rosetta">&copy; Philip Shih 2025</span>
-
-        <!-- Original checkbox-area div for Incognito switch removed from here as it's repositioned -->
-        <!-- <div class="checkbox-area" style="justify-content: center; text-align: center;"> ... </div> -->
+        <div style="text-align: center; margin-bottom: 5px;">
+            <h1 style="margin-bottom: 0; display: inline-block; vertical-align: middle;">Rosetta</h1>
+            <button type="button" id="rosettaHelpButton" title="Help / Documentation" style="background: none; border: none; color: #333; font-size: 0.9em; padding: 0 0 0 5px; margin-left: 5px; vertical-align: middle; cursor: pointer;">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </div>
+        <span class="copyright-rosetta" style="margin-top: 0px;">&copy; Philip Shih 2025</span>
 
         <details open class="section-container">
             <summary class="section-title">Input</summary>
-            <div id="inputSectionContent"> 
-                <textarea id="patientInfoInput" placeholder="Add input here..."></textarea>
+            <div id="inputSectionContent" style="position: relative;">
+                <textarea id="patientInfoInput" placeholder="Add input here..." style="padding-right: 120px;"></textarea>
+                <button type="button" id="deidentifyPatientInfoBtn" class="rosetta-secondary-button" style="position: absolute; top: 5px; right: 5px; z-index: 5;" title="De-identify Input Text">
+                    <i class="fas fa-user-shield"></i> De-identify
+                </button>
                 <div id="updateNoteUIContainer_rosetta" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; border: 1px solid #eee; border-radius: 4px; text-align: left;">
                     <input type="checkbox" id="enableUpdateModeCheckbox_rosetta" name="enableUpdateModeCheckbox_rosetta" style="margin-right: 5px;">
                     <label for="enableUpdateModeCheckbox_rosetta" style="font-weight: normal; display: inline;">Update existing file?</label>
@@ -234,7 +123,6 @@
                     <div id="existingNotesControls_rosetta" class="hidden" style="margin-top: 10px;">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <select id="existingNotesDropdown_rosetta" style="flex-grow: 1; margin-bottom: 0; min-width: 150px;">
-                                <!-- Options will be populated by JavaScript -->
                             </select>
                             <button type="button" id="refreshNotesButton_rosetta" title="Refresh Notes List">
                               <i class="fas fa-redo" style="font-size: 0.8em;"></i>
@@ -245,16 +133,13 @@
             </div>
         </details>
 
-        </details>
-
         <details class="section-container" id="templateSection">
             <summary class="section-title">Template (Optional)</summary>
             <div id="smartPhraseSectionContent">
                 <label for="templateSelector" style="font-weight: bold; margin-bottom: 5px; display: block;">Manual:</label>
                 <select id="templateSelector" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px;">
-                    <!-- Options will be dynamically populated by JS, including "None" -->
                 </select>
-                <hr style="margin: 15px 0;"> <!-- Optional separator -->
+                <hr style="margin: 15px 0;">
                 <label for="epicSmartPhraseInput" style="font-weight: bold; margin-bottom: 5px; display: block;">Custom Template:</label>
                 <textarea id="epicSmartPhraseInput" placeholder="Insert template (SmartPhrase, previous note, etc.)..."></textarea>
                 <div style="margin-top: 5px;">
@@ -267,9 +152,7 @@
         <details class="section-container">
             <summary class="section-title">Options</summary> 
             <div id="optionsSectionContent">
-                <!-- templateSelector elements moved to "Template (Optional)" section -->
                 <div id="checkboxOptionsContainer" style="margin-bottom: 20px; text-align: left;"> 
-                    <!-- Checkboxes will be dynamically added here by JS -->
                 </div>
             </div>
         </details>
@@ -285,7 +168,7 @@
 
         <details open class="section-container"> 
             <summary class="section-title">Note</summary>
-            <div id="noteSectionContent" style="position: relative;"> <!-- Added relative positioning for button -->
+            <div id="noteSectionContent" style="position: relative;">
                 <textarea id="mainOutputArea" placeholder="Note will appear here..." readonly></textarea>
                 <button type="button" id="copyNoteButton" class="rosetta-secondary-button" style="position: absolute; top: 5px; right: 5px; z-index: 5;" title="Copy Note to Clipboard">
                     <i class="fas fa-copy"></i> Copy
@@ -296,11 +179,13 @@
         <details open class="section-container" id="serverSavedNotesSection">
             <summary class="section-title">Saved Notes</summary>
             <div id="serverNotesListArea" style="margin-top: 10px;">
-                <button type="button" id="refreshServerNotesListButton" class="rosetta-secondary-button" style="margin-bottom: 10px;">
+                <button type="button" id="refreshServerNotesListButton" class="rosetta-secondary-button" style="margin-bottom: 10px; margin-right: 5px;">
                     <i class="fas fa-redo"></i> Refresh List
                 </button>
+                <button type="button" id="deleteAllNotesButton" class="rosetta-secondary-button" style="margin-bottom: 10px; background-color: #dc3545; color: white;" title="Delete All Saved Notes">
+                    <i class="fas fa-trash-alt"></i> Delete All Notes
+                </button>
                 <ul id="serverNotesDisplayList" style="list-style-type: none; padding-left: 0; max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 4px;">
-                    <!-- Notes will be populated here by JavaScript -->
                     <li id="serverNotesLoadingMsg">Loading notes...</li>
                 </ul>
             </div>
@@ -314,24 +199,21 @@
     </footer>
 
     <script>
-      const ROSETTA_BACKEND_URL = 'https://rosetta-backend.onrender.com'; // Define backend URL for Rosetta
+      const ROSETTA_BACKEND_URL = 'https://rosetta-backend.onrender.com'; 
 
       function checkPassword() {
         const passwordInput = document.getElementById('secret-password');
         const password = passwordInput.value;
-        const correctPassword = 'E916!'; // Keep this password or change as needed
+        const correctPassword = 'E916!'; 
 
         if (password === correctPassword) {
-          // Hide main page content and show ShihGPTMD app
           document.getElementById('mainPageContent').classList.add('hidden');
           document.getElementById('shihGptMdAppContainer').classList.remove('hidden');
-          // Optionally hide the password input area itself
-          // document.querySelector('.password-entry-container').classList.add('hidden');
-          initializeShihGptMdApp(); // Call to initialize app features
+          initializeShihGptMdApp(); 
         } else {
           alert('Incorrect password.');
         }
-        passwordInput.value = '';
+        passwordInput.value = ''; 
       }
 
       document.getElementById('secret-password').addEventListener('keypress', function(event) {
@@ -341,81 +223,84 @@
         }
       });
 
-      // ShihGPTMD App JavaScript
+      async function rosettaDeidentifyInputText() {
+          const patientInfoTextarea = document.getElementById('patientInfoInput'); 
+          const deidentifyButton = document.getElementById('deidentifyPatientInfoBtn'); 
+          if (!patientInfoTextarea || !deidentifyButton) {
+              console.error("De-identify Error: patientInfoTextarea or deidentifyButton not found in base.html.");
+              return;
+          }
+          const originalText = patientInfoTextarea.value;
+          if (!originalText.trim()) {
+              alert("Input text is empty. Nothing to de-identify.");
+              return;
+          }
+          const rosettaBackendUrl = ROSETTA_BACKEND_URL; 
+          deidentifyButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+          deidentifyButton.disabled = true;
+          try {
+              const response = await fetch(`${rosettaBackendUrl}/api/deidentify_text`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', },
+                  body: JSON.stringify({ text_content: originalText }),
+              });
+              deidentifyButton.innerHTML = '<i class="fas fa-user-shield"></i> De-identify';
+              deidentifyButton.disabled = false;
+              if (response.ok) {
+                  const data = await response.json();
+                  patientInfoTextarea.value = data.deidentified_text;
+                  alert("Text de-identified successfully!");
+              } else {
+                  const errorData = await response.json();
+                  alert(`De-identification failed: ${errorData.error} - ${errorData.details || ''}`);
+              }
+          } catch (error) {
+              deidentifyButton.innerHTML = '<i class="fas fa-user-shield"></i> De-identify';
+              deidentifyButton.disabled = false;
+              alert(`An error occurred: ${error.message}`);
+          }
+      }
+
       function initializeShihGptMdApp() {
-        const ROSETTA_APP_BACKEND_URL = ROSETTA_BACKEND_URL; // Make it available inside this scope if not already global
+        const ROSETTA_APP_BACKEND_URL = ROSETTA_BACKEND_URL; 
+
+        const deidentifyBtnBase = document.getElementById('deidentifyPatientInfoBtn');
+        if (deidentifyBtnBase) {
+            deidentifyBtnBase.addEventListener('click', rosettaDeidentifyInputText);
+        }
 
         async function fetchExistingNotesRosetta() {
-            console.log("DEBUG: fetchExistingNotesRosetta called.");
             const notesDropdown = document.getElementById('existingNotesDropdown_rosetta');
-            if (!notesDropdown) {
-                console.error("Rosetta Error: existingNotesDropdown_rosetta DOM element not found.");
-                return;
-            }
-            
+            if (!notesDropdown) return;
             const previouslySelected = notesDropdown.value;
-            notesDropdown.innerHTML = '<option value="" disabled>Loading notes...</option>'; // Indicate loading, make it disabled
-
+            notesDropdown.innerHTML = '<option value="" disabled>Loading notes...</option>';
             try {
-                // Use the new endpoint for consistency
-                console.log(`DEBUG: Fetching from ${ROSETTA_APP_BACKEND_URL}/list_saved_notes`);
                 const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_saved_notes`);
-                console.log(`DEBUG: /list_saved_notes response status: ${response.status}`);
-                notesDropdown.innerHTML = ''; // Clear loading message
-
+                notesDropdown.innerHTML = ''; 
                 if (!response.ok) {
-                    console.error('Rosetta Error: Failed to fetch saved notes list. Status:', response.status, response.statusText);
                     const errorOption = document.createElement('option');
-                    errorOption.value = "";
-                    errorOption.textContent = "Error loading notes";
-                    errorOption.disabled = true;
-                    notesDropdown.appendChild(errorOption);
-                    try {
-                        const errorData = await response.json();
-                        console.error('Rosetta Error details from backend:', errorData);
-                        if (errorData.error) {
-                             errorOption.textContent = `Error: ${errorData.error}`;
-                        }
-                    } catch (e) { /* ignore */ }
-                    return;
+                    errorOption.textContent = "Error loading notes"; errorOption.disabled = true;
+                    notesDropdown.appendChild(errorOption); return;
                 }
-
                 const data = await response.json();
-                console.log("DEBUG: /list_notes response data:", data);
-
                 if (data.notes && data.notes.length > 0) {
                     data.notes.forEach(noteFile => {
                         const option = document.createElement('option');
-                        option.value = noteFile;
-                        option.textContent = noteFile;
+                        option.value = noteFile; option.textContent = noteFile;
                         notesDropdown.appendChild(option);
                     });
                     if (previouslySelected && notesDropdown.querySelector(`option[value="${previouslySelected}"]`)) {
                         notesDropdown.value = previouslySelected;
-                    } else {
-                        notesDropdown.selectedIndex = 0; // Select the first actual note
-                    }
-                } else if (data.error) {
-                    console.error('Rosetta Error from backend fetching saved notes:', data.error);
-                    const errorOpt = document.createElement('option');
-                    errorOpt.value = "";
-                    errorOpt.textContent = `Error: ${data.error}`;
-                    errorOpt.disabled = true;
-                    notesDropdown.appendChild(errorOpt);
+                    } else { notesDropdown.selectedIndex = 0; }
                 } else {
                      const noNotesOpt = document.createElement('option');
-                     noNotesOpt.value = "";
-                     noNotesOpt.textContent = "No notes found";
-                     noNotesOpt.disabled = true;
+                     noNotesOpt.textContent = data.error || "No notes found"; noNotesOpt.disabled = true;
                      notesDropdown.appendChild(noNotesOpt);
                 }
             } catch (error) {
-                console.error('Rosetta Error: Network error fetching notes list:', error);
-                notesDropdown.innerHTML = ''; // Clear loading message
+                notesDropdown.innerHTML = ''; 
                 const networkErrorOpt = document.createElement('option');
-                networkErrorOpt.value = "";
-                networkErrorOpt.textContent = "Network error loading notes";
-                networkErrorOpt.disabled = true;
+                networkErrorOpt.textContent = "Network error"; networkErrorOpt.disabled = true;
                 notesDropdown.appendChild(networkErrorOpt);
             }
         }
@@ -423,305 +308,116 @@
 
         async function loadSelectedNoteContent(filename, targetAreaId = 'mainOutputArea') {
             const outputArea = document.getElementById(targetAreaId);
-            // const modelImpressionArea = document.getElementById('modelImpressionArea'); // Keep this if you want to clear it too
-            if (!outputArea || !filename) {
-                console.error(`Rosetta Error: Output area '${targetAreaId}' not found or no filename provided for loading.`);
-                if (outputArea) outputArea.value = "Error: Could not load note content (UI element missing or no file selected).";
-                return;
-            }
-
+            if (!outputArea || !filename) return;
             outputArea.value = `Loading content for ${filename}...`;
-            // if (modelImpressionArea) modelImpressionArea.value = ""; // Clear impression area when loading
-
             try {
-                console.log(`DEBUG: Fetching note content from ${ROSETTA_APP_BACKEND_URL}/get_note/${filename} for target ${targetAreaId}`);
-                const encodedFilename = encodeURIComponent(filename); // Good practice
+                const encodedFilename = encodeURIComponent(filename); 
                 const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/get_note/${encodedFilename}`);
-                console.log(`DEBUG: /get_note/${filename} response status: ${response.status} for target ${targetAreaId}`);
-
                 if (!response.ok) {
-                    let errorMsg = `Failed to load note content for ${filename} into ${targetAreaId}. Status: ${response.status}`;
-                    try {
-                        const errorData = await response.json();
-                        console.error('Rosetta Error details from backend:', errorData);
-                        if (errorData.error) {
-                             errorMsg += `\nBackend Error: ${errorData.error}`;
-                        }
-                    } catch (e) { /* Ignore if response is not JSON */ }
-                    console.error(errorMsg);
-                    outputArea.value = `Error: ${errorMsg}`;
-                    return;
+                    outputArea.value = `Error: Failed to load note. Status: ${response.status}`; return;
                 }
-
-                const noteContent = await response.text();
-                console.log(`DEBUG: Loaded note content for ${filename} into ${targetAreaId}`);
-                outputArea.value = noteContent;
-                // Optionally, scroll to the note section or the output area
+                outputArea.value = await response.text();
                 const noteSection = document.getElementById('noteSectionContent');
-                if (noteSection) {
-                    noteSection.scrollIntoView({ behavior: 'smooth' });
-                }
-
-
+                if (noteSection) noteSection.scrollIntoView({ behavior: 'smooth' });
             } catch (error) {
-                console.error(`Rosetta Error: Network error fetching note content for ${filename} into ${targetAreaId}:`, error);
-                outputArea.value = `Network error loading note ${filename} into ${targetAreaId}.\nDetails: ${error.message}`;
+                outputArea.value = `Network error loading note.\nDetails: ${error.message}`;
             }
         }
 
         async function displaySavedNotesList() {
             const listElement = document.getElementById('serverNotesDisplayList');
-            // Get the static <li> element meant for loading/status messages
             const statusMessageElement = document.getElementById('serverNotesLoadingMsg'); 
-
-            if (!listElement) {
-                console.error("Rosetta Error: Server notes list UI element (serverNotesDisplayList) not found.");
-                return;
-            }
-
-            // Prepare the status message element
-            if (statusMessageElement) {
-                statusMessageElement.textContent = "Loading notes...";
-                statusMessageElement.style.display = ""; // Ensure it's visible
-                // Clear any previous notes *except* the status message element itself
-                // This is safer than listElement.innerHTML = '' if statusMessageElement is complex
-                while (listElement.firstChild && listElement.firstChild !== statusMessageElement) {
-                    listElement.removeChild(listElement.firstChild);
-                }
-                while (listElement.lastChild && listElement.lastChild !== statusMessageElement) {
-                    listElement.removeChild(listElement.lastChild);
-                }
-                // If statusMessageElement was not already in listElement or listElement was empty, add it.
-                if (!statusMessageElement.parentNode || statusMessageElement.parentNode !== listElement) {
-                    listElement.innerHTML = ''; // Clear completely if structure is unexpected
-                    listElement.appendChild(statusMessageElement);
-                }
-                 // Ensure it's the only child at this stage if it exists
-                if (listElement.children.length > 1 && statusMessageElement) {
-                    listElement.innerHTML = '';
-                    listElement.appendChild(statusMessageElement);
-                }
-
-            } else {
-                // Fallback if the static status <li> wasn't found in HTML
-                listElement.innerHTML = '<li>Loading notes...</li>';
-            }
-            
-            // The actual <li> element that will display messages (could be statusMessageElement or a new one)
-            const currentStatusLi = listElement.firstChild;
-
-
+            if (!listElement || !statusMessageElement) return;
+            statusMessageElement.textContent = "Loading notes...";
+            listElement.innerHTML = ''; listElement.appendChild(statusMessageElement);
             try {
                 const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_saved_notes`);
-
                 if (!response.ok) {
-                    const errorText = `Error loading notes: ${response.statusText}`;
-                    if (currentStatusLi) currentStatusLi.textContent = errorText;
-                    // else listElement.innerHTML = `<li>${errorText}</li>`; // Should be covered by currentStatusLi
-                    console.error("Rosetta Error: Failed to fetch server notes list:", response.statusText);
-                    return;
+                    statusMessageElement.textContent = `Error loading notes: ${response.statusText}`; return;
                 }
                 const data = await response.json();
-                console.log("Rosetta Debug: Data received for server notes list:", data);
-
                 if (data.notes && data.notes.length > 0) {
-                    listElement.innerHTML = ''; // Clear the loading/status message
+                    listElement.innerHTML = ''; 
                     data.notes.forEach(filename => {
                         const listItem = document.createElement('li');
                         listItem.textContent = filename;
-                        listItem.style.cursor = "pointer";
-                        listItem.style.padding = "5px 0";
-                        listItem.style.borderBottom = "1px solid #f0f0f0";
+                        listItem.style.cursor = "pointer"; listItem.style.padding = "5px 0"; listItem.style.borderBottom = "1px solid #f0f0f0";
                         listItem.addEventListener('mouseover', () => listItem.style.backgroundColor = '#f9f9f9');
                         listItem.addEventListener('mouseout', () => listItem.style.backgroundColor = 'transparent');
-                        listItem.addEventListener('click', () => {
-                            loadSelectedNoteContent(filename, 'mainOutputArea');
-                        });
+                        listItem.addEventListener('click', () => loadSelectedNoteContent(filename, 'mainOutputArea'));
                         listElement.appendChild(listItem);
                     });
-                } else { // No notes or an error message in the data payload
-                    let messageText = "No saved notes found on server.";
-                    if (data.error) {
-                        messageText = `Error: ${data.error}`;
-                        console.error("Rosetta Error from backend:", data.error);
-                    }
-                    if (currentStatusLi) currentStatusLi.textContent = messageText;
-                    // else listElement.innerHTML = `<li>${messageText}</li>`;
+                } else { 
+                    statusMessageElement.textContent = data.error || "No saved notes found on server.";
                 }
             } catch (error) {
-                console.error("Rosetta Error: Network error fetching server notes list:", error);
-                const errorText = "Network error loading notes.";
-                if (currentStatusLi) { // If currentStatusLi is still the one showing "Loading..."
-                     currentStatusLi.textContent = errorText;
-                } else { // If list was cleared before error (e.g. during response.json())
-                     listElement.innerHTML = `<li>${errorText}</li>`;
-                }
+                statusMessageElement.textContent = "Network error loading notes.";
             }
         }
 
         async function saveCustomTemplate() {
             const templateContent = document.getElementById('epicSmartPhraseInput').value;
-            if (!templateContent.trim()) {
-                alert("The template content is empty. Please paste your template before saving.");
-                return;
-            }
-
-            let userFilename = prompt("Enter a name for this template (e.g., 'my_progress_note').\nAllowed characters: letters, numbers, underscores, hyphens.\n'.txt' will be added automatically.", "my_custom_template");
-
-            if (!userFilename || !userFilename.trim()) {
-                // User cancelled or entered empty name
-                return;
-            }
-
-            // Basic sanitization for filename (more robust sanitization on backend is still recommended)
+            if (!templateContent.trim()) { alert("Template content is empty."); return; }
+            let userFilename = prompt("Enter template name (e.g., 'my_progress_note').\n.txt added automatically.", "my_custom_template");
+            if (!userFilename || !userFilename.trim()) return;
             userFilename = userFilename.trim().replace(/[^a-zA-Z0-9_-]/g, '_'); 
-            if (!userFilename) { 
-                alert("Invalid filename after sanitization. Please use letters, numbers, underscores, or hyphens.");
-                return;
-            }
+            if (!userFilename) { alert("Invalid filename."); return; }
             const fullFilename = `${userFilename}.txt`;
-
-            const payload = {
-                filename: fullFilename,
-                content: templateContent
-            };
-            console.log("DEBUG: Saving custom template with payload:", payload);
-
             try {
                 const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/save_smartphrase_template`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
+                    method: 'POST', headers: { 'Content-Type': 'application/json', },
+                    body: JSON.stringify({ filename: fullFilename, content: templateContent }),
                 });
-
                 const result = await response.json();
-                if (response.ok) {
-                    alert(`Template '${result.filename || fullFilename}' saved successfully! The dropdown will refresh.`);
-                    populatePredefinedTemplatesDropdown(); // Refresh the dropdown
-                } else {
-                    alert(`Error saving template: ${result.error || 'Unknown error from backend.'}`);
-                }
-            } catch (error) {
-                console.error('Error saving custom template via fetch:', error);
-                alert(`Network error or backend issue while saving template: ${error.message}`);
-            }
+                alert(response.ok ? `Template '${result.filename || fullFilename}' saved.` : `Error: ${result.error}`);
+                if (response.ok) populatePredefinedTemplatesDropdown();
+            } catch (error) { alert(`Network error: ${error.message}`); }
         }
 
         async function populatePredefinedTemplatesDropdown() {
             const templateSelector = document.getElementById('templateSelector');
-            if (!templateSelector) {
-                console.error("Rosetta Error: templateSelector dropdown not found");
-                return;
-            }
-            templateSelector.innerHTML = ''; // Clear existing options first
-
-            // Add "None" option
-            const noneOption = document.createElement('option');
-            noneOption.value = "none";
-            noneOption.textContent = "None (Use General Structure)";
-            templateSelector.appendChild(noneOption);
-            
-            // Add a loading/placeholder option that will be removed or replaced
-            const loadingOption = document.createElement('option');
-            loadingOption.value = "";
-            loadingOption.textContent = "Loading templates...";
-            loadingOption.disabled = true; // Make it not selectable
-            templateSelector.appendChild(loadingOption);
-
+            if (!templateSelector) return;
+            templateSelector.innerHTML = '<option value="none">None (Use General Structure)</option><option value="" disabled>Loading...</option>';
             try {
                 const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/list_smartphrase_templates`);
-                templateSelector.removeChild(loadingOption); // Remove loading option once fetch starts/completes
-
+                const loadingOpt = templateSelector.querySelector('option[value=""]');
+                if(loadingOpt) templateSelector.removeChild(loadingOpt);
                 if (!response.ok) {
-                    console.error('Rosetta Error: Failed to fetch smartphrase templates list:', response.statusText);
-                    const errorOption = document.createElement('option');
-                    errorOption.value = "";
-                    errorOption.textContent = "Error loading templates";
-                    errorOption.disabled = true;
-                    templateSelector.appendChild(errorOption);
-                    templateSelector.value = "none"; // Default to "None" on error
-                    return;
+                    templateSelector.appendChild(Object.assign(document.createElement('option'), {textContent: "Error loading", disabled: true}));
+                    templateSelector.value = "none"; return;
                 }
-                const templateFiles = await response.json(); 
-                
-                if (templateFiles.templates && templateFiles.templates.length > 0) {
-                    templateFiles.templates.forEach(filename => {
+                const data = await response.json();
+                if (data.templates && data.templates.length > 0) {
+                    data.templates.forEach(filename => {
                         if (filename.endsWith('.txt')) {
                             const value = filename.slice(0, -4); 
-                            let displayText = value.replace(/[_-]/g, ' ');
-                            displayText = displayText.replace(/\b\w/g, char => char.toUpperCase()); 
-                            
-                            const option = document.createElement('option');
-                            option.value = value;
-                            option.textContent = displayText;
-                            templateSelector.appendChild(option);
+                            let displayText = value.replace(/[_-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); 
+                            templateSelector.appendChild(Object.assign(document.createElement('option'), {value: value, textContent: displayText}));
                         }
                     });
-                    // Set a default selection
-                    const defaultTemplateValue = 'general_soap'; // Try to default to general_soap
-                    let defaultSelected = false;
-                    if (templateSelector.querySelector(`option[value="${defaultTemplateValue}"]`)) {
-                        templateSelector.value = defaultTemplateValue;
-                        defaultSelected = true;
-                    }
-                    if (!defaultSelected && templateSelector.options.length > 1) { // If general_soap not found, and more than "None" exists
-                         // templateSelector.selectedIndex = 1; // Select first actual template after "None"
-                         // Or better, default to "none" if general_soap isn't there
-                         templateSelector.value = "none";
-                    } else if (!defaultSelected) { // Only "None" option is there
-                        templateSelector.value = "none";
-                    }
-
-                } else { // No templates found from backend, but "None" option is still there
-                    // const noTemplatesOption = document.createElement('option');
-                    // noTemplatesOption.value = "";
-                    // noTemplatesOption.textContent = "No predefined templates found";
-                    // noTemplatesOption.disabled = true;
-                    // templateSelector.appendChild(noTemplatesOption);
-                    templateSelector.value = "none"; // Default to "None"
-                }
+                    templateSelector.value = templateSelector.querySelector('option[value="general_soap"]') ? 'general_soap' : 'none';
+                } else { templateSelector.value = "none"; }
             } catch (error) {
-                console.error('Rosetta Error: Network error fetching smartphrase templates list:', error);
-                if (templateSelector.contains(loadingOption)) templateSelector.removeChild(loadingOption);
-                const errorOption = document.createElement('option');
-                errorOption.value = "";
-                errorOption.textContent = "Error loading templates (network)";
-                errorOption.disabled = true;
-                templateSelector.appendChild(errorOption);
-                templateSelector.value = "none"; // Default to "None" on error
+                if (templateSelector.querySelector('option[value=""]')) templateSelector.removeChild(templateSelector.querySelector('option[value=""]'));
+                templateSelector.appendChild(Object.assign(document.createElement('option'), {textContent: "Network error", disabled: true}));
+                templateSelector.value = "none";
             }
         }
 
         const checkboxOptions = [
-            // Concise Labels & Updated Group Names
-            { id: "genSHN", label: "SHN", group: "Output" },
-            { id: "genVSHN", label: "VSHN", group: "Output" },
+            { id: "genSHN", label: "SHN", group: "Output" }, { id: "genVSHN", label: "VSHN", group: "Output" },
             { id: "formatByProblem", label: "A&P", group: "Output", checked: true },
-            { id: "incPathophys", label: "Pathophysiology", group: "Reasoning" },
-            { id: "incGuidelines", label: "Guideline Citations (PMID/Calculators)", group: "Reasoning" },
-            { id: "formatSOAP", label: "SOAP", group: "Documentation", checked: true },
-            { id: "formatHnP", label: "H&P", group: "Documentation" },
-            { id: "formatDischarge", label: "Discharge Summary", group: "Documentation" },
-            { id: "formatPreOp", label: "Pre-op Note", group: "Documentation" },
-            // Context Options
-            { id: "specAnesthesia", label: "Anesthesia", group: "Context" },
-            { id: "specDerm", label: "Dermatology", group: "Context" },
-            { id: "specFM", label: "Family Medicine", group: "Context" },
-            { id: "specIM", label: "Internal Medicine", group: "Context" },
-            { id: "specNeuro", label: "Neuro", group: "Context" },
-            { id: "specOBGYN", label: "OBGYN", group: "Context" },
-            { id: "specPeds", label: "Pediatrics", group: "Context" },
-            { id: "specPsych", label: "Psychiatry", group: "Context" },
+            { id: "incPathophys", label: "Pathophysiology", group: "Reasoning" }, { id: "incGuidelines", label: "Guideline Citations", group: "Reasoning" },
+            { id: "formatSOAP", label: "SOAP", group: "Documentation", checked: true }, { id: "formatHnP", label: "H&P", group: "Documentation" },
+            { id: "formatDischarge", label: "Discharge Summary", group: "Documentation" }, { id: "formatPreOp", label: "Pre-op Note", group: "Documentation" },
+            { id: "specAnesthesia", label: "Anesthesia", group: "Context" }, { id: "specDerm", label: "Dermatology", group: "Context" },
+            { id: "specFM", label: "Family Medicine", group: "Context" }, { id: "specIM", label: "Internal Medicine", group: "Context" },
+            { id: "specNeuro", label: "Neuro", group: "Context" }, { id: "specOBGYN", label: "OBGYN", group: "Context" },
+            { id: "specPeds", label: "Pediatrics", group: "Context" }, { id: "specPsych", label: "Psychiatry", group: "Context" },
             { id: "specSurgeryGen", label: "Surgery (General)", group: "Context" },
-            // Features - Reordered
-            { id: "genHistoryQuestions", label: "History", group: "Features" },
-            { id: "genPEManeuvers", label: "Physical Exam", group: "Features" },
-            { id: "genROSTemplate", label: "ROS", group: "Features" },
-            { id: "genChartReview", label: "Chart Review", group: "Features" },
+            { id: "genHistoryQuestions", label: "History", group: "Features" }, { id: "genPEManeuvers", label: "Physical Exam", group: "Features" },
+            { id: "genROSTemplate", label: "ROS", group: "Features" }, { id: "genChartReview", label: "Chart Review", group: "Features" },
             { id: "incMissingData", label: "Missing Data", group: "Features" },
-            // Security - Updated group name, labels and defaults
             { id: "confirmDeidentified", label: "Identification", group: "Security", checked: true }, 
             { id: "removeDates", label: "Relative Time", group: "Security", checked: true }, 
             { id: "stripNonStandardAbbr", label: "Standard Abbrev. Only", group: "Security", checked: true } 
@@ -729,422 +425,215 @@
 
         function populateCheckboxOptions() {
             const container = document.getElementById('checkboxOptionsContainer');
-            if (!container) return;
-            container.innerHTML = ''; 
+            if (!container) return; container.innerHTML = ''; 
             let currentGroup = "";
             checkboxOptions.forEach(opt => {
                 if (opt.group !== currentGroup) {
                     currentGroup = opt.group;
                     const groupTitle = document.createElement('h4');
-                    groupTitle.textContent = currentGroup;
-                    groupTitle.style.marginTop = '15px';
-                    groupTitle.style.marginBottom = '5px';
+                    groupTitle.textContent = currentGroup; groupTitle.style.marginTop = '15px'; groupTitle.style.marginBottom = '5px';
                     container.appendChild(groupTitle);
                 }
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = opt.id;
-                checkbox.name = opt.id;
-                checkbox.value = opt.id;
-                if (opt.checked) {
-                    checkbox.checked = true;
-                }
-
-                const labelEl = document.createElement('label');
-                labelEl.htmlFor = opt.id;
-                labelEl.appendChild(document.createTextNode(opt.label));
-                labelEl.style.fontWeight = 'normal';
-                // labelEl.style.marginLeft = '5px'; // Controlled by CSS now
-                // labelEl.style.marginRight = '15px'; // Controlled by CSS now
-
-                const div = document.createElement('div');
-                div.className = 'checkbox-option-item'; // Add class for styling
-                div.appendChild(checkbox);
-                div.appendChild(labelEl);
-                container.appendChild(div);
+                const checkbox = Object.assign(document.createElement('input'), {type:'checkbox', id:opt.id, name:opt.id, value:opt.id, checked:opt.checked});
+                const labelEl = Object.assign(document.createElement('label'), {htmlFor:opt.id, textContent:opt.label, style:"font-weight:normal;"});
+                const div = Object.assign(document.createElement('div'), {className:'checkbox-option-item'});
+                div.appendChild(checkbox); div.appendChild(labelEl); container.appendChild(div);
             });
         }
 
         function getSelectedServiceAbbreviation() {
-            // Attempt to infer from specialty checkboxes.
             const contextCheckboxes = [
-                { id: "specAnesthesia", abbr: "ANES" },
-                { id: "specDerm", abbr: "DERM" },
-                { id: "specFM", abbr: "FM" },
-                { id: "specIM", abbr: "IM" },
-                { id: "specNeuro", abbr: "NEURO" },
-                { id: "specOBGYN", abbr: "OBGYN" },
-                { id: "specPeds", abbr: "PEDS" },
-                { id: "specPsych", abbr: "PSYCH" },
-                { id: "specSurgeryGen", abbr: "SURG" }
-                // Add more mappings if other context options imply a service for filename
+                { id: "specAnesthesia", abbr: "ANES" }, { id: "specDerm", abbr: "DERM" }, { id: "specFM", abbr: "FM" },
+                { id: "specIM", abbr: "IM" }, { id: "specNeuro", abbr: "NEURO" }, { id: "specOBGYN", abbr: "OBGYN" },
+                { id: "specPeds", abbr: "PEDS" }, { id: "specPsych", abbr: "PSYCH" }, { id: "specSurgeryGen", abbr: "SURG" }
             ];
             for (const spec of contextCheckboxes) {
                 const checkbox = document.getElementById(spec.id);
-                if (checkbox && checkbox.checked) {
-                    return spec.abbr;
-                }
+                if (checkbox && checkbox.checked) return spec.abbr;
             }
-            return "GENERAL"; // Default if no specific specialty is checked
+            return "GENERAL";
         }
 
         async function submitPromptToBackend() {
-            console.log("DEBUG: submitPromptToBackend function called."); // New log
-
             const patientInfo = document.getElementById('patientInfoInput').value;
             const epicSmartPhrase = document.getElementById('epicSmartPhraseInput').value;
             const selectedTemplate = document.getElementById('templateSelector').value;
             const outputArea = document.getElementById('mainOutputArea');
             const modelImpressionDisplayArea = document.getElementById('modelImpressionArea');
-            
-            if (!outputArea || !modelImpressionDisplayArea) {
-                console.error("Rosetta Error: Output or Impression area DOM elements not found!");
-                alert("Rosetta Error: Critical UI elements (output/impression areas) are missing. Please check the HTML structure or report this issue.");
-                return;
-            }
-            
-            console.log("DEBUG: Setting loading indicators.");
-            outputArea.value = "Processing... Please wait.";
-            modelImpressionDisplayArea.value = "Processing... Please wait.";
-
-            // Construct the payload for the backend
-            let patient_info_content = "";
-            const isUpdateOperation = document.getElementById('enableUpdateModeCheckbox_rosetta')?.checked && document.getElementById('existingNotesDropdown_rosetta')?.value;
-
-            if (isUpdateOperation && patientInfo.trim() === "") {
-                patient_info_content = "(No new clinical information provided - this is a reformat or option-change request for an existing note)";
-            } else {
-                patient_info_content = patientInfo;
-            }
-            
-            let template_content_for_payload = "";
-            let selected_template_name_for_payload = "";
-
+            if (!outputArea || !modelImpressionDisplayArea) { alert("UI elements missing."); return; }
+            outputArea.value = "Processing..."; modelImpressionDisplayArea.value = "Processing...";
+            let patient_info_content = (document.getElementById('enableUpdateModeCheckbox_rosetta')?.checked && document.getElementById('existingNotesDropdown_rosetta')?.value && patientInfo.trim() === "") ? "(No new clinical information provided - this is a reformat or option-change request for an existing note)" : patientInfo;
+            let template_content_for_payload = ""; let selected_template_name_for_payload = "";
             if (epicSmartPhrase.trim() !== "") {
-                template_content_for_payload = epicSmartPhrase;
-                selected_template_name_for_payload = "custom_from_input";
-            } else if (selectedTemplate && selectedTemplate !== "none") { // Check if a template is selected and it's not "none"
+                template_content_for_payload = epicSmartPhrase; selected_template_name_for_payload = "custom_from_input";
+            } else if (selectedTemplate && selectedTemplate !== "none") {
                 const templateFileName = `${selectedTemplate}.txt`;
-                const selectedTemplateDropdown = document.getElementById('templateSelector');
-                selected_template_name_for_payload = selectedTemplateDropdown.options[selectedTemplateDropdown.selectedIndex].text; // User-friendly name
+                selected_template_name_for_payload = document.getElementById('templateSelector').options[document.getElementById('templateSelector').selectedIndex].text;
                 try {
-                    // Assuming smartphrase_templates are served relative to the HTML file or a base URL
-                    // For GitHub Pages, this path might need to be {{ site.baseurl }}/smartphrase_templates/
-                    // However, if the backend serves these, the URL structure might differ.
-                    // For now, let's assume they are co-located or served from a relative path.
-                    // If your backend serves these, adjust the fetch URL accordingly.
                     const response = await fetch(`smartphrase_templates/${templateFileName}`);
-                    if (response.ok) {
-                        template_content_for_payload = await response.text();
-                    } else {
-                        if(outputArea) outputArea.value = `Error: Could not load SmartPhrase template 'smartphrase_templates/${templateFileName}'. Status: ${response.status}. Will proceed without specific template content.`;
-                        template_content_for_payload = `(Error loading template: ${templateFileName}, Status: ${response.status})`;
-                    }
-                } catch (error) {
-                    if(outputArea) outputArea.value = `Error: Could not load SmartPhrase template 'smartphrase_templates/${templateFileName}'. Error: ${error}. Will proceed without specific template content.`;
-                    template_content_for_payload = `(Error loading template: ${templateFileName}, Error: ${error})`;
-                }
-            } else { // "None" is selected or selectedTemplate is empty
-                 selected_template_name_for_payload = "None (Use General Structure)"; // Or whatever the display text for "none" is
-                 template_content_for_payload = ""; // No content for "none"
-            }
-
-            // Structured options
-            const structuredOptions = {};
-            checkboxOptions.forEach(opt => {
-                const checkbox = document.getElementById(opt.id);
-                if (checkbox) { // Ensure checkbox exists
-                    // For each group, collect checked items. If a group can have multiple selections, use an array.
-                    // If a group is single-select (like documentation type, though UI is checkboxes), backend needs to handle.
-                    // For simplicity here, we'll just mark true/false for each option ID.
-                    // Backend can interpret these IDs.
-                    structuredOptions[opt.id] = checkbox.checked;
-                }
-            });
-            
+                    template_content_for_payload = response.ok ? await response.text() : `(Error loading template: ${templateFileName}, Status: ${response.status})`;
+                } catch (error) { template_content_for_payload = `(Error loading template: ${templateFileName}, Error: ${error})`; }
+            } else { selected_template_name_for_payload = "None (Use General Structure)"; }
+            const structuredOptions = {}; checkboxOptions.forEach(opt => { const cb = document.getElementById(opt.id); if(cb) structuredOptions[opt.id] = cb.checked; });
             const serviceAbbreviation = getSelectedServiceAbbreviation();
-            // Update loading message to be more specific
-            if(outputArea) outputArea.value = `Gathering data for service: ${serviceAbbreviation}... Constructing request...`;
-            
-            const payload = {
-                patient_data: patient_info_content,
-                template_name: selected_template_name_for_payload, // This will be "None (Use General Structure)" if "none" is selected
-                template_value: selectedTemplate, // This will be "none" if "none" is selected
-                template_content: template_content_for_payload,
-                options: structuredOptions,
-                service_abbreviation: serviceAbbreviation
-            };
-            console.log("DEBUG: Payload constructed:", payload); // New log
-
-            const enableUpdateModeCheckbox = document.getElementById('enableUpdateModeCheckbox_rosetta');
+            const payload = { patient_data: patient_info_content, template_name: selected_template_name_for_payload, template_value: selectedTemplate, template_content: template_content_for_payload, options: structuredOptions, service_abbreviation: serviceAbbreviation };
+            const enableUpdateCheckbox = document.getElementById('enableUpdateModeCheckbox_rosetta');
             const existingNotesDropdown = document.getElementById('existingNotesDropdown_rosetta');
-            
-            if (enableUpdateModeCheckbox && enableUpdateModeCheckbox.checked && existingNotesDropdown && existingNotesDropdown.value) {
-                payload.existing_note_filename = existingNotesDropdown.value;
-            }
-
+            if (enableUpdateCheckbox?.checked && existingNotesDropdown?.value) payload.existing_note_filename = existingNotesDropdown.value;
             try {
-                console.log(`DEBUG: Sending fetch request to ${ROSETTA_APP_BACKEND_URL}/generate_note`); // New log
-                if(outputArea) outputArea.value = `Sending request to backend for service: ${serviceAbbreviation}... Please wait.`;
-
-                const backend_response = await fetch(`${ROSETTA_APP_BACKEND_URL}/generate_note`, { 
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-                console.log("DEBUG: Fetch request sent, awaiting response."); // New log
-
-                if(outputArea) outputArea.value = `Received response from backend. Processing...`;
-                console.log(`DEBUG: Backend response status: ${backend_response.status}`); // New log
-
+                const backend_response = await fetch(`${ROSETTA_APP_BACKEND_URL}/generate_note`, { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify(payload) });
                 const result = await backend_response.json();
-                console.log("DEBUG: Backend response JSON parsed:", result); // New log
-                let resultDisplay = "";
-
-                if (result.prompt_feedback && result.prompt_feedback !== "N/A") {
-                    resultDisplay += `Prompt Feedback from API:\n${result.prompt_feedback}\n\n---\n`;
-                }
-
-                const modelImpressionArea = document.getElementById('modelImpressionArea');
-
-                if (backend_response.ok) {
-                    resultDisplay = `Success: Note ${result.filename} ${result.message.includes("updated") ? "updated" : "created"}.\n`;
-                    if (modelImpressionArea) {
-                        modelImpressionArea.value = result.llm_model_thoughts || "(No specific reasoning provided by model)";
-                    }
-                    outputArea.value = result.llm_note_output || "(No note output provided by model)";
-                    fetchExistingNotesRosetta(); // Refresh notes list for the dropdown
-                    displaySavedNotesList(); // Refresh the "Saved Notes" list display
-                } else {
-                    resultDisplay = `Error from backend: ${result.error}\nDetails: ${result.details || 'N/A'}\n`;
-                    if (modelImpressionArea) {
-                        modelImpressionArea.value = result.llm_model_thoughts || "(No reasoning provided due to error)";
-                    }
-                    outputArea.value = result.llm_note_output || "(No note output due to error)";
-                }
-                // Prepend feedback to the main output area or a dedicated status line if desired
-                // For now, let's keep the main output area for the note itself, and modelImpressionArea for thoughts.
-                // The success/error message can be part of the thoughts or a small status line.
-                // Let's put the primary status in the modelImpressionArea if it's short, or alert.
-                if (modelImpressionArea && result.message) { // If there's a success/error message from backend
-                    modelImpressionArea.value = `Status: ${result.message}\nPrompt Feedback: ${result.prompt_feedback || 'N/A'}\n\n--- Model Thoughts ---\n` + (result.llm_model_thoughts || "(No specific reasoning provided by model)");
-                } else if (modelImpressionArea && result.error) {
-                     modelImpressionArea.value = `Status Error: ${result.error}\nDetails: ${result.details || 'N/A'}\nPrompt Feedback: ${result.prompt_feedback || 'N/A'}\n\n--- Model Thoughts ---\n` + (result.llm_model_thoughts || "(No reasoning provided due to error)");
-                }
-
-
+                let statusMsg = backend_response.ok ? `Success: Note ${result.filename} ${result.message.includes("updated") ? "updated" : "created"}.` : `Error: ${result.error} (Details: ${result.details || 'N/A'})`;
+                modelImpressionDisplayArea.value = `Status: ${statusMsg}\nPrompt Feedback: ${result.prompt_feedback || 'N/A'}\n\n--- Model Thoughts ---\n` + (result.llm_model_thoughts || "(No reasoning provided)");
+                outputArea.value = result.llm_note_output || "(No note output)";
+                if(backend_response.ok) { fetchExistingNotesRosetta(); displaySavedNotesList(); }
             } catch (error) {
-                console.error('Rosetta Error: Error sending prompt to backend:', error);
-                outputArea.value = `Network error or backend server not running.\nCould not connect to the Rosetta backend at ${ROSETTA_APP_BACKEND_URL}.\nPlease ensure the Python Flask server (shihgptmd_backend.py) is running and accessible on your network (check firewall).\nDetails: ${error.message}`;
+                outputArea.value = `Network error or backend server issue.\nDetails: ${error.message}`;
+                modelImpressionDisplayArea.value = `Network error. Ensure backend is running.`;
             }
         }
         
         const hideCheckbox = document.getElementById('hideTextCheckbox');
-        const textAreasToHide = [
-            document.getElementById('patientInfoInput'),
-            document.getElementById('epicSmartPhraseInput'),
-            document.getElementById('modelImpressionArea'), // Added new area
-            document.getElementById('mainOutputArea')
-        ];
-
+        const textAreasToHide = [ document.getElementById('patientInfoInput'), document.getElementById('epicSmartPhraseInput'), document.getElementById('modelImpressionArea'), document.getElementById('mainOutputArea') ];
         if (hideCheckbox) {
             hideCheckbox.addEventListener('change', function() {
-                textAreasToHide.forEach(textArea => {
-                    if (textArea) {
-                        if (this.checked) {
-                            textArea.classList.add('text-hidden-on-white');
-                        } else {
-                            textArea.classList.remove('text-hidden-on-white');
-                        }
-                    }
-                });
+                textAreasToHide.forEach(textArea => { if (textArea) textArea.classList.toggle('text-hidden-on-white', this.checked); });
             });
         }
 
-        // Call initialization functions once
-        populatePredefinedTemplatesDropdown(); 
-        populateCheckboxOptions(); 
-
+        populatePredefinedTemplatesDropdown(); populateCheckboxOptions(); 
         const generateButton = document.getElementById('generatePromptButton');
-        if (generateButton) {
-            generateButton.addEventListener('click', submitPromptToBackend); 
-        }
-
+        if (generateButton) generateButton.addEventListener('click', submitPromptToBackend); 
         
-        // Event listeners for "Update Note" UI elements
         const enableUpdateCheckbox = document.getElementById('enableUpdateModeCheckbox_rosetta');
         const notesControls = document.getElementById('existingNotesControls_rosetta');
         const refreshNotesListButton = document.getElementById('refreshNotesButton_rosetta'); 
-
         if (enableUpdateCheckbox && notesControls) {
             enableUpdateCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    notesControls.classList.remove('hidden');
-                    fetchExistingNotesRosetta(); 
-                } else {
-                    notesControls.classList.add('hidden');
-                }
+                notesControls.classList.toggle('hidden', !this.checked);
+                if (this.checked) fetchExistingNotesRosetta(); 
             });
-            if (!enableUpdateCheckbox.checked) {
-                notesControls.classList.add('hidden');
-            }
-
-            // Add listener to load note content when dropdown selection changes
+            if (!enableUpdateCheckbox.checked) notesControls.classList.add('hidden');
             const notesDropdown = document.getElementById('existingNotesDropdown_rosetta');
-            if (notesDropdown) {
-                notesDropdown.addEventListener('change', function() {
-                    if (this.value) { // Only load if a valid note is selected
-                        loadSelectedNoteContent(this.value);
-                    }
-                });
-            } else {
-                 console.error("Rosetta Error: Could not find existing notes dropdown to attach change listener.");
-            }
+            if (notesDropdown) notesDropdown.addEventListener('change', function() { if (this.value) loadSelectedNoteContent(this.value); });
         }
-
-        if (refreshNotesListButton) {
-            refreshNotesListButton.addEventListener('click', fetchExistingNotesRosetta);
-        }
+        if (refreshNotesListButton) refreshNotesListButton.addEventListener('click', fetchExistingNotesRosetta);
 
         const saveTemplateBtn = document.getElementById('saveCustomTemplateButton');
-        if (saveTemplateBtn) {
-            saveTemplateBtn.addEventListener('click', saveCustomTemplate);
-        }
-
+        if (saveTemplateBtn) saveTemplateBtn.addEventListener('click', saveCustomTemplate);
         const clearTemplateBtn = document.getElementById('clearCustomTemplateButton');
-        if (clearTemplateBtn) {
-            clearTemplateBtn.addEventListener('click', function() {
-                const epicSmartPhraseInput = document.getElementById('epicSmartPhraseInput');
-                if (epicSmartPhraseInput) {
-                    epicSmartPhraseInput.value = '';
-                }
-            });
-        }
+        if (clearTemplateBtn) clearTemplateBtn.addEventListener('click', () => { const ta = document.getElementById('epicSmartPhraseInput'); if(ta) ta.value = ''; });
 
         async function deleteCustomTemplate() {
             const templateSelector = document.getElementById('templateSelector');
             const selectedTemplate = templateSelector.value;
-
-            if (selectedTemplate === "none") {
-                alert("Please select a manual template to delete.");
-                return;
-            }
-
-            if (!confirm(`Are you sure you want to delete the manual template '${selectedTemplate}'?`)) {
-                return;
-            }
-
+            if (selectedTemplate === "none") { alert("Please select a template to delete."); return; }
+            if (!confirm(`Delete template '${selectedTemplate}'?`)) return;
             try {
                 const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/delete_smartphrase_template`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    method: 'POST', headers: { 'Content-Type': 'application/json', },
                     body: JSON.stringify({ filename: `${selectedTemplate}.txt` }),
                 });
-
                 const result = await response.json();
-                if (response.ok) {
-                    alert(`Template '${selectedTemplate}' deleted successfully! The dropdown will refresh.`);
-                    populatePredefinedTemplatesDropdown(); // Refresh the dropdown
-                } else {
-                    alert(`Error deleting template: ${result.error || 'Unknown error from backend.'}`);
-                }
-            } catch (error) {
-                console.error('Error deleting custom template via fetch:', error);
-                alert(`Network error or backend issue while deleting template: ${error.message}`);
-            }
+                alert(response.ok ? `Template '${selectedTemplate}' deleted.` : `Error: ${result.error}`);
+                if (response.ok) populatePredefinedTemplatesDropdown();
+            } catch (error) { alert(`Network error: ${error.message}`); }
         }
-
-        const deleteTemplateBtn = document.getElementById('deleteCustomTemplateButton');
-        if (deleteTemplateBtn) {
-            deleteTemplateBtn.addEventListener('click', deleteCustomTemplate);
-        }
-
-        console.log("Rosetta app features initialized.");
+        const deleteTemplateBtn = document.getElementById('deleteCustomTemplateButton'); // Assuming this button exists
+        if (deleteTemplateBtn) deleteTemplateBtn.addEventListener('click', deleteCustomTemplate);
 
         const templateSection = document.getElementById('templateSection');
-        if (templateSection) {
-            templateSection.addEventListener('toggle', function() {
-                if (!this.open) {
-                    populatePredefinedTemplatesDropdown();
-                }
-            });
-        }
+        if (templateSection) templateSection.addEventListener('toggle', function() { if (!this.open) populatePredefinedTemplatesDropdown(); });
 
-        // Add Copy Note Button Logic
         const copyButton = document.getElementById('copyNoteButton');
         const noteOutputArea = document.getElementById('mainOutputArea');
-
         if (copyButton && noteOutputArea) {
             copyButton.addEventListener('click', function() {
-                const textToCopy = noteOutputArea.value;
-                if (!textToCopy) {
-                    alert("There is no note content to copy.");
-                    return;
-                }
-
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    // Success feedback
-                    const originalText = copyButton.innerHTML;
-                    copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    setTimeout(() => {
-                        copyButton.innerHTML = originalText;
-                    }, 2000); // Revert after 2 seconds
-                }).catch(err => {
-                    console.error('Rosetta Error: Failed to copy text: ', err);
-                    alert('Failed to copy note to clipboard. Please try manually.\nError: ' + err);
-                });
+                if (!noteOutputArea.value) { alert("No note to copy."); return; }
+                navigator.clipboard.writeText(noteOutputArea.value).then(() => {
+                    const originalText = copyButton.innerHTML; copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => { copyButton.innerHTML = originalText; }, 2000);
+                }).catch(err => alert('Failed to copy. Error: ' + err));
             });
-        } else {
-             console.error("Rosetta Error: Could not find copy button or note output area for event listener setup.");
         }
 
-
-        // Removed the automatic refresh on history section toggle
-
-        // Initial population of the new server notes list
         displaySavedNotesList();
-
-        // Add event listener for the new refresh button
         const refreshServerNotesBtn = document.getElementById('refreshServerNotesListButton');
-        if (refreshServerNotesBtn) {
-            refreshServerNotesBtn.addEventListener('click', displaySavedNotesList);
-        } else {
-            console.error("Rosetta Error: Could not find refreshServerNotesListButton.");
+        if (refreshServerNotesBtn) refreshServerNotesBtn.addEventListener('click', displaySavedNotesList);
+
+        async function deleteAllNotes() {
+            if (!confirm("Delete ALL saved notes? This cannot be undone.")) return;
+            try {
+                const response = await fetch(`${ROSETTA_APP_BACKEND_URL}/api/delete_all_notes`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', },
+                    body: JSON.stringify({ confirm: true }) 
+                });
+                const result = await response.json();
+                alert(response.ok ? (result.message || "All notes deleted.") : `Error: ${result.error || 'Unknown'}`);
+                if (response.ok) { displaySavedNotesList(); fetchExistingNotesRosetta(); }
+            } catch (error) { alert(`Network error: ${error.message}`); }
         }
+        const deleteAllBtn = document.getElementById('deleteAllNotesButton');
+        if (deleteAllBtn) deleteAllBtn.addEventListener('click', deleteAllNotes);
+
+        const helpButton = document.getElementById('rosettaHelpButton');
+        const docModal = document.getElementById('rosettaDocumentationModal');
+        const docContent = document.getElementById('rosettaDocumentationContent');
+        const closeDocModalBtn = document.getElementById('closeDocModalButton');
+        async function openDocumentationModal() {
+            if (docModal && docContent) {
+                docModal.classList.remove('hidden');
+                docContent.innerHTML = '<p>Loading documentation...</p>';
+                try {
+                    const response = await fetch('ROSETTA_DOCUMENTATION.md');
+                    if (response.ok) {
+                        const markdownText = await response.text();
+                        if (typeof marked !== 'undefined') {
+                            docContent.innerHTML = marked.parse(markdownText);
+                        } else {
+                            console.error("Marked.js library not loaded. Displaying raw Markdown.");
+                            docContent.textContent = markdownText; 
+                        }
+                    } else {
+                        docContent.innerHTML = `Error loading documentation: Status ${response.status}`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching documentation:', error);
+                    docContent.innerHTML = `Error fetching documentation: ${error.message}`;
+                }
+            }
+        }
+        if (helpButton) helpButton.addEventListener('click', openDocumentationModal);
+        if (closeDocModalBtn) closeDocModalBtn.addEventListener('click', () => { if (docModal) docModal.classList.add('hidden'); });
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && docModal && !docModal.classList.contains('hidden')) {
+                docModal.classList.add('hidden');
+            }
+        });
       }
-      // Call initializeShihGptMdApp() only after successful password entry,
-      // which is handled in the modified checkPassword function.
-      // Ensure checkboxOptions is defined in a scope accessible by submitPromptToBackend if it's called from initializeShihGptMdApp
-      // For simplicity, ensure checkboxOptions is defined before initializeShihGptMdApp or within it if not already.
-      // It seems checkboxOptions is defined globally in the previous version of this script, which is fine.
     </script>
 
   <script>
-        // const refreshDriveButton = document.getElementById('refreshDriveButton'); // Removed
-        // const refreshHistoryButtonBottom = document.getElementById('refreshHistoryButtonBottom'); // Removed
-
-        // function refreshDriveFrame() { // Removed
-        //     const driveFrame = document.getElementById('driveFrame');
-        //     if (driveFrame) {
-        //         const originalSrc = driveFrame.src;
-        //         driveFrame.src = '';
-        //         setTimeout(() => {
-        //             driveFrame.src = originalSrc;
-        //         }, 100);
-        //     }
-        // }
-
-        // if (refreshDriveButton) { // Removed
-        //     refreshDriveButton.addEventListener('click', refreshDriveFrame);
-        // }
-
-        // if (refreshHistoryButtonBottom) { // Removed
-        //     refreshHistoryButtonBottom.addEventListener('click', refreshDriveFrame);
-        // }
     </script>
   </body>
 </html>
+<environment_details>
+# VSCode Visible Files
+_layouts/base.html
+
+# VSCode Open Tabs
+requirements.txt
+_layouts/about.html
+rosetta_backend.py
+ROSETTA_DOCUMENTATION.md
+_layouts/base.html
+
+# Current Time
+5/29/2025, 1:57:17 PM (America/Los_Angeles, UTC-7:00)
+
+# Context Window Usage
+886,929 / 1,048.576K tokens used (85%)
+
+# Current Mode
+ACT MODE
+</environment_details>

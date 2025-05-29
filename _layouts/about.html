@@ -85,16 +85,7 @@ layout: base
 
 <div id="rosettaAppModal" class="rosetta-hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999;">
     <div class="rosetta-body"> <!-- Apply Rosetta specific body styles here -->
-        <div id="rosettaPasswordPromptContainer">
-            <div id="rosettaPasswordPrompt" class="rosetta-container"> <!-- Apply container style -->
-                <h2>Enter Password for Rosetta</h2>
-                <input type="password" id="rosettaPasswordInput" placeholder="Password" class="rosetta-textarea">
-                <button onclick="rosettaCheckPassword()" class="rosetta-button">Submit</button>
-                <p id="rosettaPasswordError" style="color: red;"></p>
-                <button onclick="closeRosettaApp()" class="rosetta-button" style="background-color: #6c757d; margin-top: 10px;">Close</button>
-            </div>
-        </div>
-
+        <!-- rosettaPasswordPromptContainer removed -->
         <div id="rosettaAppContent" class="rosetta-container rosetta-hidden"> <!-- Apply container style, initially hidden -->
             <h1>Rosetta Interface</h1>
 
@@ -104,7 +95,12 @@ layout: base
             </div>
 
             <h2 class="rosetta-section-title">Patient Information</h2>
-            <textarea id="rosettaPatientInfoInput" placeholder="Enter patient information here..." class="rosetta-textarea"></textarea>
+            <div style="position: relative;"> <!-- Wrapper for textarea and button -->
+                <textarea id="rosettaPatientInfoInput" placeholder="Enter patient information here..." class="rosetta-textarea" style="padding-right: 100px;"></textarea> <!-- Add padding to avoid overlap -->
+                <button type="button" id="rosettaDeidentifyBtn" class="rosetta-secondary-button" style="position: absolute; top: 5px; right: 5px; z-index: 5;" title="De-identify Input Text">
+                    <i class="fas fa-user-shield"></i> De-identify
+                </button>
+            </div>
 
             <h2 class="rosetta-section-title">EPIC SmartPhrase Template (Optional)</h2>
             <textarea id="rosettaEpicSmartPhraseInput" placeholder="Paste EPIC SmartPhrase template here if desired..." class="rosetta-textarea"></textarea>
@@ -140,48 +136,21 @@ layout: base
 
 <script>
     // Rosetta App Specific JavaScript
-    const ROSETTA_CORRECT_PASSWORD = "password123"; // CHANGE THIS!
-    // let rosettaTypedSequence = ""; // Commented out
-    // const rosettaTriggerSequence = "E916!"; // Commented out
-
-    function rosettaCheckPassword() {
-        const password = document.getElementById('rosettaPasswordInput').value;
-        if (password === ROSETTA_CORRECT_PASSWORD) {
-            document.getElementById('rosettaPasswordPrompt').classList.add('rosetta-hidden');
-            document.getElementById('rosettaAppContent').classList.remove('rosetta-hidden');
-            document.getElementById('rosettaPasswordError').textContent = '';
-        } else {
-            document.getElementById('rosettaPasswordError').textContent = 'Incorrect password.';
-        }
-    }
+    // ROSETTA_CORRECT_PASSWORD and rosettaCheckPassword function removed.
+    // Global keydown listener for E916! to open modal directly is also removed as per new instructions.
     
     function openRosettaApp() {
         document.getElementById('rosettaAppModal').classList.remove('rosetta-hidden');
-        document.getElementById('rosettaPasswordInput').value = ''; // Clear password field
-        document.getElementById('rosettaPasswordError').textContent = ''; // Clear error message
-        // Ensure password prompt is shown and app content is hidden initially
-        document.getElementById('rosettaPasswordPrompt').classList.remove('rosetta-hidden');
-        document.getElementById('rosettaAppContent').classList.add('rosetta-hidden');
-        document.getElementById('rosettaPasswordInput').focus();
+        // Directly show app content as the internal password prompt is removed.
+        document.getElementById('rosettaAppContent').classList.remove('rosetta-hidden');
     }
 
     function closeRosettaApp() {
         document.getElementById('rosettaAppModal').classList.add('rosetta-hidden');
     }
 
-    /* Commenting out the global keydown listener for E916!
-    document.addEventListener('keydown', function(event) {
-        rosettaTypedSequence += event.key;
-        // If the sequence is longer than the trigger, keep only the last N characters
-        if (rosettaTypedSequence.length > rosettaTriggerSequence.length) {
-            rosettaTypedSequence = rosettaTypedSequence.substr(rosettaTypedSequence.length - rosettaTriggerSequence.length);
-        }
-        if (rosettaTypedSequence === rosettaTriggerSequence) {
-            openRosettaApp();
-            rosettaTypedSequence = ""; // Reset sequence
-        }
-    });
-    */
+    // The E916! global keydown listener that was previously here (commented out) is fully removed.
+    // The logic to open Rosetta via "E916!" will be handled by the external password field's checkPassword() function.
 
     const rosettaCheckboxOptions = [
         { id: "rosettaGenSHN", label: "Generate SHN (Short-hand Notation)", group: "Output Format" },
@@ -357,7 +326,17 @@ BEGIN MODEL RESPONSE BASED ON ABOVE INSTRUCTIONS AND PATIENT DATA:
         if(outputArea) outputArea.value = prompt;
     }
     
+    // Function to call the de-identification API is now in _layouts/base.html
+    // async function rosettaDeidentifyInputText() { ... } // Removed from here
+
+
     document.addEventListener('DOMContentLoaded', function() {
+        // Event listener for rosettaDeidentifyBtn is now set up in _layouts/base.html's initializeShihGptMdApp
+        // const rosettaDeidentifyButton = document.getElementById('rosettaDeidentifyBtn');
+        // if (rosettaDeidentifyButton) {
+        //     rosettaDeidentifyButton.addEventListener('click', rosettaDeidentifyInputText);
+        // }
+
         const rosettaHideCheckbox = document.getElementById('rosettaHideTextCheckbox');
         const rosettaTextAreasToHide = [
             document.getElementById('rosettaPatientInfoInput'),

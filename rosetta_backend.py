@@ -200,20 +200,18 @@ def get_llm_response(dynamic_prompt_from_frontend):
 def generate_filename(service_abbreviation):
     """
     Generates a filename based on service, current time, and date.
-    Format: temp_ps_notedraft_[SERVICE]_[TIME].[DATE].txt
-    Time: HHMM (military)
-    Date: MM.DD.YYYY
+    New Format: rosetta_note_YYYYMMDD_HHMM_SERVICE.txt
     """
     now = datetime.datetime.now()
-    time_str = now.strftime("%H%M")
-    date_str = now.strftime("%m.%d.%Y")
+    date_str = now.strftime("%Y%m%d") # YYYYMMDD
+    time_str = now.strftime("%H%M")   # HHMM
     
     # Sanitize service_abbreviation to ensure it's filesystem-friendly
     safe_service_abbr = "".join(c if c.isalnum() else "_" for c in service_abbreviation)
     if not safe_service_abbr:
-        safe_service_abbr = "unknown_service"
+        safe_service_abbr = "GENERAL" # Default to GENERAL if sanitization results in empty
         
-    filename = f"temp_ps_notedraft_{safe_service_abbr}_{time_str}_{date_str}.txt"
+    filename = f"rosetta_note_{date_str}_{time_str}_{safe_service_abbr}.txt"
     return filename
 
 def save_note_to_file(filename, content):
@@ -415,14 +413,15 @@ def list_saved_notes():
     print(f"DEBUG: Directory exists: {abs_notes_dir}. Listing contents...")
     try:
         all_files = os.listdir(abs_notes_dir)
-        print(f"DEBUG: Raw directory listing: {all_files}")
-        # List files and filter for .txt, ensuring they are files
-        notes = [f for f in all_files if os.path.isfile(os.path.join(abs_notes_dir, f)) and f.endswith('.txt')]
-        print(f"DEBUG: Filtered .txt files: {notes}")
-        # Sort by name, or potentially by modification time if needed (more complex)
-        sorted_notes = sorted(notes, reverse=True)
-        print(f"DEBUG: Returning sorted notes: {sorted_notes}")
-        return jsonify({"notes": sorted_notes}), 200 # Sort newest first by name convention
+        # Filter for .txt files and ensure they are files
+        note_filenames = [f for f in all_files if os.path.isfile(os.path.join(abs_notes_dir, f)) and f.endswith('.txt')]
+        
+        # Sort by filename in descending (reverse) order.
+        # With the new format YYYYMMDD_HHMM_SERVICE.txt, this will place newest first.
+        sorted_notes = sorted(note_filenames, reverse=True)
+        
+        print(f"DEBUG: Sorted list of filenames (lexicographical reverse): {sorted_notes}")
+        return jsonify({"notes": sorted_notes}), 200
     except Exception as e:
         print(f"ERROR: Exception during listing notes from {abs_notes_dir}: {e}")
         return jsonify({"error": f"Failed to list notes: {str(e)}", "notes": []}), 500
@@ -892,3 +891,44 @@ def deidentify_text_gcp_dlp():
     except Exception as e:
         print(f"ERROR: Exception in /api/deidentify_text: {e}")
         return jsonify({"error": "An unexpected error occurred during de-identification.", "details": str(e)}), 500
+
+@app.route('/api/delete_all_notes', methods=['POST']) # Changed to POST for safety
+def delete_all_notes():
+    """
+    Deletes all .txt files in the OUTPUT_NOTES_DIRECTORY.
+    Requires a confirmation parameter in the request.
+    """
+    print("DEBUG: /api/delete_all_notes endpoint hit")
+    try:
+        data = request.get_json()
+        if not data or data.get("confirm") != True: # Require explicit confirmation
+            return jsonify({"error": "Deletion not confirmed."}), 400
+
+        if not os.path.exists(OUTPUT_NOTES_DIRECTORY):
+            print(f"Info: Output directory {OUTPUT_NOTES_DIRECTORY} not found. Nothing to delete.")
+            return jsonify({"message": "Notes directory not found, nothing to delete."}), 200 # Or 404 if preferred
+
+        deleted_count = 0
+        errors = []
+        for filename in os.listdir(OUTPUT_NOTES_DIRECTORY):
+            if filename.endswith(".txt"):
+                filepath = os.path.join(OUTPUT_NOTES_DIRECTORY, filename)
+                try:
+                    os.remove(filepath)
+                    deleted_count += 1
+                    print(f"Deleted: {filepath}")
+                except Exception as e:
+                    print(f"Error deleting file {filepath}: {e}")
+                    errors.append(f"Could not delete {filename}: {str(e)}")
+        
+        if errors:
+            return jsonify({
+                "message": f"Attempted to delete all notes. Deleted: {deleted_count}. Errors occurred.",
+                "errors": errors
+            }), 500 # Partial success / error
+        
+        return jsonify({"message": f"Successfully deleted {deleted_count} notes."}), 200
+
+    except Exception as e:
+        print(f"ERROR: Exception in /api/delete_all_notes: {e}")
+        return jsonify({"error": "An unexpected error occurred during deletion.", "details": str(e)}), 500
