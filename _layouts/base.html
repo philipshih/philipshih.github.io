@@ -536,21 +536,6 @@
         const generateButton = document.getElementById('generatePromptButton');
         if (generateButton) generateButton.addEventListener('click', submitPromptToBackend); 
         
-        // After populating templates, check initial state for edit/delete buttons
-        // Ensure this runs after populatePredefinedTemplatesDropdown has potentially set a default value.
-        // Since populatePredefinedTemplatesDropdown is async, we might need to ensure it completes.
-        // However, if its default setting is synchronous or quick, this might be okay.
-        // For robustness, one might await populatePredefinedTemplatesDropdown if it were called here,
-        // but it's called earlier. We'll assume the dropdown is settled by this point in init.
-        const initialSelectedTemplateValue = templateSelectorForEdit.value;
-        if (initialSelectedTemplateValue && initialSelectedTemplateValue !== "none") {
-            if(editManualButton) editManualButton.classList.remove('hidden');
-            if(deleteSelectedManualBtn) deleteSelectedManualBtn.classList.remove('hidden');
-        } else {
-            if(editManualButton) editManualButton.classList.add('hidden');
-            if(deleteSelectedManualBtn) deleteSelectedManualBtn.classList.add('hidden');
-        }
-
         const enableUpdateCheckbox = document.getElementById('enableUpdateModeCheckbox_rosetta');
         const notesControls = document.getElementById('existingNotesControls_rosetta');
         const refreshNotesListButton = document.getElementById('refreshNotesButton_rosetta'); 
@@ -684,6 +669,18 @@
         const deleteSelectedManualBtn = document.getElementById('deleteSelectedManualButton');
         const customTemplateTextarea = document.getElementById('epicSmartPhraseInput');
         const saveChangesBtn = document.getElementById('saveChangesToManualButton');
+
+        // Initial state check for edit/delete buttons AFTER elements are defined
+        if (templateSelectorForEdit) { // Ensure templateSelectorForEdit is found
+            const initialSelectedTemplateValue = templateSelectorForEdit.value;
+            if (initialSelectedTemplateValue && initialSelectedTemplateValue !== "none") {
+                if(editManualButton) editManualButton.classList.remove('hidden');
+                if(deleteSelectedManualBtn) deleteSelectedManualBtn.classList.remove('hidden');
+            } else {
+                if(editManualButton) editManualButton.classList.add('hidden');
+                if(deleteSelectedManualBtn) deleteSelectedManualBtn.classList.add('hidden');
+            }
+        }
 
 
         if (templateSelectorForEdit && editManualButton && customTemplateTextarea && saveChangesBtn && deleteSelectedManualBtn) {
