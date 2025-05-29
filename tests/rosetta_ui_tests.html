@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rosetta UI Logic Tests</title>
+    <style>
+        .hidden { display: none !important; }
+        #test-output { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+        .log-pass { color: green; }
+        .log-fail { color: red; font-weight: bold; }
+        .log-info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Rosetta UI Logic Tests</h1>
+    <p>Open browser console to see detailed assertions. Summary below.</p>
+
+    <!-- Simplified UI Elements for Testing -->
+    <div id="templateSection">
+        <label for="templateSelector">Manual:</label>
+        <select id="templateSelector">
+            <option value="none">None (Use General Structure)</option>
+            <option value="general_soap">General SOAP Note</option>
+            <option value="another_template">Another Template</option>
+        </select>
+        <div style="margin-top: 5px; margin-bottom: 15px;">
+            <button type="button" id="editSelectedManualButton" class="hidden">Edit Selected Manual</button>
+            <button type="button" id="deleteSelectedManualButton" class="hidden">Delete Selected Manual</button>
+        </div>
+        <hr>
+        <label for="epicSmartPhraseInput">Custom Template:</label>
+        <textarea id="epicSmartPhraseInput"></textarea>
+        <div style="margin-top: 5px;">
+            <button type="button" id="saveChangesToManualButton" class="hidden">Save Changes</button>
+            <button type="button" id="saveAsNewManualButton">Save as New Manual</button>
+            <button type="button" id="clearCustomTemplateButton">Clear</button>
+        </div>
+    </div>
+
+    <div id="test-output">
+        <h2>Test Results:</h2>
+        <!-- Test results will be appended here by JavaScript -->
+    </div>
+
+    <script>
+        // --- Minimal necessary JS from _layouts/base.html for testing ---
+        let currentlyEditingManualFilename = null;
+        const ROSETTA_APP_BACKEND_URL = 'http://localhost:5000'; // Mock backend URL for tests
+
+        // DOM Elements (re-queried for test environment)
+        const templateSelectorForEdit = document.getElementById('templateSelector');
+        const editManualButton = document.getElementById('editSelectedManualButton');
+        const deleteSelectedManualBtn = document.getElementById('deleteSelectedManualButton');
+        const customTemplateTextarea = document.getElementById('epicSmartPhraseInput');
+        const saveChangesBtn = document.getElementById('saveChangesToManualButton');
+        const saveAsNewBtn = document.getElementById('saveAsNewManualButton');
+        const clearTemplateBtn = document.getElementById('clearCustomTemplateButton');
+        const testOutputDiv = document.getElementById('test-output');
+
+        function logTestResult(description, success, details = '') {
+            const p = document.createElement('p');
+            p.textContent = `${description}: ${success ? 'PASS' : 'FAIL'}`;
+            p.className = success ? 'log-pass' : 'log-fail';
+            if (details) {
+                const detailSpan = document.createElement('span');
+                detailSpan.textContent = ` (${details})`;
+                detailSpan.style.fontSize = '0.9em';
+                detailSpan.style.marginLeft = '10px';
+                p.appendChild(detailSpan);
+            }
+            testOutputDiv.appendChild(p);
+            if (!success) {
+                console.error(`FAIL: ${description}`, details || '');
+            } else {
+                console.log(`PASS: ${description}`);
+            }
+        }
+        
+        // Mocked functions that would normally interact with backend or do more complex UI
+        async function populatePredefinedTemplatesDropdown() {
+            // Simulate setting a default value and then updating button visibility
+            console.info('Simulating populatePredefinedTemplatesDropdown...');
+            templateSelectorForEdit.value = "general_soap"; // Simulate default selection
+            
+            // Logic moved from initializeShihGptMdApp to here for testing after dropdown is "populated"
+            if (templateSelectorForEdit.value && templateSelectorForEdit.value !== "none") {
+                if(editManualButton) editManualButton.classList.remove('hidden');
+                if(deleteSelectedManualBtn) deleteSelectedManualBtn.classList.remove('hidden');
+            } else {
+                if(editManualButton) editManualButton.classList.add('hidden');
+                if(deleteSelectedManualBtn) deleteSelectedManualBtn.classList.add('hidden');
+            }
+            logTestResult('populatePredefinedTemplatesDropdown sets default and shows buttons', 
+                !editManualButton.classList.contains('hidden') && 
+                !deleteSelectedManualBtn.classList.contains('hidden') &&
+                templateSelectorForEdit.value === "general_soap"
+            );
+        }
+
+        async function saveCustomTemplate(isNewFile) {
+            logTestResult(`saveCustomTemplate called (isNewFile: ${isNewFile})`, true);
+            // Simulate save and reset state
+            currentlyEditingManualFilename = null;
+            if (saveChangesBtn) {
+                saveChangesBtn.textContent = 'Save Changes';
+                saveChangesBtn.classList.add('hidden');
+                saveChangesBtn.disabled = true;
+            }
+            // In a real scenario, populatePredefinedTemplatesDropdown would be called again if isNewFile is true
+            return true; 
+        }
+
+        // --- Test Setup and Execution ---
+        function runTests() {
+            console.info('Starting Rosetta UI Logic Tests...');
+            testOutputDiv.innerHTML = '<h2>Test Results:</h2>'; // Clear previous results
+
+            // Test 1: Initial state after simulated population
+            populatePredefinedTemplatesDropdown().then(() => { // Ensure population completes
+                console.assert(!editManualButton.classList.contains('hidden'), "Test 1.1 FAIL: Edit button should be visible for default 'general_soap'.");
+                logTestResult("Test 1.1: Edit button visible on load (default 'general_soap')", !editManualButton.classList.contains('hidden'));
+                console.assert(!deleteSelectedManualBtn.classList.contains('hidden'), "Test 1.2 FAIL: Delete button should be visible for default 'general_soap'.");
+                logTestResult("Test 1.2: Delete button visible on load (default 'general_soap')", !deleteSelectedManualBtn.classList.contains('hidden'));
+                console.assert(saveChangesBtn.classList.contains('hidden'), "Test 1.3 FAIL: Save Changes button should be hidden initially.");
+                logTestResult("Test 1.3: Save Changes button hidden on load", saveChangesBtn.classList.contains('hidden'));
+
+                // Test 2: Dropdown change to "None"
+                templateSelectorForEdit.value = "none";
+                templateSelectorForEdit.dispatchEvent(new Event('change')); // Simulate change event
+                console.assert(editManualButton.classList.contains('hidden'), "Test 2.1 FAIL: Edit button should hide when 'None' selected.");
+                logTestResult("Test 2.1: Edit button hides for 'None'", editManualButton.classList.contains('hidden'));
+                console.assert(deleteSelectedManualBtn.classList.contains('hidden'), "Test 2.2 FAIL: Delete button should hide when 'None' selected.");
+                logTestResult("Test 2.2: Delete button hides for 'None'", deleteSelectedManualBtn.classList.contains('hidden'));
+
+                // Test 3: Dropdown change to a valid template
+                templateSelectorForEdit.value = "another_template";
+                templateSelectorForEdit.dispatchEvent(new Event('change'));
+                console.assert(!editManualButton.classList.contains('hidden'), "Test 3.1 FAIL: Edit button should show for 'another_template'.");
+                logTestResult("Test 3.1: Edit button shows for 'another_template'", !editManualButton.classList.contains('hidden'));
+                console.assert(!deleteSelectedManualBtn.classList.contains('hidden'), "Test 3.2 FAIL: Delete button should show for 'another_template'.");
+                logTestResult("Test 3.2: Delete button shows for 'another_template'", !deleteSelectedManualBtn.classList.contains('hidden'));
+                console.assert(saveChangesBtn.classList.contains('hidden'), "Test 3.3 FAIL: Save Changes button should still be hidden.");
+                logTestResult("Test 3.3: Save Changes button still hidden after dropdown change", saveChangesBtn.classList.contains('hidden'));
+
+                // Test 4: Click "Edit Selected Manual"
+                // Mock fetch for editManualButton
+                const originalFetch = window.fetch;
+                window.fetch = async (url) => {
+                    if (url.includes('another_template.txt')) {
+                        return Promise.resolve({
+                            ok: true,
+                            text: async () => "Content of another_template"
+                        });
+                    }
+                    return originalFetch(url);
+                };
+                editManualButton.click(); // Simulate click
+                
+                // Need to wait for async operations in editManualButton click
+                setTimeout(() => {
+                    console.assert(customTemplateTextarea.value === "Content of another_template", "Test 4.1 FAIL: Textarea not populated.");
+                    logTestResult("Test 4.1: Textarea populated on edit", customTemplateTextarea.value === "Content of another_template");
+                    console.assert(currentlyEditingManualFilename === "another_template.txt", "Test 4.2 FAIL: currentlyEditingManualFilename not set.");
+                    logTestResult("Test 4.2: currentlyEditingManualFilename set", currentlyEditingManualFilename === "another_template.txt");
+                    console.assert(!saveChangesBtn.classList.contains('hidden'), "Test 4.3 FAIL: Save Changes button not visible after edit.");
+                    logTestResult("Test 4.3: Save Changes button visible after edit", !saveChangesBtn.classList.contains('hidden'));
+                    console.assert(saveChangesBtn.textContent === "Save Changes to another_template", "Test 4.4 FAIL: Save Changes button text incorrect.");
+                    logTestResult("Test 4.4: Save Changes button text updated", saveChangesBtn.textContent === "Save Changes to another_template");
+
+                    // Test 5: Click "Save Changes"
+                    saveChangesBtn.click(); // Simulate click
+                    setTimeout(() => { // Wait for async saveCustomTemplate
+                        console.assert(saveChangesBtn.classList.contains('hidden'), "Test 5.1 FAIL: Save Changes button not hidden after save.");
+                        logTestResult("Test 5.1: Save Changes button hidden after save", saveChangesBtn.classList.contains('hidden'));
+                        console.assert(currentlyEditingManualFilename === null, "Test 5.2 FAIL: currentlyEditingManualFilename not reset.");
+                        logTestResult("Test 5.2: currentlyEditingManualFilename reset after save", currentlyEditingManualFilename === null);
+
+                        // Test 6: Click "Clear" button
+                        customTemplateTextarea.value = "Some text";
+                        currentlyEditingManualFilename = "some_file.txt"; // Simulate it was being edited
+                        saveChangesBtn.classList.remove('hidden');
+                        clearTemplateBtn.click();
+                        console.assert(customTemplateTextarea.value === "", "Test 6.1 FAIL: Textarea not cleared.");
+                        logTestResult("Test 6.1: Textarea cleared", customTemplateTextarea.value === "");
+                        console.assert(currentlyEditingManualFilename === null, "Test 6.2 FAIL: currentlyEditingManualFilename not reset by clear.");
+                        logTestResult("Test 6.2: currentlyEditingManualFilename reset by clear", currentlyEditingManualFilename === null);
+                        console.assert(saveChangesBtn.classList.contains('hidden'), "Test 6.3 FAIL: Save Changes button not hidden by clear.");
+                        logTestResult("Test 6.3: Save Changes button hidden by clear", saveChangesBtn.classList.contains('hidden'));
+                        console.assert(templateSelectorForEdit.value === "none", "Test 6.4 FAIL: Dropdown not reset by clear.");
+                        logTestResult("Test 6.4: Dropdown reset by clear", templateSelectorForEdit.value === "none");
+                        
+                        window.fetch = originalFetch; // Restore original fetch
+                        console.info('All tests complete. Check console for details.');
+                        logTestResult("--- All Tests Concluded ---", true);
+                    }, 100); // Timeout for saveCustomTemplate
+                }, 100); // Timeout for edit button async
+            });
+        }
+
+        // Attach event listeners from the main script (simplified)
+        if (templateSelectorForEdit && editManualButton && customTemplateTextarea && saveChangesBtn && deleteSelectedManualBtn) {
+            templateSelectorForEdit.addEventListener('change', function() {
+                currentlyEditingManualFilename = null; 
+                saveChangesBtn.classList.add('hidden');
+                saveChangesBtn.disabled = true;
+                saveChangesBtn.textContent = 'Save Changes';
+
+                if (this.value && this.value !== "none") {
+                    editManualButton.classList.remove('hidden');
+                    deleteSelectedManualBtn.classList.remove('hidden');
+                } else {
+                    editManualButton.classList.add('hidden');
+                    deleteSelectedManualBtn.classList.add('hidden');
+                }
+            });
+
+            editManualButton.addEventListener('click', async function() {
+                const selectedTemplateValue = templateSelectorForEdit.value;
+                if (!selectedTemplateValue || selectedTemplateValue === "none") { return; }
+                const templateFileName = `${selectedTemplateValue}.txt`;
+                editManualButton.textContent = 'Loading...'; editManualButton.disabled = true;
+                try {
+                    const response = await window.fetch(`smartphrase_templates/${templateFileName}`); // Use window.fetch for mock
+                    if (response.ok) {
+                        const templateContent = await response.text();
+                        customTemplateTextarea.value = templateContent;
+                        currentlyEditingManualFilename = templateFileName;
+                        saveChangesBtn.textContent = `Save Changes to ${selectedTemplateValue}`;
+                        saveChangesBtn.classList.remove('hidden');
+                        saveChangesBtn.disabled = false;
+                    } else {
+                        currentlyEditingManualFilename = null;
+                        saveChangesBtn.textContent = 'Save Changes';
+                        saveChangesBtn.classList.add('hidden');
+                        saveChangesBtn.disabled = true;
+                    }
+                } catch (error) {
+                    currentlyEditingManualFilename = null;
+                    saveChangesBtn.textContent = 'Save Changes';
+                    saveChangesBtn.classList.add('hidden');
+                    saveChangesBtn.disabled = true;
+                } finally {
+                    editManualButton.textContent = 'Edit Selected Manual';
+                    editManualButton.disabled = false;
+                }
+            });
+            
+            // No deleteSelectedManualBtn listener here as it involves backend and confirm()
+        }
+
+        if (saveChangesBtn) {
+            saveChangesBtn.addEventListener('click', () => saveCustomTemplate(false));
+        }
+        if (saveAsNewBtn) {
+            saveAsNewBtn.addEventListener('click', () => saveCustomTemplate(true));
+        }
+        if (clearTemplateBtn) {
+            clearTemplateBtn.addEventListener('click', () => { 
+                customTemplateTextarea.value = ''; 
+                currentlyEditingManualFilename = null;
+                if(saveChangesBtn) {
+                    saveChangesBtn.classList.add('hidden');
+                    saveChangesBtn.disabled = true;
+                    saveChangesBtn.textContent = 'Save Changes';
+                }
+                if(templateSelectorForEdit) templateSelectorForEdit.value = "none";
+                if(editManualButton) editManualButton.classList.add('hidden');
+                if(deleteSelectedManualBtn) deleteSelectedManualBtn.classList.add('hidden');
+            });
+        }
+        
+        // Run tests on load
+        window.onload = runTests;
+
+    </script>
+</body>
+</html>

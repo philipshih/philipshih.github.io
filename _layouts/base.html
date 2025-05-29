@@ -427,11 +427,30 @@
                         }
                     });
                     templateSelector.value = templateSelector.querySelector('option[value="general_soap"]') ? 'general_soap' : 'none';
-                } else { templateSelector.value = "none"; }
+                } else { 
+                    templateSelector.value = "none"; 
+                }
+
+                // After setting the dropdown value, update button visibility
+                const editBtn = document.getElementById('editSelectedManualButton');
+                const deleteBtn = document.getElementById('deleteSelectedManualButton');
+                if (templateSelector.value && templateSelector.value !== "none") {
+                    if(editBtn) editBtn.classList.remove('hidden');
+                    if(deleteBtn) deleteBtn.classList.remove('hidden');
+                } else {
+                    if(editBtn) editBtn.classList.add('hidden');
+                    if(deleteBtn) deleteBtn.classList.add('hidden');
+                }
+
             } catch (error) {
                 if (templateSelector.querySelector('option[value=""]')) templateSelector.removeChild(templateSelector.querySelector('option[value=""]'));
                 templateSelector.appendChild(Object.assign(document.createElement('option'), {textContent: "Network error", disabled: true}));
                 templateSelector.value = "none";
+                // Ensure buttons are hidden on error too
+                const editBtn = document.getElementById('editSelectedManualButton');
+                const deleteBtn = document.getElementById('deleteSelectedManualButton');
+                if(editBtn) editBtn.classList.add('hidden');
+                if(deleteBtn) deleteBtn.classList.add('hidden');
             }
         }
 
@@ -670,18 +689,7 @@
         const customTemplateTextarea = document.getElementById('epicSmartPhraseInput');
         const saveChangesBtn = document.getElementById('saveChangesToManualButton');
 
-        // Initial state check for edit/delete buttons AFTER elements are defined
-        if (templateSelectorForEdit) { // Ensure templateSelectorForEdit is found
-            const initialSelectedTemplateValue = templateSelectorForEdit.value;
-            if (initialSelectedTemplateValue && initialSelectedTemplateValue !== "none") {
-                if(editManualButton) editManualButton.classList.remove('hidden');
-                if(deleteSelectedManualBtn) deleteSelectedManualBtn.classList.remove('hidden');
-            } else {
-                if(editManualButton) editManualButton.classList.add('hidden');
-                if(deleteSelectedManualBtn) deleteSelectedManualBtn.classList.add('hidden');
-            }
-        }
-
+        // The initial state check is now handled within populatePredefinedTemplatesDropdown
 
         if (templateSelectorForEdit && editManualButton && customTemplateTextarea && saveChangesBtn && deleteSelectedManualBtn) {
             templateSelectorForEdit.addEventListener('change', function() {

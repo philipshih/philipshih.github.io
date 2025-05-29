@@ -54,10 +54,13 @@ Rosetta allows users to input patient information, select various options and te
     *   `#enableUpdateModeCheckbox_rosetta`: Checkbox to enable updating an existing note.
     *   `#existingNotesDropdown_rosetta`: Dropdown to select an existing note for update.
     *   `#refreshNotesButton_rosetta`: Button to refresh the existing notes dropdown.
-    *   `#templateSelector`: Dropdown for predefined SmartPhrase templates.
-    *   `#epicSmartPhraseInput`: Textarea for custom templates.
-    *   `#saveCustomTemplateButton`: Button to save custom template.
-    *   `#clearCustomTemplateButton`: Button to clear custom template textarea.
+    *   `#templateSelector`: Dropdown for predefined "Manual" SmartPhrase templates.
+    *   `#editSelectedManualButton`: Button to load a selected manual into the custom textarea for editing.
+    *   `#deleteSelectedManualButton`: Button to delete a selected manual.
+    *   `#epicSmartPhraseInput`: Textarea for custom templates or for editing loaded manuals.
+    *   `#saveChangesToManualButton`: Button to save changes to an existing, loaded manual.
+    *   `#saveAsNewManualButton`: Button to save content from custom textarea as a new manual.
+    *   `#clearCustomTemplateButton`: Button to clear custom template textarea and reset editing state.
     *   `#checkboxOptionsContainer`: Houses various checkboxes for generation options.
     *   `#generatePromptButton`: Main button (<i class="fas fa-angle-right"></i>) to trigger note generation.
     *   `#modelImpressionArea`: Textarea for LLM "thoughts" and status messages.
@@ -93,6 +96,9 @@ Rosetta allows users to input patient information, select various options and te
     *   `get_llm_response()`: Sends the combined prompt to the Gemini API and processes the response, extracting model "thoughts" and the main note.
 *   **De-identification**:
     *   `deidentify_text_gcp_dlp()`: Uses Google Cloud DLP client to redact PII from text.
+        *   The `parent` resource for DLP API calls is `projects/{gcp_project_id}/locations/global`.
+        *   The `location_id` is also explicitly set to `global` in the request.
+        *   Includes `MEDICAL_RECORD_NUMBER` and `US_SOCIAL_SECURITY_NUMBER` among other infoTypes for redaction.
 *   **File Management**:
     *   `generate_filename()`: Creates filenames for new notes using the format: `rosetta_note_{YYYYMMDD}_{HHMM}_{SERVICE}.txt`.
     *   `save_note_to_file()`: Saves note content to the `OUTPUT_NOTES_DIRECTORY`.
