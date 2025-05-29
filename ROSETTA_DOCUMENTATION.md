@@ -8,34 +8,31 @@ Rosetta calls Google's Gemini API to craft structured medical notes. Inputs are 
 ### **Getting Started with Rosetta**
 Rosetta is organized into collapsible sections.
 
+#### Incognito Mode
+*   For on-screen privacy, toggle the switch at the top-right of Rosetta to make input and outputs white.
 ####  Input
 Input all pertinent clinical details here – HPI, exam findings, lab results, imaging interpretations, etc.
 *   **De-identify Button**:
     *   Click the "De-identify" icon (top-right of the input area).
-    *   Rosetta securely routes inputs to Google Cloud DLP for thorough de-identification. The anonymized text replaces your original input.
+    *   Rosetta securely routes inputs to Google Cloud DLP for de-identification. Anonymized text replaces your original input.
 *   **Update Existing Note?**:
     *   Check this option to add to or reformat a previous note.
     *   A dropdown list of your saved notes will appear. Select a note to load its content.
-    *   Use the adjacent refresh icon to fetch the latest list of saved notes.
 
 #### Template
-*   **Manual Templates (Dropdown)**:
-    *   Choose from a list of your saved manual templates (e.g., "General SOAP Note") to quickly structure your note.
-    *   Selecting "None (Use General Structure)" will not apply a specific manual template.
+*   **Manuals**:
+    *   Choose from a list of your saved Manuals (e.g., "General SOAP Note") as a template to structure your note.
+    *   Selecting "None (Use General Structure)" will not apply a specific Manual. Notes will be structured based on selected Options and as deemed appropriate.
 *   **Edit Selected Manual**:
-    *   After selecting a manual from the dropdown, this button appears.
-    *   Click it to load the content of the selected manual into the "Custom Template" textarea below, allowing you to view and modify it.
+    *   Loads the content of the selected Manual into the "Custom Template" text area below, allowing you to view and modify existing Manuals.
 *   **Delete Selected Manual**:
-    *   Appears when a manual is selected from the dropdown.
-    *   Click to delete the currently selected manual template from the server (a confirmation prompt will appear).
+    *   Click to delete the currently selected Manual from the server.
 *   **Custom Template Area (Textarea)**:
-    *   Paste any specific format, an EPIC SmartPhrase, or the content of a manual loaded for editing here. This will be used as the primary template if populated.
+    *   Paste any specific format, an EPIC SmartPhrase, or the content of a Manual loaded for editing here. This will be used as the primary template if populated.
 *   **Save Changes**:
-    *   This button appears after you've clicked "Edit Selected Manual" and the template content is loaded into the "Custom Template" area.
-    *   Click it to save any modifications you've made back to the *original* manual template file that was loaded. The button text will indicate which file is being saved (e.g., "Save Changes to general_soap").
+    *   Save any modifications made back to the *original* Manual file that was loaded. The button text will indicate which file is being saved (e.g., "Save Changes to general_soap").
 *   **Save as New Manual**:
-    *   Use this button to save the current content of the "Custom Template" textarea as a brand new manual template.
-    *   You will be prompted to enter a name for your new manual.
+    *   Save the current content of the "Custom Template" textarea as a brand new Manual. You will be prompted to enter a name for your new Manual. 
 *   **Clear**:
     *   Clears the content of the "Custom Template" textarea.
     *   If you were editing a loaded manual, this also resets the editing state (the "Save Changes" button will disappear).
@@ -51,28 +48,19 @@ Input all pertinent clinical details here – HPI, exam findings, lab results, i
    
 #### Generate
 *   The right-arrow button (<i class="fas fa-angle-right"></i>). Click it after providing your input and selecting options.
-*   Rosetta compiles everything and sends it to the Gemini LLM via the secure backend.
+*   Rosetta compiles everything and sends it to an LLM hosted by Render via the secure backend.
 
 #### Output
-*   **Model Impression**: Displays LLM's preliminary reasoning before the final note. Also shows backend status messages.
+*   **Model Impression**: Displays LLM's preliminary reasoning before the final note and backend status messages.
 
 #### Note
 *   Completed notes appear here.
 *   **Copy Button**: Click the <i class="fas fa-copy"></i> icon (top-right of the note area) to instantly copy the note to your clipboard.
 
 #### Saved Notes
-*   **Refresh List**: Get the latest list of your saved notes.
+*   **Refresh List**: Retrieve the latest list of your saved notes.
 *   **Delete All Notes**:
-    *   Clean up your archive.
+    *   Removes all saved notes.
 *  
-
-#### Incognito Mode
-*   For on-screen privacy, toggle the switch at the top-right of Rosetta to make input and outputs white.
 ---
-
-### **Technology Powering Your Assistant**
-*   **Intelligent Note Generation**: State-of-the-art AI from Google's Gemini Pro.
-*   **Secure De-identification**: Robust privacy protection using Google Cloud Data Loss Prevention (DLP) API.
-
----
-*Rosetta was created by Philip Shih as a test of functionality. Exercise your clinical judgment by reviewing and verifying AI-generated content.*
+*Rosetta was developed by Philip Shih as proof-of-concept. Exercise your clinical judgment by reviewing and verifying AI-generated content.*
