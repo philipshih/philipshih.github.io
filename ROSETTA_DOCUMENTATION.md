@@ -6,8 +6,8 @@
 Rosetta helps users generate notes. Inputs are deidentified using the Google Cloud Data Loss Prevention (DLP) API. The Rosetta backend is hosted on Render.
 
 Rosetta has unique features:
-- Transparency in reasoning steps taken prior to note generation  
-- Assessment & Plan generation
+- Transparency in reasoning steps taken prior to generating note
+- Assessment & Plan support
 - Epic SmartPhrase template support
 - Note conversion to templates for future use
 - Dynamically update generated notes using new input
@@ -28,7 +28,7 @@ Toggle the switch at the top-right of the Rosetta interface to hide input and ou
 ## ⌨️ Input
 Enter pertinent details including HPI, exam findings, lab results, imaging interpretations, previous notes, etc.
 
-**Advanced De-identification** <i class="fas fa-cogs"></i>
+**De-identify** <i class="fas fa-user-shield"></i>
 
 Deidentifies ⌨️ Input before processing. The de-identified text will replace your original input text.
 
@@ -47,7 +47,7 @@ Manuals allow you keep notes in a specific format. If "None" is selected, Notes 
 
 **Custom Template** 
 
-Paste a medical note, an EPIC SmartPhrase, or the content of a Manual you've loaded for editing. If this area contains content, it will be used as the primary template for your Note.
+Paste a medical note, an EPIC SmartPhrase, or the content of a Manual you've loaded for editing. If this area contains content, it will be used as the primary Note template.
 
 **Save Changes** 
 
@@ -55,7 +55,7 @@ Save edits to the original manual file. The button's text will indicate which fi
 
 **Save as New Manual** 
 
-Saves the content of the "Custom Template" text area as a new Manual. You will be prompted to enter a name for this Manual.
+Saves the content of the "Custom Template" text area as a new Manual. You will be prompted to enter a name.
 
 **Clear** 
 
@@ -88,13 +88,13 @@ Request a list of initial history questions, a list of missing data, indicated p
 
 ---
 
-## ✨ Generate
-Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after providing your input and selecting your desired options. Rosetta will compile all inputs and begin processing. Your Note will generate even if Rosetta is closed. Please allow up to 3 minutes for processing.
+## 📖 Flip the Page
+Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after providing your input and selecting your desired options. Rosetta will compile all inputs and begin processing. Generation will complete even if Rosetta is closed. Please allow up to 3 minutes for processing.
 
 ---
 
 ## 💡 Output
-Displays reasoning process during Note generation. Output will not be displayed until Note completes generating.
+Displays reasoning process during Note generation. 💡 Output will not be displayed until Note completes generating.
 
 ---
 
