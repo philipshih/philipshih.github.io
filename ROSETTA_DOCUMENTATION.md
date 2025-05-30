@@ -26,7 +26,7 @@ Rosetta is organized into collapsible sections for ease of use.
 Toggle the switch at the top-right of the Rosetta interface to hide input and output text.
 
 ## ⌨️ Input
-Enter pertinent details including HPI, exam findings, lab results, imaging interpretations, previous notes, etc.
+Enter HPI, exam findings, lab results, imaging interpretations, previous notes, etc.
 
 **De-identify** <i class="fas fa-user-shield"></i>
 
@@ -39,7 +39,7 @@ Select a pre-existing, saved Note to be updated using provided input data.
 ---
 
 ## 📄 Template
-Manage the structure and formatting of your Note. 
+Manage the structure and formatting the Note.
 
 **Manuals** 
 
@@ -47,7 +47,7 @@ Manuals allow you keep notes in a specific format. If "None" is selected, Notes 
 
 **Custom Template** 
 
-Paste a medical note, an EPIC SmartPhrase, or the content of a Manual you've loaded for editing. If this area contains content, it will be used as the primary Note template.
+Paste a past note, an EPIC SmartPhrase, or the content of a Manual you've loaded for editing. If this area contains content, it will be used as the primary Note template.
 
 **Save Changes** 
 
@@ -76,15 +76,15 @@ Include more pathophysiologic reasoning or cite relevant clinical guidelines in 
 
 **Documentation** 
 
-Specify if your Note should be a SOAP, H&P, Discharge Summary, or Pre-op note.
+Specify if the Note should be a SOAP, H&P, Discharge Summary, or Pre-op note.
 
 **Context** 
 
-Adapt Note for various contexts such as Dermatology, Pediatrics, Internal Medicine.
+Adapt Note for various contexts such as Dermatology, Pediatrics, and Internal Medicine.
 
 **Features** 
 
-Request a list of initial history questions, a list of missing data, indicated physical exam maneuvers, and more.
+Request a list of items to generate such as initial history questions, a list of missing data, and indicated physical exam maneuvers.
 
 ---
 
@@ -94,7 +94,7 @@ Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after pr
 ---
 
 ## 💡 Output
-Displays reasoning process during Note generation. 💡 Output will not be displayed until Note completes generating.
+Displays reasoning during Note generation. 💡 Output will not be displayed until Note completes generating.
 
 ---
 
@@ -107,7 +107,7 @@ Copies the Note to your clipboard.
 ---
 
 ## 💾 Saved Notes
-Manage your collection of generated Notes. Select a note from this list to load it into the 📝 Note section for viewing.
+Manage your collection of generated Notes. Selecting a Note from this list will load it into the 📝 Note section for viewing.
 
 **Delete All Notes** – Remove all saved Notes.
 
