@@ -28,7 +28,7 @@ Toggle the switch at the top-right of the Rosetta interface to hide input and ou
 ## ⌨️ Input
 Enter pertinent details including HPI, exam findings, lab results, imaging interpretations, previous notes, etc.
 
-**De-identify** <i class="fas fa-user-shield"></i>
+**Advanced De-identification** <i class="fas fa-cogs"></i>
 
 Deidentifies ⌨️ Input before processing. The de-identified text will replace your original input text.
 
