@@ -3,7 +3,7 @@
 
 © Philip Shih 2025
 
-Rosetta helps users generate notes. Inputs are deidentified using the Google Cloud Data Loss Prevention (DLP) API. The Rosetta backend is hosted on Render.
+Rosetta helps users generate notes. Inputs are deidentified using the Google Cloud Data Loss Prevention (DLP) API hosted on Render.
 
 Rosetta has unique features:
 - Transparency in reasoning steps taken prior to generating note
@@ -13,7 +13,7 @@ Rosetta has unique features:
 - Dynamically update generated notes using new input
 - Compatible with all devices
 
-I have limited this tool to medical students, residents, and attending physicians, who may request access through the email address linked on my homepage. Feedback can be sent to my email address linked on my homepage.
+I am limiting this tool to medical students, residents, and attending physicians, who may request access through the email address linked on my homepage.
 
 *Do not use this tool in any patient care setting, and do not process real health information. Rosetta is a work in progress and was developed as a proof-of-concept. Abuse will be logged and reported.*
 
@@ -88,18 +88,18 @@ Request a list of items to generate such as initial history questions, a list of
 
 ---
 
-## 📖 Flip the Page
-Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after providing your input and selecting your desired options. Rosetta will compile all inputs and begin processing. Generation will complete even if Rosetta is closed. Please allow up to 3 minutes for processing.
+## (<i class="fas fa-angle-right"></i>) Flip Page
+Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after providing your input and selecting your desired options. After flipping the page, the Note will generate even if you navigate away from this webpage. Please allow up to 3 minutes for processing.
 
 ---
 
 ## 💡 Output
-Displays reasoning during Note generation. 💡 Output will not be displayed until Note completes generating.
+Displays reasoning during Note generation. Will not be displayed until Note completes generating.
 
 ---
 
 ## 📝 Note
-Your completed Note appears in this section.
+The completed Note appears in this section.
 
 **Copy** (<i class="fas fa-copy"></i>) 
 Copies the Note to your clipboard.
@@ -107,7 +107,7 @@ Copies the Note to your clipboard.
 ---
 
 ## 💾 Saved Notes
-Manage your collection of generated Notes. Selecting a Note from this list will load it into the 📝 Note section for viewing.
+Manage your collection of past generated Notes. Selecting a Note from this list will load it into the 📝 Note section for viewing.
 
 **Delete All Notes** – Remove all saved Notes.
 
