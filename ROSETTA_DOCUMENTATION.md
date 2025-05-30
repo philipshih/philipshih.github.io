@@ -1,5 +1,5 @@
 ![Rosetta Logo](assets/img/rosetta_logo.png)
-*Rosetta Beta v1.0.3*
+**Rosetta Beta v1.0.3**
 
 © Philip Shih 2025
 
@@ -7,13 +7,13 @@ Rosetta calls Google's Gemini API to generate medical notes abiding by user pref
 
 Rosetta offers features unlike any other industry-standard AI Scribe tools on the market:
 - Cross-platform compatibility
-- Preliminary reasoning steps prior to note generation  
-- Assessment and plan support
-- Epic SmartPhrase support  
-- Conversion of notes to templates
-- Dynamic updates to notes based on new user input
+- Transparency in reasoning steps taken prior to note generation  
+- Assessment & Plan generation
+- Epic SmartPhrase template support
+- Convert notes to templates for future use
+- Update notes using new input
 
-Access to the Rosetta beta is currently limited to friends and trusted colleagues. Medical students, residents, and attending physicians may request access through the email address linked on my homepage. Do not enter patient health information before verifying successful de-identification according to HIPAA regulations. Abuse will be logged and reported.
+Access to the Rosetta beta is currently limited to friends and trusted colleagues. Medical students, residents, and attending physicians may request access through the email address linked on my homepage. Do not process patient health information prior to verifying successful de-identification according to HIPAA regulations. Abuse will be logged and reported.
 
 ---
 
@@ -37,7 +37,7 @@ Manage the structure and formatting of your Note.
 
 **Edit Selected Manual** – Loads the content of a selected Manual into the "Custom Template" text area for viewing and editing.
 
-**Delete Selected Manual** – Removes the currently selected Manual from the server.
+**Delete Selected Manual** – Removes the selected Manual from the server.
 
 **Custom Template** – Paste a medical note, an EPIC SmartPhrase, or the content of a Manual you've loaded for editing. If this area contains content, it will be used as the primary template.
 
@@ -50,7 +50,7 @@ Manage the structure and formatting of your Note.
 ## ⚙️ Options
 Select any combination of options to tailor your Note.
 
-**Output** – Generate your Note in SHN (Short-hand Notation), VSHN (Very Short-hand), A&P by Problem, or A&P Only (outputs only the Assessment & Plan section, structured by problem).
+**Output** – Generate your Note in SHN (Short-hand Notation), VSHN (Very Short-hand), A&P by Problem, or A&P Only (outputs only the Assessment & Plan)
 
 **Reasoning** – Include full pathophysiologic reasoning or cite relevant clinical guidelines in Note.
 
