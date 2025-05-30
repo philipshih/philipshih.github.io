@@ -34,6 +34,8 @@ Securely routes your input to Google Cloud DLP for de-identification. The de-ide
 
 Select an pre-existing, saved Note to be updated using provided input data.
 
+---
+
 ## 📄 Template
 Manage the structure and formatting of your Note. 
 
@@ -61,7 +63,11 @@ Saves edits to the original manual file. The button's text will indicate which f
 
 Saves the content of the "Custom Template" text area as a new Manual. You will be prompted to enter a name for this Manual.
 
-**Clear** – Erase the content of the "Custom Template" text area. 
+**Clear** 
+
+Erase the content of the "Custom Template" text area. 
+
+---
 
 ## ⚙️ Options
 Select any combination of options to tailor your Note.
@@ -89,6 +95,8 @@ Request a list of initial history questions, a list of missing data, indicated p
 **Security** 
 
 Confirm De-Identification, convert dates to relative time, and Mirror Input Abbreviations.
+
+---
 
 ## ✨ Generate
 Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after providing your input and selecting your desired options. Rosetta will compile all inputs and begin processing. Note generation will continue even if Rosetta is closed. Please allow up to 3 minutes for processing.
