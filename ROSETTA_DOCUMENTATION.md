@@ -5,13 +5,13 @@
 
 Rosetta calls Google's Gemini API to generate medical notes abiding by user preferences. Inputs are deidentified using the Google Cloud Data Loss Prevention (DLP) API. The Rosetta backend is hosted on Render.
 
-Rosetta contains features unlike any other industry-standard AI Scribe tools:
+Rosetta contains features unlike those offered in any other industry-standard AI Scribe tools:
 - Transparency in reasoning steps taken prior to note generation  
 - Assessment & Plan generation
 - Epic SmartPhrase template support
 - Convert notes to templates for future use
 - Update notes using new input
-- Compatible with any and all devices
+- Compatibility across all devices
 
 Access to the Rosetta beta is currently limited to friends and trusted colleagues. Medical students, residents, and attending physicians may request access through the email address linked on my homepage. Do not process patient health information before verifying successful de-identification according to HIPAA regulations. Abuse will be logged and reported.
 
