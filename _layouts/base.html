@@ -773,7 +773,7 @@
                         const templateContent = await response.text();
                         customTemplateTextarea.value = templateContent;
                         currentlyEditingManualFilename = templateFileName; // Set the file being edited
-                        saveChangesBtn.textContent = `Save Changes to ${selectedTemplateValue}`; // Update text
+                        saveChangesBtn.textContent = `Save as ${selectedTemplateValue}`; // Update text
                         saveChangesBtn.classList.remove('hidden'); // Show button
                         saveChangesBtn.disabled = false; // Enable button
                         customTemplateTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
