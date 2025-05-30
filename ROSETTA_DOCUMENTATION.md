@@ -26,7 +26,7 @@ Toggle the switch at the top-right of the Rosetta interface to hide input and ou
 ## ⌨️ Input
 Enter pertinent clinical details including HPI, exam findings, lab results, imaging interpretations, previous notes, etc.
 
-**De-identify** 
+**De-identify** <i class="fas fa-user-shield"></i>
 
 Securely routes your input to Google Cloud DLP for de-identification. The de-identified text will replace your original input text.
 
