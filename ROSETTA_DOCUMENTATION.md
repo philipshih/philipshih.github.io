@@ -94,25 +94,31 @@ Request a list of initial history questions, a list of missing data, indicated p
 
 **Security** 
 
-Confirm De-Identification, convert dates to relative time, and Mirror Input Abbreviations.
+Confirm De-identification, convert dates to relative time, and use abbreviations that were found in the input.
 
 ---
 
 ## ✨ Generate
 Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after providing your input and selecting your desired options. Rosetta will compile all inputs and begin processing. Note generation will continue even if Rosetta is closed. Please allow up to 3 minutes for processing.
 
+---
+
 ## 💡 Output
-Displays Rosetta's preliminary reasoning and thought process before the Note is generated. 
+Displays Rosetta's preliminary reasoning and thought process during Note generation. The output will not be displayed until the Note has finished generating.
+
+---
 
 ## 📝 Note
 Your completed Note appears in this section.
 
 **Copy** (<i class="fas fa-copy"></i>) – Copies the Note to your clipboard.
 
+---
+
 ## 💾 Saved Notes
 Manage your collection of generated Notes. Select a note from this list to load it into the 📝 Note section for viewing.
 
-**Refresh List** – Retrieve the latest list of saved Notes from the server.
+**Refresh List** – Retrieve list of saved Notes from the server.
 
 **Delete All Notes** – Remove all saved Notes from the server.
 
