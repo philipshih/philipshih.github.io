@@ -50,7 +50,7 @@ Manage the structure and formatting of your Note.
 ## ⚙️ Options
 Select any combination of options to tailor your Note.
 
-**Output** – Generate your Note in SHN (Short-hand Notation), VSHN (Very Short-hand), Assessment & Plan by problem, or A&P Only (outputs only the Assessment & Plan section, structured by problem).
+**Output** – Generate your Note in SHN (Short-hand Notation), VSHN (Very Short-hand), A&P by Problem, or A&P Only (outputs only the Assessment & Plan section, structured by problem).
 
 **Reasoning** – Include full pathophysiologic reasoning or cite relevant clinical guidelines in Note.
 
@@ -60,7 +60,7 @@ Select any combination of options to tailor your Note.
 
 **Features** – Request a list of initial history questions, a list of missing data, indicated physical exam maneuvers, and more.
 
-**Security** – Confirm successful de-identification, convert dates to relative time, and mirror the abbreviations included in the initial input.
+**Security** – Confirm De-Identification, convert dates to relative time, and Mirror Input Abbreviations.
 
 ## ✨ Generate
 Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after providing your input and selecting your desired options. Rosetta will compile all inputs and begin processing. Note generation will continue even if Rosetta is closed. Please allow up to 3 minutes for processing.
