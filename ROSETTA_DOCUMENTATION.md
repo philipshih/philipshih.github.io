@@ -1,10 +1,19 @@
 ![Rosetta Logo](assets/img/rosetta_logo.png)
-Rosetta Beta v1.0.3
+*Rosetta Beta v1.0.3*
+
 © Philip Shih 2025
 
-Rosetta calls Google's Gemini API to securely generate structured medical notes according to user preferences. Inputs are deidentified using the Google Cloud Data Loss Prevention (DLP) API. 
+Rosetta calls Google's Gemini API to generate medical notes abiding by user preferences. Inputs are deidentified using the Google Cloud Data Loss Prevention (DLP) API. The Rosetta backend is hosted on Render.
 
-Access to the Rosetta Beta is currently limited to friends and trusted colleagues. Medical students, residents, and attending physicians may request access through the email address linked on my homepage. Do NOT enter patient health information before confirming it has been de-identified according to HIPAA regulations.
+Rosetta offers features unlike any other industry-standard AI Scribe tools on the market:
+- Cross-platform compatibility
+- Preliminary reasoning steps prior to note generation  
+- Assessment and plan support
+- Epic SmartPhrase support  
+- Conversion of notes to templates
+- Dynamic updates to notes based on new user input
+
+Access to the Rosetta beta is currently limited to friends and trusted colleagues. Medical students, residents, and attending physicians may request access through the email address linked on my homepage. Do not enter patient health information before verifying successful de-identification according to HIPAA regulations. Abuse will be logged and reported.
 
 ---
 
@@ -12,62 +21,64 @@ Access to the Rosetta Beta is currently limited to friends and trusted colleague
 Rosetta is organized into collapsible sections for ease of use.
 
 ## 🕶️ Incognito Mode
-Toggle the switch at the top-right of Rosetta to make input and output text areas blend with the background.
+Toggle the switch at the top-right of the Rosetta interface to hide input and output text.
 
 ## ⌨️ Input
-Enter pertinent clinical details – HPI, exam findings, lab results, imaging interpretations, etc.
+Enter pertinent clinical details including HPI, exam findings, lab results, imaging interpretations, previous notes, etc.
 
-**De-identify** – Routes your input to Google Cloud DLP for thorough de-identification. The de-identified text will replace your original input text.
+**De-identify** – Securely routes your input to Google Cloud DLP for de-identification. The de-identified text will replace your original input text.
 
-**Update Existing Note?** – Select from a dropdown list of your saved notes and load its content. Use the refresh icon to fetch the most current list of saved notes.
+**Update Existing Note** – Select an pre-existing, saved Note to be updated using provided input data.
 
 ## 📄 Template
-Manage your note structures here. **Manuals** (e.g., "General SOAP Note") apply a predefined structure to your note. Selecting "None (Use General Structure)" means no specific Manual will be applied. Notes will then be structured based on selected Options or as deemed appropriate for your input text.
+Manage the structure and formatting of your Note. 
 
-**Edit Selected Manual** – Loads the content of a selected Manual into the "Custom Template" text area below, allowing you to view and make modifications.
+**Manuals** (e.g., "General SOAP Note") apply a predefined structure to your Note. If "None" is selected, notes will be structured based on selected Options or as deemed appropriate for your provided input.
 
-**Delete Selected Manual** – Remove the currently selected Manual from the server.
+**Edit Selected Manual** – Loads the content of a selected Manual into the "Custom Template" text area for viewing and editing.
 
-**Custom Template** – Paste any medical note, an EPIC SmartPhrase, or the content of a Manual you've loaded for editing. If this area has content, it will be used as the primary template.
+**Delete Selected Manual** – Removes the currently selected Manual from the server.
 
-**Save Changes** – Save any modifications back to the original manual file. The button's text will indicate which file is being saved (e.g., "Save Changes to general_soap").
+**Custom Template** – Paste a medical note, an EPIC SmartPhrase, or the content of a Manual you've loaded for editing. If this area contains content, it will be used as the primary template.
 
-**Save as New Manual** – Save the current content of the "Custom Template" textarea as a brand new Manual. You will be prompted to enter a name for this new Manual.
+**Save Changes** – Saves edits to the original manual file. The button's text will indicate which file is being saved (e.g., "Save Changes to general_soap").
 
-**Clear** – Erase the content of the "Custom Template" text area. If you were editing a loaded Manual, this action also resets the editing state, causing the "Save Changes" button to disappear.
+**Save as New Manual** – Saves the content of the "Custom Template" text area as a new Manual. You will be prompted to enter a name for this Manual.
+
+**Clear** – Erase the content of the "Custom Template" text area. 
 
 ## ⚙️ Options
-Select any combination of options to tailor your output.
+Select any combination of options to tailor your Note.
 
-**Output** – Generate your output in SHN (Short-hand Notation), VSHN (Very Short-hand), or Assessment & Plan by problem.
+**Output** – Generate your Note in SHN (Short-hand Notation), VSHN (Very Short-hand), Assessment & Plan by problem, or A&P Only (outputs only the Assessment & Plan section, structured by problem).
 
-**Reasoning** – Include full pathophysiologic reasoning or cite relevant clinical guidelines in output.
+**Reasoning** – Include full pathophysiologic reasoning or cite relevant clinical guidelines in Note.
 
-**Documentation** – Specify if output should be a SOAP, H&P, Discharge Summary, or Pre-op note.
+**Documentation** – Specify if your Note should be a SOAP, H&P, Discharge Summary, or Pre-op note.
 
-**Context** – Adapt note generation for various contexts such as Dermatology, Pediatrics, Internal Medicine.
+**Context** – Adapt Note generation for various contexts such as Dermatology, Pediatrics, Internal Medicine.
 
-**Features** – Request initial history questions, a list of missing data, and more.
+**Features** – Request a list of initial history questions, a list of missing data, indicated physical exam maneuvers, and more.
 
-**Security** – Confirm successful de-identification, convert dates to relative time, and use abbreviations included in initial input.
-   
+**Security** – Confirm successful de-identification, convert dates to relative time, and mirror the abbreviations included in the initial input.
+
 ## ✨ Generate
-Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after providing your input and selecting your desired options. Rosetta will compiles all inputs and route them to the LLM for processing.
+Click the large right-arrow button (<i class="fas fa-angle-right"></i>) after providing your input and selecting your desired options. Rosetta will compile all inputs and begin processing. Note generation will continue even if Rosetta is closed. Please allow up to 3 minutes for processing.
 
 ## 💡 Output
-Displays the LLM's preliminary reasoning and thought process before the final note is generated. 
+Displays Rosetta's preliminary reasoning and thought process before the Note is generated. 
 
 ## 📝 Note
-Your completed and structured medical notes appear in this section.
+Your completed Note appears in this section.
 
-**Copy** (<i class="fas fa-copy"></i> icon) – Copies the Note to your clipboard.
+**Copy** (<i class="fas fa-copy"></i>) – Copies the Note to your clipboard.
 
 ## 💾 Saved Notes
-Manage your collection of generated Notes here.
+Manage your collection of generated Notes. Select a note from this list to load it into the 📝 Note section for viewing.
 
-**Refresh List** – Retrieve the latest list of all your saved Notes from the server.
+**Refresh List** – Retrieve the latest list of saved Notes from the server.
 
-**Delete All Notes** – Remove all saved Notes from your archive after confirmation.
+**Delete All Notes** – Remove all saved Notes from the server.
 
 ---
-*I developed Rosetta as a proof-of-concept. Exercise judgment by verifying outputs. Send feedback to my email address linked on my homepage. Abuse will be logged and reported.*
+*Rosetta is a work in progress and was developed as a proof-of-concept. Exercise judgment by verifying outputs. Send feedback to my email address linked on my homepage. Abuse will be logged and reported.*

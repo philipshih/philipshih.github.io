@@ -625,6 +625,7 @@ def handle_generate_note():
             "genSHN": "- Output Format: Generate SHN (Short-hand Notation). Rephrase full note using standard clinical abbreviations while maintaining clarity. Prioritize abbreviations from the 'Preferred Shorthand Glossary' if provided.",
             "genVSHN": "- Output Format: Generate VSHN (Very Short-hand Notation). Distill into ultra-concise, rapid-style shorthand. Omit non-critical detail. Use standard medical abbreviations where appropriate, prioritizing those from the 'Preferred Shorthand Glossary' if provided. Avoid uncommon abbreviations or excessive capitalization. DO NOT use underscores (_) to connect words; instead, use terse phrasing or standard abbreviations.",
             "formatByProblem": "- A&P Structure: Format the Assessment & Plan section 'By Problem'. (Detailed instructions for 'By Problem' A&P will be appended if this is selected).",
+            "genAandPOnly": "- Output Content: Generate ONLY the Assessment & Plan section, structured 'By Problem'. Omit all other sections like Impression, Subjective (HPI, ROS, PMH, SHx, FHx), and Objective (Vitals, PE, Labs, Imaging). The 'By Problem' A&P formatting instructions still apply.",
             "incPathophys": "- Reasoning Detail: Include full pathophysiologic reasoning in the Assessment & Plan.",
             "incGuidelines": "- Reasoning Detail: Include guideline recommendations if relevant.",
             "formatSOAP": "- Documentation Type: Use SOAP format (if no overriding template is provided).",
@@ -660,11 +661,21 @@ def handle_generate_note():
         # Ensure generated content structurally complies with clinical documentation standards.
         for opt_id, is_checked in options.items():
             if is_checked and opt_id in option_to_instruction_map:
+                # If genAandPOnly is selected, we don't want to add formatByProblem's basic instruction,
+                # as genAandPOnly's instruction already covers the "by problem" aspect.
+                # However, we DO want the *detailed* "By Problem" instructions later.
+                if opt_id == "formatByProblem" and options.get("genAandPOnly"):
+                    selected_options_instructions.append("- A&P Structure: (Using 'By Problem' structure as per 'A&P Only' request).") # Placeholder or confirmation
+                    has_any_option_selected = True
+                    continue # Skip adding the generic formatByProblem instruction text
+                
                 selected_options_instructions.append(option_to_instruction_map[opt_id])
                 has_any_option_selected = True
         
-        if options.get("formatByProblem"): # Special detailed instructions for A&P By Problem
-            selected_options_instructions.append("\nDetailed Instructions for 'Assessment & Plan By Problem' (if A&P By Problem option is selected):")
+        # If "A&P Only" is selected, it implies "formatByProblem" structure.
+        # Or if "formatByProblem" is selected independently.
+        if options.get("genAandPOnly") or options.get("formatByProblem"):
+            selected_options_instructions.append("\nDetailed Instructions for 'Assessment & Plan By Problem' (apply if 'A&P Only' or 'Assessment & Plan by problem' is selected):")
             selected_options_instructions.append("Structure the Assessment and Plan (A&P) section 'By Problem'. For EACH problem identified, strictly follow this format:\n")
             selected_options_instructions.append("#Problem Name (e.g., #Hypertension)")
             selected_options_instructions.append("Assessment: [Concisely define the problem based on available lab/history/physical exam/presentation details. Include likely or possible etiologies for this patient. Describe the patient's current state or status regarding this problem.]")
@@ -678,10 +689,18 @@ def handle_generate_note():
             selected_options_instructions.append("- The 'Assessment:' part for each problem should be a comprehensive but concise paragraph.")
             selected_options_instructions.append("- The 'Plan:' part for each problem MUST use hyphenated lists for actionable items.")
             selected_options_instructions.append("- Ensure clinical reasoning is evident in the grouping and content of plan items.")
-            if options.get("genVSHN"):
-                selected_options_instructions.append("\nIMPORTANT FOR VSHN + By Problem: After structuring the A&P 'By Problem', apply VSHN principles (ultra-concise, rapid-style shorthand) to the ENTIRE note, including the content within each problem's Assessment and Plan. Prioritize abbreviations from the 'Preferred Shorthand Glossary'. Strive for maximum brevity while retaining the problem-oriented structure.")
-            elif options.get("genSHN"):
-                selected_options_instructions.append("\nIMPORTANT FOR SHN + By Problem: After structuring the A&P 'By Problem', apply SHN principles (standard clinical abbreviations) to the ENTIRE note, including the content within each problem's Assessment and Plan, prioritizing abbreviations from the 'Preferred Shorthand Glossary', while maintaining clarity.")
+
+            # Apply SHN/VSHN to the A&P content if those options are also selected
+            if options.get("genAandPOnly"): # If A&P Only is selected, these apply to the A&P section
+                if options.get("genVSHN"):
+                    selected_options_instructions.append("\nIMPORTANT FOR A&P Only + VSHN: Apply VSHN principles (ultra-concise, rapid-style shorthand) to the generated Assessment & Plan section. Prioritize abbreviations from the 'Preferred Shorthand Glossary'.")
+                elif options.get("genSHN"):
+                    selected_options_instructions.append("\nIMPORTANT FOR A&P Only + SHN: Apply SHN principles (standard clinical abbreviations) to the generated Assessment & Plan section, prioritizing abbreviations from the 'Preferred Shorthand Glossary', while maintaining clarity.")
+            else: # If not A&P Only, but formatByProblem is selected, these apply to the whole note
+                if options.get("genVSHN"):
+                    selected_options_instructions.append("\nIMPORTANT FOR VSHN + By Problem A&P: After structuring the A&P 'By Problem', apply VSHN principles (ultra-concise, rapid-style shorthand) to the ENTIRE note, including the content within each problem's Assessment and Plan. Prioritize abbreviations from the 'Preferred Shorthand Glossary'. Strive for maximum brevity while retaining the problem-oriented structure.")
+                elif options.get("genSHN"):
+                    selected_options_instructions.append("\nIMPORTANT FOR SHN + By Problem A&P: After structuring the A&P 'By Problem', apply SHN principles (standard clinical abbreviations) to the ENTIRE note, including the content within each problem's Assessment and Plan, prioritizing abbreviations from the 'Preferred Shorthand Glossary', while maintaining clarity.")
 
         # Add the shorthand glossary if SHN or VSHN is selected
         if options.get("genSHN") or options.get("genVSHN"):
@@ -696,7 +715,6 @@ def handle_generate_note():
                     "but refer to this list first for consistency. Avoid inventing new or highly unusual abbreviations."
                 )
                 selected_options_instructions.append(glossary_instruction)
-
 
     if not has_any_option_selected:
         selected_options_instructions.append("- (Using default behaviors as per core instructions for non-specified options)")
